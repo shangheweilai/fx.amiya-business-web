@@ -142,6 +142,46 @@ const routes = [{
         component: () =>
             import ('@/views/dataCenter/views/assistantDetails'),
     },
+    {
+        path: '/personal',
+        name: 'personal',
+        meta: {
+            title: "个人中心",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/personal'),
+    },
+    {
+        path: '/myData',
+        name: 'myData',
+        meta: {
+            title: "我的数据",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/myData/myData'),
+    },
+    {
+        path: '/accountNumber',
+        name: 'accountNumber',
+        meta: {
+            title: "账号设置",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/accountNumber/accountNumber'),
+    },
+    {
+        path: '/anchor',
+        name: 'anchor',
+        meta: {
+            title: "主播数据",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/anchor/anchor'),
+    },
 ]
 
 const router = new VueRouter({

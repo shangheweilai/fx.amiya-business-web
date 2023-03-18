@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container2">
         <div class="date_con">
             <div class="title">{{noonTip}}，{{employeeName}}</div>
             <div class="date">{{todayDate}}，{{week}}</div>
@@ -40,24 +40,39 @@
         </div>
         <div class="order_content">
             <span class="today_order">今日登记到院订单（{{toHospitalNum}}）</span>
-            <span class="all_order" @click="$router.push('/orderList')">全部订单></span>
+            <span class="all_order" @click="$router.push('/dispatched')">全部订单></span>
         </div>
        
        <!-- 今日到院数据 -->
         <div class="bottom_table"> 
             <tables @tables="tables"/>
         </div>
+
+        <tabbar :active="0" />
+        
+        <!-- 修改密码 -->
+        <!-- <editPassword :isPassword="isPassword" @isPasswordChange="isPasswordChange"/> -->
+        <div class="mc" v-if="isLoading"></div>
     </div>
 </template>
 <script>
 import  * as api from "@/api/index.js";
+import  * as userApi from "@/api/user.js";
+
 import tables from "./components/tables.vue"
+import tabbar from "@/components/tabbar/tabbar.vue"
+// import editPassword from '@/components/editPassword/editPassword.vue';
 export default {
     components:{
         tables,
+        tabbar,
+        // editPassword
     },
     data(){
         return{
+            isLoading:false,
+            // 修改密码弹窗
+            isPassword:false,
             toHospitalNum:0,
             error: false,
             loading: false,
@@ -80,12 +95,16 @@ export default {
         }
     },
     methods:{
+        // 关闭子组件修改密码弹窗
+        isPasswordChange(value){
+            this.isPassword = value
+        },
         dataCenterClick(){
             if(this.readDataCenter == 'true'){
                 this.$router.push('/dataCenter')
                 return false
             }else{
-                this.$toast('你暂无权限查看')
+                this.$toast('您当前的角色暂时无法进入，请联系管理员进行角色升级！')
                 return
             }
         },
@@ -138,25 +157,60 @@ export default {
         }
     },
     created(){
+        
         this.myNoonTip()
         this.setNowTimes()
         if(!sessionStorage.getItem('myCustomerCount')){
+            this.isLoading = true
             this.getCustomer()
+            this.$toast.loading({
+                message: '数据正在努力加载中，请耐心等待',
+                duration: 3000,
+                position: "center",
+            });
+            setTimeout(()=>{
+                this.isLoading = false
+            },3000)
+        }else{
+
         }
-        // this.getTodayToHospitalInfo()
+        // // 检测当前密码是否合法
+        // userApi.checkPassword(sessionStorage.getItem("password")).then((res) => {
+        //     if (res.code === 0) {
+        //         const { islegitimate } = res.data;
+        //         if (!islegitimate) {
+        //             this.$toast.fail({
+        //                 content: "密码不合法,请修改密码",
+        //                 duration: 3,
+        //             });
+        //             this.isPassword = true;
+        //         }
+        //     }
+        // });
     },
     
 }
 </script>
 <style scoped lang="less">
-.container{
+.container2{
     width: 100%;
-    height: 100vh;
+    height: 100%;
     position:relative;
-    background-image: url(../../assets/workbench_bg.png) ;
-    background-size: 100% 100%;
+    // background-image: url(../../assets/workbench_bg.png) ;
+    // background-size: 100% 100%;
+    background: linear-gradient(#5492FE, #fff);
     // overflow-x: hidden;
-    // overflow-y: hidden;
+    overflow-y: hidden;
+    .mc{
+        width: 100%;
+        height: 100vh;
+        position: fixed;
+        top: 0 ;
+        left: 0;
+        background: #000;
+        opacity: 0.3;
+        z-index: 999;
+    }
     .date_con{
         padding: 7% 0 0 10%;
         box-sizing: border-box;
@@ -184,13 +238,14 @@ export default {
         align-items: center;
         padding: 0 5%;
         box-sizing: border-box;
+        color: #5492FE;
         .customer{
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-direction: column;
             font-size: 13px;
-            color: #5492FE;
+            // color: #5492FE;
             padding: 0 10px;
             box-sizing: border-box;
         }
@@ -250,8 +305,9 @@ export default {
 
     }
     .bottom_table{
-        margin:20px 0 ;
-        height: 50%;
+        margin:20px 0 0 ;
+        // height: 50%;
+        height: 45%;
         overflow: scroll;
         // background: red;
     }

@@ -10,10 +10,10 @@
             </div>
         </div>
         <div class="" v-if="activeItem == 0">
-            <daodao :time="time" ref="daodaos" :performance="performance" :dataObj="dataObj" :isLoading="isLoading"/>
+            <daodao :time="time" ref="daodaos" :performance="performance"  :isLoading="isLoading"/>
         </div>
         <div class="" v-else>
-            <jina :time="time" ref="jinas" :performance="performance" :dataObj="dataObj" :isLoading="isLoading"/>
+            <jina :time="time" ref="jinas" :performance="performance"  :isLoading="isLoading"/>
         </div>
 
         <van-popup v-model="timeModel" position="bottom" style="height: 50%" round >
@@ -37,6 +37,9 @@ import  * as api from "@/api/order.js";
 import daodao from "../components/daodao.vue"
 import jina from "../components/jina.vue"
 export default {
+    props:{
+        liveAnchorBaseInfos:Array
+    },
     components:{
         daodao,
         jina
@@ -62,37 +65,10 @@ export default {
             timeModel:false,
             performance:{},
             isLoading:false,
-            // 用于存储处理过的数据
-            dataObj:{
-                // 本月总业绩
-                cueerntMonthTotalPerformance:null,
-                // 总业绩目标
-                totalPerformanceTarget:null,
-                // 新客目标
-                newCustomerPerformanceTarget:null,
-                // 新客业绩
-                currentMonthNewCustomerPerformance:null,
-                // 老客业绩
-                currentMonthOldCustomerPerformance:null,
-                // 老客目标
-                oldCustomerTarget:null,
-                // 199元业绩
-                existPricePerformance:null,
-                // 0元业绩
-                zeroPricePerformance:null,
-                // 当月派单当月成交
-                duringMonthSendDuringMonthDeal:null,
-                // 历史派单当月成交业绩
-                historySendDuringMonthDeal:null,
-                // 主播视频业绩
-                videoConsultationPerformance:null,
-                // 助理照片业绩
-                pictureConsultationPerformance:null,
-                // 主播接诊业绩
-                acompanyingPerformance:null,
-                // 非主播接诊业绩
-                notAcompanyingPerformance:null
-            }
+            // 主播
+            daodao:'',
+            jina:''
+            
         }
     },
     methods:{
@@ -118,47 +94,36 @@ export default {
             this.timeModel = false
             this.getPerformanceByLiveAnchorName()
         },
+        // 获取主播id
+        getAnchor(){
+            const data = {
+                isSelfLiveAnchor:true
+            }
+            api.LiveAnchorBaseInfo(data).then((res)=>{
+                if(res.code === 0) {
+                    res.data.liveAnchorBaseInfos.map(item=>{
+                        if(item.name == '刀刀'){
+                            sessionStorage.setItem('daodaoid',item.id)
+                        }else if(item.name == '吉娜'){
+                            sessionStorage.setItem('jinaid',item.id)
+                        }
+                    })
+                }
+            })
+        },
+        // 获取主播数据
         getPerformanceByLiveAnchorName(){
             const data ={
                 year:this.$moment(this.time).format("YYYY"),
                 month:this.$moment(this.time).format("MM"),
-                liveAnchorBaseId:this.activeItem == 0 ? 'f0a77257-c905-4719-95c4-ad2c4f33855c' : 'af69dcf5-f749-41ea-8b50-fe685facdd8b',
+                liveAnchorBaseId:this.activeItem == 0 ? sessionStorage.getItem('daodaoid') : sessionStorage.getItem('jinaid'),
                 isSelfLiveAnchor:true
             }
             this.isLoading = true
             api.PerformanceByLiveAnchorName(data).then((res)=>{
                 if(res.code == 0){
                     this.isLoading = false
-                    const {cueerntMonthTotalPerformance,totalPerformanceTarget,newCustomerPerformanceTarget,currentMonthNewCustomerPerformance,currentMonthOldCustomerPerformance,oldCustomerTarget,existPricePerformance,zeroPricePerformance,duringMonthSendDuringMonthDeal,historySendDuringMonthDeal,videoConsultationPerformance,pictureConsultationPerformance,acompanyingPerformance,notAcompanyingPerformance} = res.data.performance
                     this.performance =  res.data.performance
-                    this.dataObj.cueerntMonthTotalPerformance = cueerntMonthTotalPerformance > 10000 ? (cueerntMonthTotalPerformance / 10000).toFixed(3) + ' w': cueerntMonthTotalPerformance
-                    this.dataObj.totalPerformanceTarget = totalPerformanceTarget > 10000 ? (totalPerformanceTarget / 10000) + ' w': totalPerformanceTarget
-                    // 新客业绩
-                    this.dataObj.newCustomerPerformanceTarget = newCustomerPerformanceTarget > 10000 ? (newCustomerPerformanceTarget / 10000) + ' w': newCustomerPerformanceTarget
-                    this.dataObj.currentMonthNewCustomerPerformance = currentMonthNewCustomerPerformance > 10000 ? (currentMonthNewCustomerPerformance / 10000).toFixed(3) + ' w': currentMonthNewCustomerPerformance.toFixed(3) 
-                    // 老客业绩
-                    this.dataObj.currentMonthOldCustomerPerformance = currentMonthOldCustomerPerformance > 10000 ? (currentMonthOldCustomerPerformance / 10000).toFixed(3) + ' w': currentMonthOldCustomerPerformance.toFixed(3) 
-                    // 老客目标
-                    this.dataObj.oldCustomerTarget = oldCustomerTarget > 10000 ? (oldCustomerTarget / 10000) + ' w': oldCustomerTarget
-                    // 199元业绩
-                    this.dataObj.existPricePerformance = existPricePerformance > 10000 ? (existPricePerformance / 10000).toFixed(3) + ' w': existPricePerformance.toFixed(3) 
-                    // 0元业绩
-                    this.dataObj.zeroPricePerformance = zeroPricePerformance > 10000 ? (zeroPricePerformance / 10000).toFixed(3) + ' w': zeroPricePerformance.toFixed(3)
-                    // 当月派单当月成交
-                    this.dataObj.duringMonthSendDuringMonthDeal = duringMonthSendDuringMonthDeal > 10000 ? (duringMonthSendDuringMonthDeal / 10000).toFixed(3) + ' w': duringMonthSendDuringMonthDeal.toFixed(3) 
-                    // 历史派单当月成交业绩
-                    this.dataObj.historySendDuringMonthDeal = historySendDuringMonthDeal > 10000 ? (historySendDuringMonthDeal / 10000).toFixed(3) + ' w': historySendDuringMonthDeal.toFixed(3) 
-                    // 主播视频业绩
-                    this.dataObj.videoConsultationPerformance = videoConsultationPerformance > 10000 ? (videoConsultationPerformance / 10000).toFixed(3) + ' w': videoConsultationPerformance.toFixed(3) 
-                    // 助理照片业绩
-                    this.dataObj.pictureConsultationPerformance = pictureConsultationPerformance > 10000 ? (pictureConsultationPerformance / 10000).toFixed(3) + ' w': pictureConsultationPerformance.toFixed(3) 
-                    // 主播接诊业绩
-                    this.dataObj.acompanyingPerformance = acompanyingPerformance > 10000 ? (acompanyingPerformance / 10000).toFixed(3) + ' w': acompanyingPerformance.toFixed(3) 
-                    // 非主播接诊业绩
-                    this.dataObj.notAcompanyingPerformance = notAcompanyingPerformance > 10000 ? (notAcompanyingPerformance / 10000).toFixed(3) + ' w': notAcompanyingPerformance.toFixed(3) 
-
-
-
                 }else{
                     this.$toast(res.msg)
                 }
@@ -166,12 +131,17 @@ export default {
         }
     },
     created(){
-        if(this.activeItem == 0){
+        this.getAnchor()
+        setTimeout(()=>{
             this.getPerformanceByLiveAnchorName()
-            return
-        }
+        },1000)
+        // if(this.activeItem == 0){
+        //     this.getPerformanceByLiveAnchorName()
+            
+        //     return
+        // }
         // this.activeItem = sessionStorage.getItem('divdeIntoActive') ? sessionStorage.getItem('divdeIntoActive') : 0
-    }
+    },
 }
 </script>
 

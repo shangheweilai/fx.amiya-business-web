@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content" :style="{height:list.length < 4 ? '100vh' : 'auto'}">
     <div class="search_content">
         <van-field
             v-model="query.keyword"
@@ -45,12 +45,14 @@
               <div class="item_type">状态：{{item.orderStatusText}}</div>
             </div>
             <div class="item_center">
-              <van-image
+              <!-- <van-image
                 width="50"
                 height="50"
                 :src="item.thumbPictureUrl"
                 style="margin:0 8px 0 0"
-              />
+                
+              /> -->
+              <img :src="item.thumbPictureUrl" alt="" style="width:50px;height:50px;margin:0 8px 0 0">
               <div class="item_right">
                 
                 <div class="right_content">
@@ -155,6 +157,8 @@ export default {
               orderInfo:res.data.orderInfo
             }
           })
+        }else{
+          this.$toast(res.msg);
         }
       })
     },
@@ -385,7 +389,7 @@ export default {
       align-items: center;
       margin: 7px 0;
       .item_right{
-        width: 100%;
+        width: 70%;
         flex:1;
         .right_content{
           display: flex;

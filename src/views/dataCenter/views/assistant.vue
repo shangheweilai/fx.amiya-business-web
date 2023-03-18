@@ -10,10 +10,10 @@
             </div>
         </div>
         <div class="" v-if="activeItem == 0">
-            <assistantDaodao   :performance="performance" :isLoading="isLoading" />
+            <assistantDaodao   :performance="performance" :isLoading="isLoading" :liveAnchorBaseInfos="liveAnchorBaseInfos"/>
         </div>
         <div class="" v-else>
-            <assistantJina   :performance="performance" :isLoading="isLoading"/>
+            <assistantDaodao   :performance="performance" :isLoading="isLoading" :liveAnchorBaseInfos="liveAnchorBaseInfos"/>
         </div>
 
         <van-popup v-model="timeModel" position="bottom" style="height: 50%" round >
@@ -36,6 +36,9 @@ import  * as api from "@/api/order.js";
 import assistantDaodao from "../components/assistantDaodao.vue"
 import assistantJina from "../components/assistantJina.vue"
 export default {
+    props:{
+        liveAnchorBaseInfos:Array
+    },
     components:{
         assistantDaodao,
         assistantJina
@@ -65,6 +68,7 @@ export default {
         }
     },
     methods:{
+        // tab切换
         navClick(value){
             sessionStorage.setItem('assistantActive',value)
             if(value == 0){
@@ -78,20 +82,40 @@ export default {
             }
             
         },
+        // 时间选择
         timeClick(){
             this.currentDate = new Date(this.$moment(this.time).format("YYYY-MM-DD"))
             this.timeModel = true
         },
+        // 时间确认
         timeConfirm(value){
             this.time = this.$moment(value).format("YYYY-MM")
             this.timeModel = false
             this.getcustomerServicePerformance()
         },
+        // 获取主播id
+        getAnchor(){
+            const data = {
+                isSelfLiveAnchor:true
+            }
+            api.LiveAnchorBaseInfo(data).then((res)=>{
+                if(res.code === 0) {
+                    res.data.liveAnchorBaseInfos.map(item=>{
+                        if(item.name == '刀刀'){
+                            sessionStorage.setItem('daodaoid',item.id)
+                        }else if(item.name == '吉娜'){
+                            sessionStorage.setItem('jinaid',item.id)
+                        }
+                    })
+                }
+            })
+        },
+        // 获取助理业绩
         getcustomerServicePerformance(){
             const data ={
                 year:this.$moment(this.time).format("YYYY"),
                 month:this.$moment(this.time).format("MM"),
-                liveAnchorBaseId:this.activeItem == 0 ? 'f0a77257-c905-4719-95c4-ad2c4f33855c' : 'af69dcf5-f749-41ea-8b50-fe685facdd8b',
+                liveAnchorBaseId:this.activeItem == 0 ? sessionStorage.getItem('daodaoid') : sessionStorage.getItem('jinaid'),
                 isSelfLiveAnchor:true
             }
             this.isLoading = true
@@ -110,6 +134,7 @@ export default {
         //     this.getcustomerServicePerformance()
         //     return
         // }
+        this.getAnchor()
         this.activeItem = sessionStorage.getItem('assistantActive') ? sessionStorage.getItem('assistantActive') : 0
         this.getcustomerServicePerformance()
     }

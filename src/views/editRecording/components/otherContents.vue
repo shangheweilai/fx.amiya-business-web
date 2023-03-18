@@ -103,6 +103,8 @@ export default {
         phone:customerMessage.phone,
         sex:customerMessage.sex,
         wechatNumber:customerMessage.wechatNumber,
+        customerPictures:customerMessage.imgList,
+
         // 订单信息
         addOrderPirce:Number(orderMessage.addOrderPrice), 
         appointmentHospitalId:Number(orderMessage.appointmentHospitalId),
@@ -117,7 +119,6 @@ export default {
         remark:otherContents.remark,
         unSendReason:otherContents.unSendReason,
         appointmentDate:null,
-        customerPictures:[],
         consultationEmpId:0,
         acceptConsulting:''
       }

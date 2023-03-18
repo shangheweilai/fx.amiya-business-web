@@ -2,8 +2,9 @@
   <div class="container" v-if="$route.query.orderInfo">
     <div class="step_con">
       <!-- $route.query.orderInfo.orderStatusText == '未派单' ? 0: $route.query.orderInfo.orderStatusText == '已派单' ? 1 : $route.query.orderInfo.isToHospital == true ? 2 : $route.query.orderInfo.orderStatusText == '已成交' ?  3 : $route.query.orderInfo.orderStatusText == '已接单' ? 1 : $route.query.orderInfo.orderStatusText == '重单-不可深度' ? 2 : $route.query.orderInfo.orderStatusText == '重单-可深度' ? 2 : $route.query.orderInfo.orderStatusText == '未成交' ? 2 : 4 -->
+      <!-- $route.query.orderInfo.orderStatusText == '未派单' ? 0 : $route.query.orderInfo.orderStatusText == '已派单' ? 1 : $route.query.orderInfo.isToHospital == true ? 2 : $route.query.orderInfo.orderStatusText == '已成交' ?  3 : $route.query.orderInfo.orderStatusText == '已接单' ? 1 : $route.query.orderInfo.orderStatusText == '重单-不可深度' ? 2 : $route.query.orderInfo.orderStatusText == '重单-可深度' ? 2 : $route.query.orderInfo.orderStatusText == '未成交' ? 2 : 0 -->
       <van-steps
-        :active="$route.query.orderInfo.orderStatusText == '未派单' ? 0 : $route.query.orderInfo.orderStatusText == '已派单' ? 1 : $route.query.orderInfo.isToHospital == true ? 2 : $route.query.orderInfo.orderStatusText == '已成交' ?  3 : $route.query.orderInfo.orderStatusText == '已接单' ? 1 : $route.query.orderInfo.orderStatusText == '重单-不可深度' ? 2 : $route.query.orderInfo.orderStatusText == '重单-可深度' ? 2 : $route.query.orderInfo.orderStatusText == '未成交' ? 2 : 0"
+        :active="$route.query.orderInfo.orderStatusText == '已成交' ? 3 :  ($route.query.orderInfo.isToHospital == true || $route.query.orderInfo.orderStatusText == '重单-不可深度' || $route.query.orderInfo.orderStatusText == '未成交' ? 2 : ($route.query.orderInfo.orderStatusText == '已派单' || $route.query.orderInfo.orderStatusText == '已接单') ? 1 : 0)"
         active-color="#5492FE"
         style="border-radius: 10px"
       >
@@ -35,7 +36,7 @@
           <span>微信号：{{ $route.query.orderInfo.wechatNumber }}</span>
         </div>
         <div class="item_f">
-          <span>手机号：{{ $route.query.orderInfo.phone }}</span>
+          <span>手机号：{{ $route.query.orderInfo.encryptPhone }}</span>
           <span>性别：{{ $route.query.orderInfo.sex }}</span>
         </div>
         <div class="item_f">
@@ -201,11 +202,11 @@
           </div>
           <div class="item_img">
             未成交截图：<viewer
-              v-if="$route.query.orderInfo.dealPictureUrl"
+              v-if="$route.query.orderInfo.unDealPictureUrl"
               baseLayerPicker="true"
             >
               <img
-                :src="$route.query.orderInfo.dealPictureUrl"
+                :src="$route.query.orderInfo.unDealPictureUrl"
                 alt=""
                 class="unImg"
               />

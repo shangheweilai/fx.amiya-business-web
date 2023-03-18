@@ -1,7 +1,5 @@
 <template>  
   <div class="container">
-
-  
     <div class="content">
         <div class="anchor">成交信息填写</div>
         <div >
@@ -90,6 +88,18 @@
                 :rows="2"
                 v-if="form.isFinish == false"
             />
+            <div class="customer_img" v-if="form.isFinish == false">未成交截图</div>
+            <div  class="img_content" v-if="form.isFinish == false">
+                <div v-for="(item,index) in form.unDealPictureUrl" :key="index" style="display:flex;">
+                <div class="img_item">
+                    <viewer v-if="item"  baseLayerPicker ="true" >
+                    <img :src="item" alt=""  class="img" >
+                    </viewer>
+                    <span class="opacity_con"  @click="deletClick(index)">x</span>
+                </div>
+                </div>
+                <van-uploader :after-read="afterReadClick" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize" :before-read="beforeRead" v-if="form.unDealPictureUrl.length<1"/>
+            </div>
             <van-field
                 v-model="form.otherContentPlatFormOrderId"
                 label="抖店订单号"
@@ -106,6 +116,30 @@
                 type="textarea"
                 :rows="4"
             />
+            <div class="customer_img" v-if="form.isFinish == true">成交凭证</div>
+            <div  class="img_content" v-if="form.isFinish == true">
+                <div v-for="(item,index) in form.dealPictureUrl" :key="index" style="display:flex;">
+                <div class="img_item">
+                    <viewer v-if="item"  baseLayerPicker ="true" >
+                    <img :src="item" alt=""  class="img" >
+                    </viewer>
+                    <span class="opacity_con"  @click="deletClick3(index)">x</span>
+                </div>
+                </div>
+                <van-uploader :after-read="afterReadClick3" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize3" :before-read="beforeRead3" v-if="form.dealPictureUrl.length<1"/>
+            </div>
+            <div class="customer_img">邀约凭证</div>
+            <div  class="img_content">
+                <div v-for="(item,index) in form.invitationDocuments" :key="index" style="display:flex;">
+                <div class="img_item">
+                    <viewer v-if="item"  baseLayerPicker ="true" >
+                    <img :src="item" alt=""  class="img" >
+                    </viewer>
+                    <span class="opacity_con"  @click="deletClick2(index)">x</span>
+                </div>
+                </div>
+                <van-uploader :after-read="afterReadClick2" :max-count="5" :max-size="5 * 1024 * 1024" @oversize="onOversize2" :before-read="beforeRead2" v-if="form.invitationDocuments.length<5"/>
+            </div>
         </div>
 
         <div>
@@ -198,11 +232,11 @@ export default {
                 // 后期项目铺垫
                 lastProjectStage:'',
                 // 成交截图url
-                dealPictureUrl:'',
+                dealPictureUrl:[],
                 // 未成交原因
                 unDealReason:'',
                 // 未成交截图url
-                unDealPictureUrl:'',
+                unDealPictureUrl:[],
                 // 成交时间
                 dealDate:this.$moment().format("YYYY-MM-DD"),
                 //业绩类型 
@@ -243,6 +277,96 @@ export default {
 
     },
     methods:{
+        // 未成交截图
+        beforeRead(file) {
+            if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
+                this.$toast("请上传正确格式的图片！");
+                return false;
+            }
+            return true;
+        },
+        onOversize(file) {
+            this.$toast("只能上传5M以内的图片！");
+        },
+        deletClick(index){
+        this.form.unDealPictureUrl.splice(index, 1)
+        },
+        afterReadClick(file){
+        // 此时可以自行将文件上传至服务器
+        let content = file.file;
+            let data = new FormData();
+            data.append('uploadfile',content);
+            api.upload(data).then(res=>{
+            if(res.code == 0){
+                this.form.unDealPictureUrl.push(res.data.url)
+                return
+            }else if(res.code == 404){
+                this.$toast("上传失败！");
+                return
+            }
+            })
+        },
+
+        // 邀约凭证
+        beforeRead2(file) {
+            if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
+                this.$toast("请上传正确格式的图片！");
+                return false;
+            }
+            return true;
+        },
+        onOversize2(file) {
+            this.$toast("只能上传5M以内的图片！");
+        },
+        deletClick2(index){
+        this.form.invitationDocuments.splice(index, 1)
+        },
+        afterReadClick2(file){
+        // 此时可以自行将文件上传至服务器
+        let content = file.file;
+            let data = new FormData();
+            data.append('uploadfile',content);
+            api.upload(data).then(res=>{
+            if(res.code == 0){
+                this.form.invitationDocuments.push(res.data.url)
+                return
+            }else if(res.code == 404){
+                this.$toast("上传失败！");
+                return
+            }
+            })
+        },
+
+        // 成交凭证
+        beforeRead3(file) {
+            if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
+                this.$toast("请上传正确格式的图片！");
+                return false;
+            }
+            return true;
+        },
+        onOversize3(file) {
+            this.$toast("只能上传5M以内的图片！");
+        },
+        deletClick3(index){
+        this.form.dealPictureUrl.splice(index, 1)
+        },
+        afterReadClick3(file){
+        // 此时可以自行将文件上传至服务器
+        let content = file.file;
+            let data = new FormData();
+            data.append('uploadfile',content);
+            api.upload(data).then(res=>{
+            if(res.code == 0){
+                this.form.dealPictureUrl.push(res.data.url)
+                return
+            }else if(res.code == 404){
+                this.$toast("上传失败！");
+                return
+            }
+            })
+        },
+
         dealDateClick(){
            var myDate = new Date();  
             this.model.dealDateModel = true;
@@ -300,15 +424,15 @@ export default {
             toHospitalDate:toHospitalDate ? this.$moment(toHospitalDate).format("YYYY-MM-DD") : null,
             dealAmount:Number(dealAmount),
             lastProjectStage,
-            dealPictureUrl,
+            dealPictureUrl:dealPictureUrl.length   == 0 ?  ''  : dealPictureUrl[0],
             unDealReason,
-            unDealPictureUrl,
+            unDealPictureUrl:unDealPictureUrl.length == 0 ?  ''  : unDealPictureUrl[0],
             dealDate:dealDate ? this.$moment(dealDate).format("YYYY-MM-DD") : null,
             dealPerformanceType:Number(dealPerformanceType),
             isAcompanying,
             commissionRatio:0,
             otherContentPlatFormOrderId,
-            invitationDocuments:[]
+            invitationDocuments:invitationDocuments
            }
            api.finishContentPlateFormOrderByEmployee(data).then((res) => {
                 if(res.code === 0){
@@ -346,9 +470,12 @@ export default {
                 this.currentDate2 = ''
                 this.form.dealPerformanceType = null 
                 this.form.dealPerformanceTypeName = null 
+                this.form.dealPictureUrl = []
             }else{
                 this.form.isToHospital = true
                 this.form.unDealReason = ''
+                this.form.unDealPictureUrl = []
+                
             }
         },
         // 获取医院
@@ -443,6 +570,10 @@ export default {
 </script>
 
 <style scoped lang="less">
+/deep/.van-uploader__upload {
+  width:50px;
+  height:50px;
+}
 /deep/ .customer_content,.van-cell ,.van-cell--center{
     display: flex;
     
@@ -473,6 +604,32 @@ export default {
     box-shadow: 10px 10px 10px rgba(0, 0.5);
     padding: 10px;
     box-sizing: border-box;
+    .img_content{
+    display: flex;
+    .img_item{
+      position:relative;
+      margin-right:5px;
+      .img{
+        width:50px;
+        height:50px;
+      }
+      .opacity_con{
+        background:#000;
+        position:absolute;
+        right:0;
+        top:0;
+        opacity:0.2;
+        padding:1px 4px;
+        box-sizing:border-box;
+        color:#fff
+      }
+    }
+  }
+  .customer_img{
+    font-size: 13px;
+    color: #5492fe;
+    margin: 10px 0;
+  }
     .anchor {
         border-left: 3px solid #eacebf;
         font-size: 16px;

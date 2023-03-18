@@ -55,45 +55,56 @@
             <div class="pit_item">
                 <div class="pit"></div>
                 <div class="pit_content1">
-                    <div>独立业绩</div>
-                    <div class="pit_num">{{performance.notAcompanyingPerformance}}w</div>
-                </div>
-            </div>
-            <div class="pit_item">
-                <div class="pit"></div>
-                <div class="pit_content1">
                     <div>陪诊业绩</div>
                     <div class="pit_num">{{performance.acompanyingPerformance}}w</div>
                 </div>
             </div>
             <div class="pit_item">
                 <div class="pit"></div>
+                <div class="pit_content1">
+                    <div>独立业绩</div>
+                    <div class="pit_num">{{performance.notAcompanyingPerformance}}w</div>
+                </div>
+            </div>
+            <div class="pit_item">
+                <div class="pit"></div>
                 <div class="pit_content2">
-                    <div>独立/陪诊占比</div>
+                    <div>陪诊/独立占比</div>
                     <div class="pit_num">{{performance.isAcompanyingCompare}}</div>
                 </div>
             </div>
         </div>
         <div class="pit_con">
+            
             <div class="pit_item">
                 <div class="pit"></div>
                 <div class="pit_content3">
-                    <div>199业绩</div>
-                    <div class="pit_num">{{performance.havingPricePerformance}}w</div>
-                </div>
-            </div>
-            <div class="pit_item">
-                <div class="pit"></div>
-                <div class="pit_content3">
-                    <div>0元业绩</div>
+                    <div>潜在业绩</div>
                     <div class="pit_num">{{performance.zeroPerformance}}w</div>
                 </div>
             </div>
             <div class="pit_item">
                 <div class="pit"></div>
+                <div class="pit_content3">
+                    <div>有效业绩</div>
+                    <div class="pit_num">{{performance.havingPricePerformance}}w</div>
+                </div>
+            </div>
+            <div class="pit_item">
+                <div class="pit"></div>
                 <div class="pit_content4">
-                    <div>199/0元占比</div>
+                    <div>潜在/有效占比</div>
                     <div class="pit_num">{{performance.zeroAndHavingPriceCompare}}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pit_con2">
+            <div class="pit_item">
+                <div class="pit"></div>
+                <div class="pit_content">
+                    <div>当月派单当月成交业绩</div>
+                    <div class="pit_num">{{performance.thisMonthSendThisMonthDealPerformance}}w</div>
                 </div>
             </div>
         </div>
@@ -110,16 +121,7 @@
             <div class="pit_item">
                 <div class="pit"></div>
                 <div class="pit_content">
-                    <div>当月派单当月成交业绩</div>
-                    <div class="pit_num">{{performance.thisMonthSendThisMonthDealPerformance}}w</div>
-                </div>
-            </div>
-        </div>
-        <div class="pit_con2">
-            <div class="pit_item">
-                <div class="pit"></div>
-                <div class="pit_content">
-                    <div>历史/当月派单当月成交业绩</div>
+                    <div>当月/历史派单当月成交业绩</div>
                     <div class="pit_num">{{performance.historyAndThisMonthCompare}}</div>
                 </div>
             </div>

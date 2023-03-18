@@ -106,7 +106,7 @@
         <div class="center">
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">199元业绩</span>
+                    <span class="new_customer">有效业绩</span>
                 </div>
                 <div class="total_num">{{performance.existPricePerformance ? performance.existPricePerformance +'w': ' -'}}</div>
                 <div class="line"></div>
@@ -138,7 +138,7 @@
 
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">0元业绩</span>
+                    <span class="new_customer">潜在业绩</span>
                 </div>
                 <div class="total_num">{{performance.zeroPricePerformance ? performance.zeroPricePerformance + 'w': ' -'}}</div>
                 <div class="line"></div>
@@ -172,7 +172,7 @@
         <div class="center">
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">当月派单当月成交业绩</span>
+                    <span class="new_customer"> <div>当月派单</div><div>当月成交业绩</div></span>
                 </div>
                 <div class="total_num">{{performance.duringMonthSendDuringMonthDeal ? performance.duringMonthSendDuringMonthDeal + 'w' : ' -'}}</div>
                 <div class="line"></div>
@@ -204,7 +204,7 @@
 
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">历史派单当月成交业绩</span>
+                    <span class="new_customer"> <div>历史派单</div><div>当月成交业绩</div></span>
                 </div>
                 <div class="total_num">{{performance.historySendDuringMonthDeal ? performance.historySendDuringMonthDeal + 'w': ' -'}}</div>
                 <div class="line"></div>

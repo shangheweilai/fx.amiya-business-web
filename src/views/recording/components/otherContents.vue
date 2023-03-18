@@ -121,6 +121,8 @@ export default {
         phone:customerFormId.phone,
         sex:customerFormId.sex,
         wechatNumber:customerFormId.wechatNumber,
+        customerPictures:customerFormId.imgList,
+
         // 订单信息
         addOrderPrice:Number(orderFormId.addOrderPrice),
         appointmentHospitalId:Number(orderFormId.appointmentHospitalId),
@@ -135,7 +137,6 @@ export default {
         remark:otherForm.remark,
         unSendReason:otherForm.unSendReason,
         appointmentDate:null,
-        customerPictures:[],
         consultationEmpId:null,
         acceptConsulting:''
       }

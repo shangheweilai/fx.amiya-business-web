@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="content" :style="{height:list.length < 4 ? '100vh' : 'auto'}">
     <div class="search_content">
         <van-field
             v-model="query.keyword"
@@ -146,6 +146,8 @@ export default {
               orderInfo:res.data.orderInfo
             }
           })
+        }else{
+          this.$toast(res.msg);
         }
       })
     },

@@ -69,8 +69,9 @@ export default {
         
         api.qwAmiyaLoginByUserIdAndCode(data).then((res)=>{
           if(res.code == 0){
-            const {employeeName,amiyaPositionId,amiyaPositionName,token,departmentName,departmentId,refreshToken,readDataCenter,userId,code} = res.data.amiyaLoginByUserIdAndCode
+            const {employeeName,employeeId,amiyaPositionId,amiyaPositionName,token,departmentName,departmentId,refreshToken,readDataCenter,userId,code,readLiveAnchorData} = res.data.amiyaLoginByUserIdAndCode
             sessionStorage.setItem('employeeName',employeeName)
+            sessionStorage.setItem('employeeId',employeeId)
             sessionStorage.setItem('amiyaPositionId',amiyaPositionId)
             sessionStorage.setItem('amiyaPositionName',amiyaPositionName)
             sessionStorage.setItem('token',token)
@@ -80,6 +81,7 @@ export default {
             sessionStorage.setItem('readDataCenter',readDataCenter)
             sessionStorage.setItem('userId',userId)
             sessionStorage.setItem('code',code)
+            sessionStorage.setItem('readLiveAnchorData',readLiveAnchorData)
             this.$toast.success('登录成功');
             this.$router.push({path:'/workbench'});
           }
