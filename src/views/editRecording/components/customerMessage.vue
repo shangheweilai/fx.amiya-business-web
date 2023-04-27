@@ -17,6 +17,7 @@
         @input="phoneInput"
         type="number"
         maxlength="11"
+        disabled
       />
       <van-field
         v-model="form.city"

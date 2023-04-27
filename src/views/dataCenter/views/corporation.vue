@@ -110,7 +110,7 @@
         <div class="center">
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">199元业绩</span>
+                    <span class="new_customer">有效业绩</span>
                 </div>
                 <div class="total_num">{{performance.existPricePerformance ? performance.existPricePerformance + 'w': ' -'}}</div>
                 <div class="line"></div>
@@ -142,7 +142,7 @@
 
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">0元业绩</span>
+                    <span class="new_customer">潜在业绩</span>
                 </div>
                 <div class="total_num">{{performance.zeroPricePerformance ? performance.zeroPricePerformance + 'w': ' -'}}</div>
                 <div class="line"></div>
@@ -244,7 +244,7 @@
         <div class="center">
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">主播视频业绩</span>
+                    <span class="new_customer">视频业绩</span>
                 </div>
                 <div class="total_num">{{performance.videoConsultationPerformance ? performance.videoConsultationPerformance + 'w': ' -'}}</div>
                 <div class="line"></div>
@@ -276,7 +276,7 @@
 
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">助理照片业绩</span>
+                    <span class="new_customer">照片业绩</span>
                 </div>
                 <div class="total_num">{{performance.pictureConsultationPerformance ? performance.pictureConsultationPerformance + 'w' : ' -'}}</div>
                 <div class="line"></div>
@@ -460,37 +460,8 @@ export default {
             this.isLoading = true
             api.PerformanceByLiveAnchorName(data).then((res)=>{
                 if(res.code == 0){
-                    const {cueerntMonthTotalPerformance,totalPerformanceTarget,newCustomerPerformanceTarget,currentMonthNewCustomerPerformance,currentMonthOldCustomerPerformance,oldCustomerTarget,existPricePerformance,zeroPricePerformance,duringMonthSendDuringMonthDeal,historySendDuringMonthDeal,videoConsultationPerformance,pictureConsultationPerformance,acompanyingPerformance,notAcompanyingPerformance} = res.data.performance
                     this.isLoading  = false
                     this.performance =  res.data.performance
-                    // this.dataObj.cueerntMonthTotalPerformance = cueerntMonthTotalPerformance > 10000 ? (cueerntMonthTotalPerformance / 10000).toFixed(3) + ' w': cueerntMonthTotalPerformance
-                    // this.dataObj.totalPerformanceTarget = totalPerformanceTarget > 10000 ? (totalPerformanceTarget / 10000) + ' w': totalPerformanceTarget
-                    // // 新客业绩
-                    // this.dataObj.newCustomerPerformanceTarget = newCustomerPerformanceTarget > 10000 ? (newCustomerPerformanceTarget / 10000) + ' w': newCustomerPerformanceTarget
-                    // this.dataObj.currentMonthNewCustomerPerformance = currentMonthNewCustomerPerformance > 10000 ? (currentMonthNewCustomerPerformance / 10000).toFixed(3) + ' w': currentMonthNewCustomerPerformance.toFixed(3) 
-                    // // 老客业绩
-                    // this.dataObj.currentMonthOldCustomerPerformance = currentMonthOldCustomerPerformance > 10000 ? (currentMonthOldCustomerPerformance / 10000).toFixed(3) + ' w': currentMonthOldCustomerPerformance.toFixed(3) 
-                    // // 老客目标
-                    // this.dataObj.oldCustomerTarget = oldCustomerTarget > 10000 ? (oldCustomerTarget / 10000) + ' w': oldCustomerTarget
-                    // // 199元业绩
-                    // this.dataObj.existPricePerformance = existPricePerformance > 10000 ? (existPricePerformance / 10000).toFixed(3) + ' w': existPricePerformance.toFixed(3) 
-                    // // 0元业绩
-                    // this.dataObj.zeroPricePerformance = zeroPricePerformance > 10000 ? (zeroPricePerformance / 10000).toFixed(3) + ' w': zeroPricePerformance.toFixed(3)
-                    // // 当月派单当月成交
-                    // this.dataObj.duringMonthSendDuringMonthDeal = duringMonthSendDuringMonthDeal > 10000 ? (duringMonthSendDuringMonthDeal / 10000).toFixed(3) + ' w': duringMonthSendDuringMonthDeal.toFixed(3) 
-                    // // 历史派单当月成交业绩
-                    // this.dataObj.historySendDuringMonthDeal = historySendDuringMonthDeal > 10000 ? (historySendDuringMonthDeal / 10000).toFixed(3) + ' w': historySendDuringMonthDeal.toFixed(3) 
-                    // // 主播视频业绩
-                    // this.dataObj.videoConsultationPerformance = videoConsultationPerformance > 10000 ? (videoConsultationPerformance / 10000).toFixed(3) + ' w': videoConsultationPerformance.toFixed(3) 
-                    // // 助理照片业绩
-                    // this.dataObj.pictureConsultationPerformance = pictureConsultationPerformance > 10000 ? (pictureConsultationPerformance / 10000).toFixed(3) + ' w': pictureConsultationPerformance.toFixed(3) 
-                    // // 主播接诊业绩
-                    // this.dataObj.acompanyingPerformance = acompanyingPerformance > 10000 ? (acompanyingPerformance / 10000).toFixed(3) + ' w': acompanyingPerformance.toFixed(3) 
-                    // // 非主播接诊业绩
-                    // this.dataObj.notAcompanyingPerformance = notAcompanyingPerformance > 10000 ? (notAcompanyingPerformance / 10000).toFixed(3) + ' w': notAcompanyingPerformance.toFixed(3) 
-
-
-
                 }else{
                     this.$toast(res.msg)
                 }

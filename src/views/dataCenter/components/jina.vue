@@ -238,7 +238,7 @@
         <div class="center">
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">主播视频业绩</span>
+                    <span class="new_customer">视频业绩</span>
                 </div>
                 <div class="total_num">{{performance.videoConsultationPerformance ? performance.videoConsultationPerformance + 'w': ' -'}}</div>
                 <div class="line"></div>
@@ -270,7 +270,7 @@
 
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer">助理照片业绩</span>
+                    <span class="new_customer">照片业绩</span>
                 </div>
                 <div class="total_num">{{performance.pictureConsultationPerformance ? performance.pictureConsultationPerformance + 'w': ' -'}}</div>
                 <div class="line"></div>

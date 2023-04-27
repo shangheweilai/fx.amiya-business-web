@@ -9,14 +9,15 @@
         class="customer_content"
         @input="customerNameInput"
       />
+      <!-- @input="phoneInput" -->
       <van-field
         v-model="form.phone"
         label="手机号"
         placeholder="请输入手机号"
         class="customer_content"
-        @input="phoneInput"
         type="number"
         maxlength="11"
+        disabled
       />
       <van-field
         v-model="form.city"
@@ -324,6 +325,8 @@ export default {
     },
   },
   created() {
+    this.form.phone = this.$route.query.phone
+    this.form2.phone = this.$route.query.phone
     let customerFormName = JSON.parse(sessionStorage.getItem('customerFormName'))
     let customerFormId = JSON.parse(sessionStorage.getItem('customerFormId'))
     if(customerFormName || customerFormId){

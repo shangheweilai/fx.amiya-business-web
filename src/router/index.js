@@ -57,7 +57,7 @@ const routes = [{
         name: 'orderList',
         meta: {
             title: "订单列表",
-            keepAlive: true,
+            keepAlive: false,
         },
         component: () =>
             import ('@/views/orderList/orderList'),
@@ -77,7 +77,7 @@ const routes = [{
         name: 'noDispatch',
         meta: {
             title: "未派单列表",
-            keepAlive: true,
+            keepAlive: false,
         },
         component: () =>
             import ('@/views/dispatchList/views/noDispatch'),
@@ -87,7 +87,7 @@ const routes = [{
         name: 'dispatched',
         meta: {
             title: "已派单列表",
-            keepAlive: true,
+            keepAlive: false,
         },
         component: () =>
             import ('@/views/dispatchList/views/dispatched'),
@@ -106,7 +106,7 @@ const routes = [{
         path: '/deal',
         name: 'deal',
         meta: {
-            title: "订单详情",
+            title: "确认成交",
             keepAlive: false,
         },
         component: () =>
@@ -163,6 +163,66 @@ const routes = [{
             import ('@/views/personal/views/myData/myData'),
     },
     {
+        path: '/recordingApplicationList',
+        name: 'recordingApplicationList',
+        meta: {
+            title: "录单申请列表",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/recordingApplicationList/recordingApplicationList'),
+    },
+    {
+        path: '/mySubmit',
+        name: 'mySubmit',
+        meta: {
+            title: "我提交的",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/mySubmit/mySubmit'),
+    },
+    {
+        path: '/myReceive',
+        name: 'myReceive',
+        meta: {
+            title: "我收到的",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/myReceive/myReceive'),
+    },
+    {
+        path: '/editCustomer',
+        name: 'editCustomer',
+        meta: {
+            title: "修改绑定客服",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/editCustomer/editCustomer'),
+    },
+    {
+        path: '/customerServiceContentPlatformBound',
+        name: 'customerServiceContentPlatformBound',
+        meta: {
+            title: "已绑定客服内容平台订单",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/customerServiceContentPlatformBound/customerServiceContentPlatformBound'),
+    },
+    {
+        path: '/customerPool',
+        name: 'customerPool',
+        meta: {
+            title: "已绑定客户池客服手机号",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/customerPool/customerPool'),
+    },
+    {
         path: '/accountNumber',
         name: 'accountNumber',
         meta: {
@@ -173,14 +233,24 @@ const routes = [{
             import ('@/views/personal/views/accountNumber/accountNumber'),
     },
     {
-        path: '/anchor',
-        name: 'anchor',
+        path: '/anchorLeft',
+        name: 'anchorLeft',
         meta: {
             title: "主播数据",
             keepAlive: false,
         },
         component: () =>
-            import ('@/views/personal/views/anchor/anchor'),
+            import ('@/views/personal/views/anchorLeft/anchorLeft'),
+    },
+    {
+        path: '/hospital',
+        name: 'hospital',
+        meta: {
+            title: "医院排名",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/hospital/hospital'),
     },
 ]
 

@@ -33,12 +33,24 @@
           <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
         </div>
       </div>
+      <div class="item"  @click="$router.push('/recordingApplicationList')">
+        <span>录单申请列表</span>
+        <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
+      </div>
+      <div class="item"  @click="$router.push('/editCustomer')" v-if="isDirector == 'true'">
+        <span>修改绑定客服</span>
+        <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
+      </div>
       <div class="item"  @click="anchorClick">
         <span>主播数据</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
+      <div class="item"  @click="$router.push('/hospital')">
+        <span>医院排名</span>
+        <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
+      </div>
     </div>
-    <div class="item_con">
+    <!-- <div class="item_con">
       <div class="item" @click="$toast('敬请期待！')">
         <span>新手引导</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
@@ -55,7 +67,7 @@
         <span>意见反馈</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
-    </div>
+    </div> -->
     <div class="item" @click="$router.push({path:'/accountNumber',query:{employeeInfo:employeeInfo}})">
       <span>账号设置</span>
       <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
@@ -85,7 +97,8 @@ export default {
       // 数据
       employeeInfo: {},
       // 排名
-      rank:sessionStorage.getItem('rank')
+      rank:sessionStorage.getItem('rank'),
+      isDirector:sessionStorage.getItem('isDirector'),
     };
   },
   methods: {
@@ -116,7 +129,7 @@ export default {
         return
       }
       this.$router.push({
-        path:'/anchor',
+        path:'/anchorLeft',
         query:{
           liveAnchorBaseId:this.employeeInfo.liveAnchorBaseId,
           liveAnchorBaseName:this.employeeInfo.liveAnchorBaseName

@@ -1,5 +1,14 @@
 <template>
     <div class="contents" v-if="isLoading == false">
+        <div class="nav_top_con">
+            <div class="nav_con_d" >
+                <div class="daodao" >{{$route.query.liveAnchorBaseName}}</div>
+            </div>
+            <div class="right_time" @click="timeClick">
+                <span>{{time}}</span> 
+                <i class="iconfont icon-xiangxia icon_xia"></i>
+            </div>
+        </div>
         <div class="top">
             <div class="top_con">
                 <div class="top_title">总业绩</div>
@@ -172,7 +181,7 @@
         <div class="center">
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer"><div>当月派单</div><div>当月成交业绩</div></span>
+                    <span class="new_customer"> <div>当月派单</div><div>当月成交业绩</div></span>
                 </div>
                 <div class="total_num">{{performance.duringMonthSendDuringMonthDeal ? performance.duringMonthSendDuringMonthDeal + 'w': ' -'}}</div>
                 <div class="line"></div>
@@ -204,7 +213,7 @@
 
             <div class="cen_left">
                 <div class="new_customer_con">
-                    <span class="new_customer"><div>历史派单</div><div>当月成交业绩</div></span>
+                    <span class="new_customer"> <div>历史派单</div><div>当月成交业绩</div></span>
                 </div>
                 <div class="total_num">{{performance.historySendDuringMonthDeal ? performance.historySendDuringMonthDeal + 'w': ' -'}}</div>
                 <div class="line"></div>
@@ -367,23 +376,86 @@
             </div>
         </div>
         <div class="no_data">没有更多了</div>
+
+        <van-popup v-model="timeModel" position="bottom" style="height: 50%" round >
+            <van-datetime-picker
+                v-model="currentDate"
+                type="year-month"
+                title="选择年月"
+                :min-date="minDate"
+                :max-date="maxDate"
+                @cancel="timeModel = false"
+                @confirm="timeConfirm"
+            />
+        </van-popup> 
     </div>
-    <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:linear-gradient(#8ab4fe,#f5f5f5);margin-left:60px" v-else>加载中...</van-loading>
+    <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:linear-gradient(#8ab4fe,#f5f5f5);" v-else>加载中...</van-loading>
 </template>
 <script>
+import  * as api from "@/api/order.js";
 
 export default {
     props:{
-        time:String,
-        performance:Object,
-        dataObj:Object,
-        isLoading:Boolean
+       
     },
     data(){
         return{
+            // 加载中
+            isLoading:false,
+            // 时间参数
+            time:this.$moment().format("YYYY-MM"),
+            minDate: new Date(2020, 0, 1),
+            maxDate: new Date(2025, 10, 1),
+            currentDate:  this.$moment().format("YYYY-MM"),
+            // 时间弹窗
+            timeModel:false,
         }
     },
     methods:{
+        // 时间弹窗
+        timeClick(){
+            this.currentDate = new Date(this.$moment(this.time).format("YYYY-MM-DD"))
+            this.timeModel = true
+        },
+        // 时间确认
+        timeConfirm(value){
+            this.time = this.$moment(value).format("YYYY-MM")
+            this.timeModel = false
+            this.getPerformanceByLiveAnchorName()
+        },
+        // 根据id获取主播个人信息
+        getLiveAnchorBaseInfoAnchor(){
+            api.LiveAnchorBaseInfoAnchor(this.$route.query.liveAnchorBaseId).then((res)=>{
+                if(res.code === 0){
+                    sessionStorage.setItem('isSelfLivevAnchor',res.data.liveAnchorBaseInfo.isSelfLivevAnchor)
+                }
+            })
+        },
+        // 获取主播数据
+        getPerformanceByLiveAnchorName(){
+            const data ={
+                year:this.$moment(this.time).format("YYYY"),
+                month:this.$moment(this.time).format("MM"),
+                liveAnchorBaseId:this.$route.query.liveAnchorBaseId,
+                isSelfLiveAnchor:sessionStorage.getItem('isSelfLivevAnchor')
+            }
+            this.isLoading = true
+            api.PerformanceByLiveAnchorName(data).then((res)=>{
+                if(res.code == 0){
+                    this.performance =  res.data.performance
+                    this.isLoading = false
+                }else{
+                    this.$toast(res.msg)
+                }
+            })
+        }
+    },
+    mounted(){
+        
+    },
+    created(){
+        this.getLiveAnchorBaseInfoAnchor()
+        this.getPerformanceByLiveAnchorName()
         
     }
 }
@@ -391,8 +463,32 @@ export default {
 <style scoped lang="less">
 .contents{
     width: 100%;
-    padding-left: 60px;
-    box-sizing: border-box;
+    background:linear-gradient(#8ab4fe,#f5f5f5);
+    // padding: 0 30px;
+    .nav_top_con{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 14px;
+        .nav_con_d{
+            display: flex;
+            .daodao{
+                background: linear-gradient(#6398f8,#4980e6);
+                padding: 5px 20px;
+                box-sizing: border-box;
+                margin-right: 10px;
+                color: #fff;
+                border-radius: 8px;
+            }
+        }
+        .right_time{
+            color: #fff;
+        }
+        
+    }
     .top{
         width: 100%;
         display: flex;
@@ -403,7 +499,7 @@ export default {
         font-size: 12px;
         .top_con{
             width: 70%;
-            background-image: url(../../../assets/dataCenter.png) ;
+            background-image: url(../../../../assets/dataCenter.png) ;
             background-size: 100% 100%;
             border-radius: 10px/10px;
             padding: 10px;

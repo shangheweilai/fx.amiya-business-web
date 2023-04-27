@@ -16,8 +16,13 @@
         <div class="rate">
             <div class="rate_item">
                 <div  class="rate_num">{{performance.visitRate}}%</div>
-                <div>上门率</div>
+                <div>总上门率</div>
             </div>
+            <div class="rate_item">
+                <div  class="rate_num">{{performance.thisMonthSendThisMonthVisitNumRatio}}%</div>
+                <div>当月上门率</div>
+            </div>
+            
             <div class="rate_item">
                 <div  class="rate_num">{{performance.newCustomerPrice}}w</div>
                 <div>新客业绩</div>
@@ -26,10 +31,10 @@
                 <div  class="rate_num">{{performance.oldCustomerPrice}}w</div>
                 <div>老客业绩</div>
             </div>
-            <div class="rate_item">
+            <!-- <div class="rate_item">
                 <div class="rate_num">{{performance.newOrOldCustomerRate}}</div>
                 <div>新/老客占比</div>
-            </div>
+            </div> -->
         </div>
         <div class="center">
             <div class="center_con">

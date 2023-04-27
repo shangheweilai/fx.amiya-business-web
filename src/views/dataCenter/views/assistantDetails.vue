@@ -14,9 +14,13 @@
             </div>
         </div>
         <div class="rate">
-            <div class="rate_item">
+             <div class="rate_item">
                 <div class="rate_num">{{performance.visitNumRatio}}%</div>
-                <div>上门率</div>
+                <div>总上门率</div>
+            </div>
+            <div class="rate_item">
+                <div class="rate_num">{{performance.thisMonthSendThisMonthVisitNumRatio}}%</div>
+                <div>当月上门率</div>
             </div>
             <div class="rate_item">
                 <div  class="rate_num">{{performance.newCustomerPerformance}}w</div>
@@ -156,18 +160,22 @@ export default{
         }
     },
     methods:{
+        // 返回上一页
         backClick(){
             this.$router.go(-1)
         },
+        // 时间选择
         timeClick(){
             this.currentDate = new Date(this.$moment(this.time).format("YYYY-MM-DD"))
             this.timeModel = true
         },
+        // 时间确认
         timeConfirm(value){
             this.time = this.$moment(value).format("YYYY-MM")
             this.timeModel = false
             this.getcustomerServiceDetailPerformanceById()
         },
+        // 根据客服id获取助理详细业绩
         getcustomerServiceDetailPerformanceById(){
             const data ={
                 year:this.$moment(this.time).format("YYYY"),
@@ -223,7 +231,7 @@ export default{
         }
     }
     .rate{
-        width: 80%;
+        width: 100%;
         display: flex;
         justify-content: space-between;
         text-align: center;
@@ -233,12 +241,13 @@ export default{
             padding: 0 10px;
             box-sizing: border-box;
             flex:1;
-            font-size: 14px;
+            font-size: 12px;
             text-align: center;
             color: #636262;
             .rate_num{
-                font-size: 18px;
+                font-size: 14px;
                 color: #636262;
+                font-weight: bold;
             }
         }
         .rate_item:last-child{

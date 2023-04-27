@@ -228,3 +228,105 @@ export const LiveAnchorBaseInfoAnchor = (id) => {
         method: "get",
     });
 };
+// 录单申请列表查询
+export const getContentPlatFormOrderAddWork = (params) => {
+    return http({
+        url: "/businessWechat/ContentPlatFormOrderAddWork/listWithPage",
+        method: "get",
+        params
+    });
+};
+// 修改录单申请信息
+export const updateContentPlatFormOrderAddWork = (data) => {
+    return http({
+        url: "/businessWechat/ContentPlatFormOrderAddWork/update",
+        method: "put",
+        data
+    });
+};
+// 作废订单
+export const deleteOrder = (id) => {
+    return http({
+        url: `/businessWechat/ContentPlatFormOrderAddWork/${id}`,
+        method: "delete",
+    });
+};
+// 审核录单申请信息
+export const ContentPlatFormOrderAddWorkcheck = (data) => {
+    return http({
+        url: "/businessWechat/ContentPlatFormOrderAddWork/check",
+        method: "put",
+        data
+    });
+};
+// 根据手机号筛选归属客服
+export const getCustomerServiceNameByPhone = (params) => {
+        return http({
+            url: "/businessWechat/BindCustomerService/getCustomerServiceNameByPhone",
+            method: "get",
+            params
+        })
+    }
+    // 根据录单申请手机号获取录单申请信息
+export const byPhoneContentPlatFormOrderAddWork = (phone) => {
+    return http({
+        url: `/businessWechat/ContentPlatFormOrderAddWork/byPhone/${phone}`,
+        method: "get",
+    });
+};
+// 获取已绑定客服的内容平台订单列表
+export const bindCustomerServieOrders = (params) => {
+    return http({
+        url: "/businessWechat/ContentPlateFormOrder/bindCustomerServieOrders",
+        method: "get",
+        params
+    });
+};
+// 获取客户池客服下的手机号
+export const getPublicPoolPhone = (params) => {
+    return http({
+        url: "/businessWechat/BindCustomerService/getPublicPoolPhone",
+        method: "get",
+        params
+    });
+};
+// 改绑公共池客户
+export const updatePublicPoolPhone = (data) => {
+    return http({
+        url: "/businessWechat/BindCustomerService/updatePublicPoolPhone",
+        method: "put",
+        data
+    });
+};
+// 内容平台修改绑定客服
+export const updateContentPlatFormOrderListBindCustomerService = (data) => {
+    return http({
+        url: "/businessWechat/BindCustomerService/ContentPlatFormOrderListBindCustomerService",
+        method: "put",
+        data
+    });
+};
+// 添加录单申请
+export const addContentPlatFormOrderAddWork = (data) => {
+    return http({
+        url: "/businessWechat/ContentPlatFormOrderAddWork/add",
+        method: "post",
+        data
+    });
+};
+// 转移录单申请信息
+export const updateAcceptBy = (data) => {
+    return http({
+        url: "/businessWechat/ContentPlatFormOrderAddWork/updateAcceptBy",
+        method: "put",
+        data
+    });
+};
+//获取所有员工
+export const getEmployeeByPositionId = (params) => {
+    return http({
+        url: "/businessWechat/AmiyaEmployee/getEmployeeByPositionId",
+        method: "get",
+        params
+    });
+};

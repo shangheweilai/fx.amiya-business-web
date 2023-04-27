@@ -2,11 +2,9 @@
   <div id="app">
     <!-- <router-view/> -->
     <keep-alive>
-      <router-view v-if="$route.meta.keepAlive"></router-view>
+      <router-view v-if="$route.meta.keepAlive && isRouterAlive"></router-view>
     </keep-alive>
-    <router-view v-if="!$route.meta.keepAlive"></router-view>
-    <!-- 解决tabbar组件点击两次才高亮  通过路由判断才展示 否则不展示 -->
-    <!-- <tabbar v-if="$route.path == '/workbench' || $route.path == '/personal'" /> -->
+    <router-view v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
   </div>
 </template>
 <script>
@@ -18,11 +16,20 @@ export default {
   },
   data(){
     return{
+      isRouterAlive: true,
     }
   },
-  created(){
-    
-  }
+  provide() {
+    return {
+      reload: this.reload,
+    };
+  },
+  methods: {
+    reload() {
+      this.isRouterAlive = false;
+      this.$nextTick(() => (this.isRouterAlive = true));
+    },
+  },
 }
 </script>
 <style >

@@ -20,7 +20,7 @@
         </div>
         <div class="report_content">
             <div class="report_list">
-                <div class="report_item" @click="recordingClick">
+                <div class="report_item" @click="duplicateCheckModel = true">
                     <i class="iconfont icon-kehuguanli report_icons2"></i>
                     <div class="report_title">录单</div>
                 </div>
@@ -53,11 +53,53 @@
         <!-- 修改密码 -->
         <!-- <editPassword :isPassword="isPassword" @isPasswordChange="isPasswordChange"/> -->
         <div class="mc" v-if="isLoading"></div>
+
+        <!-- 录单查重 -->
+        <van-popup v-model="duplicateCheckModel" position="bottom" class="dispatch_content" round :close-on-click-overlay="false">
+            <div class="phone_title">请输入手机号进行查询</div>
+            <van-field v-model="phone"  maxlength="11" type="number" />
+
+            <!-- <div v-if="CustomerServiceNameByPhone">
+                <div v-if="CustomerServiceNameByPhone == '未绑定' || employeeName == CustomerServiceNameByPhone" class="green">该顾客手机号是新顾客或已绑定在您的账号下，可按照正常流程进行操作</div>
+                <div v-else class="ts red">该顾客手机号已绑定了啊美雅客服，若仍需要录单，您可在管理端向主管提交录单申请！</div>
+            </div>
+            <div class="ts" >温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
+            <div class="bottom">
+                <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
+                <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">下一步</van-button>
+            </div> -->
+            <div v-if="checkStateTexts == '没数据'">
+                <div v-if="CustomerServiceNameByPhone">
+                    <div v-if="CustomerServiceNameByPhone == '未绑定' || employeeName == CustomerServiceNameByPhone" >
+                        <div class="green">该顾客手机号是新顾客或已绑定在您的账号下，可按照正常流程进行操作</div>
+                        <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
+                    </div>
+                    <div v-else>
+                        <div class="red">该顾客手机号已绑定了啊美雅客服，若仍需要录单，您可以向主管提交录单申请！</div> 
+                        <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
+                        <!-- <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
+                        <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">确认</van-button> -->
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <div class="red" v-if="checkStateTexts == '未审核'">该订单已在录单申请列表进行申请，请等待审核通过后录单！</div>
+                <div class="red" v-else-if="checkStateTexts == '审核通过'">该订单已在录单申请列表进行申请，请在录单申请中录单！</div>
+                <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
+            </div>
+            <div class="bottom">
+                <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
+                <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">下一步</van-button>
+            </div>
+
+                
+
+        </van-popup>
     </div>
 </template>
 <script>
 import  * as api from "@/api/index.js";
-import  * as userApi from "@/api/user.js";
+import  * as orderApi from "@/api/order.js";
 
 import tables from "./components/tables.vue"
 import tabbar from "@/components/tabbar/tabbar.vue"
@@ -70,6 +112,14 @@ export default {
     },
     data(){
         return{
+            isFlag:true,
+            // 录单查重model
+            duplicateCheckModel:false,
+            // 手机号
+            phone:'',
+            // 穿给页面的手机号
+            CustomerPhone:'',
+            CustomerServiceNameByPhone:'',
             isLoading:false,
             // 修改密码弹窗
             isPassword:false,
@@ -92,9 +142,16 @@ export default {
             readDataCenter:sessionStorage.getItem('readDataCenter'),
             loading: false,
             finished: false,
+            // 审核状态
+            checkStateTexts:''
         }
     },
     methods:{
+        cancel(){
+            this.duplicateCheckModel = false
+            this.phone = ''
+            this.CustomerServiceNameByPhone = ''
+        },
         // 关闭子组件修改密码弹窗
         isPasswordChange(value){
             this.isPassword = value
@@ -152,9 +209,143 @@ export default {
                 }
             })
         },
-        recordingClick(){
-            this.$router.push('/recording')
-        }
+        // 根据客户手机号查询
+        duplicateCheck() {
+            if (!this.phone) {
+                this.$Message.warning("请输入客户手机号");
+                return;
+            }
+            if (this.phone) {
+                if (!/^1[3456789]\d{9}$/.test(this.phone)) {
+                this.$Message.warning("请输入正确的手机号");
+                return false;
+                }
+            }
+            this.getbyPhoneContentPlatFormOrderAddWork()
+        },
+        // 根据录单申请手机号获取录单申请信息
+        getbyPhoneContentPlatFormOrderAddWork(){
+            orderApi.byPhoneContentPlatFormOrderAddWork(this.phone).then((res) => {
+                if(res.code === 0){
+                const {id,checkStateText} = res.data.contentPlatFormOrderAddWork
+                if(!id){
+                    this.checkStateTexts = '没数据'
+                    this.getCustomerPhone()
+                    return
+                }else{
+                    if(checkStateText == '未审核'){
+                    this.checkStateTexts = checkStateText
+                    this.isFlag= false
+                    setTimeout(()=>{
+                        this.$router.push({
+                            path:'/recordingApplicationList',
+                            query:{
+                                checkStateText:checkStateText
+                            }
+                        })
+                    },3000)
+                     this.$router.push({
+                            path:'/recordingApplicationList',
+                            query:{
+                                checkStateText:checkStateText
+                            }
+                        })
+                    return
+                    }else if(checkStateText == '审核通过'){
+                    this.checkStateTexts = checkStateText
+                    this.isFlag= false
+                    setTimeout(()=>{
+                        this.$router.push({
+                            path:'/recordingApplicationList',
+                            query:{
+                                checkStateText:checkStateText
+                            }
+                        })
+                    },3000)
+                    
+                    return
+                    }
+                }
+                }
+            })
+        },
+        // 根据手机号查询是否绑定客服
+        getCustomerPhone(){
+             const data ={
+                phone:this.phone
+            }
+            this.CustomerPhone = this.phone
+            this.isFlag= true
+            orderApi.getCustomerServiceNameByPhone(data).then(res=>{
+                if(res.code === 0){
+                    const {CustomerServiceNameByPhone} = res.data
+                    this.CustomerServiceNameByPhone = CustomerServiceNameByPhone
+                    if(CustomerServiceNameByPhone == '未绑定' || sessionStorage.getItem('employeeName') == CustomerServiceNameByPhone){
+                        this.isFlag= false
+                        setTimeout(()=>{
+                            this.$router.push({
+                                path:'/recording',
+                                query:{
+                                    phone:this.CustomerPhone,
+                                    belongEmpId:CustomerServiceNameByPhone == '未绑定' ? sessionStorage.getItem('employeeName') : CustomerServiceNameByPhone
+                                }
+                            })
+                        },3000)
+                    }else{
+                        // 录单申请
+                        this.isFlag= false
+                        setTimeout(() => {
+                            this.$router.push({
+                                path:'/recordingApplicationList',
+                                query:{
+                                    phone:this.CustomerPhone,
+                                }
+                            })
+                        }, 3000);
+                    }
+                }else{
+                    this.$toast(res.msg)
+                }
+            })
+        },
+        // 重单查询
+    //     duplicateCheck(){
+    //         if (!this.phone) {
+    //             this.$toast("请输入客户手机号");
+    //             return;
+    //         }
+    //         if (this.phone) {
+    //             if (!/^1[3456789]\d{9}$/.test(this.phone)) {
+    //                 this.$toast("请输入正确的手机号");
+    //                 return false;
+    //             }
+    //         }
+    //         const data ={
+    //             phone:this.phone
+    //         }
+    //         this.CustomerPhone = this.phone
+    //         this.isFlag= true
+    //         api.getCustomerServiceNameByPhone(data).then(res=>{
+    //             if(res.code === 0){
+    //                 const {CustomerServiceNameByPhone} = res.data
+    //                 this.CustomerServiceNameByPhone = CustomerServiceNameByPhone
+    //                 if(CustomerServiceNameByPhone == '未绑定' || sessionStorage.getItem('employeeName') == CustomerServiceNameByPhone){
+    //                     this.isFlag= false
+    //                     setTimeout(()=>{
+    //                         this.$router.push({
+    //                             path:'/recording',
+    //                             query:{
+    //                                 phone:this.CustomerPhone,
+    //                                 belongEmpId:CustomerServiceNameByPhone == '未绑定' ? sessionStorage.getItem('employeeName') : CustomerServiceNameByPhone
+    //                             }
+    //                         })
+    //                     },3000)
+    //                 }
+    //             }else{
+    //                 this.$toast(res.msg)
+    //             }
+    //         })
+    //     }
     },
     created(){
         
@@ -171,8 +362,6 @@ export default {
             setTimeout(()=>{
                 this.isLoading = false
             },3000)
-        }else{
-
         }
         // // 检测当前密码是否合法
         // userApi.checkPassword(sessionStorage.getItem("password")).then((res) => {
@@ -192,6 +381,17 @@ export default {
 }
 </script>
 <style scoped lang="less">
+/deep/.van-cell::after{
+    border: none;
+}
+/deep/.van-field__control{
+    width: 80%;
+    background: #f8f4f4;
+    color: #000;
+    padding:  5px 5px 5px 10px;
+    margin: 0 auto ;
+    border-radius: 6px;
+}
 .container2{
     width: 100%;
     height: 100%;
@@ -201,6 +401,37 @@ export default {
     background: linear-gradient(#5492FE, #fff);
     // overflow-x: hidden;
     overflow-y: hidden;
+    .red{
+        color: red;
+        margin-top: 10px;
+        font-size: 12px;
+    }
+    .green{
+        color: green;
+        margin-top: 10px;
+        font-size: 12px;
+        padding: 0 20px;
+        margin-bottom: 20px;
+    }
+    .phone_title{
+        padding: 20px 0 10px 20px;
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .red{
+        color: red;
+        padding: 0 20px;
+        margin-bottom: 20px;
+    }
+    .green{
+        color: green;
+        margin-top: 10px;
+        font-size: 12px;
+        padding: 0 20px;
+        margin-bottom: 20px;
+    }
     .mc{
         width: 100%;
         height: 100vh;
@@ -310,6 +541,30 @@ export default {
         height: 45%;
         overflow: scroll;
         // background: red;
+    }
+    .bottom{
+        display: flex;
+        margin-top: 20px;
+        padding-bottom: 30px;
+        .button{
+            width: 40%;
+            height: 42px;
+            margin:0 auto
+        }
+        
+    }
+    .button2{
+        width: 30%;
+        height: 30px;
+        margin:8px auto 40px;
+        margin-bottom: 40px;
+
+    }
+    .ts{
+        font-size: 12px;
+        padding: 0 20px;
+        box-sizing: border-box;
+        padding-bottom: 20px;
     }
 }
 </style>

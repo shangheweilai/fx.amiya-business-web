@@ -1,7 +1,6 @@
 <template>
   <div class="container" v-if="$route.query.orderInfo">
     <div class="step_con">
-      <!-- $route.query.orderInfo.orderStatusText == '未派单' ? 0: $route.query.orderInfo.orderStatusText == '已派单' ? 1 : $route.query.orderInfo.isToHospital == true ? 2 : $route.query.orderInfo.orderStatusText == '已成交' ?  3 : $route.query.orderInfo.orderStatusText == '已接单' ? 1 : $route.query.orderInfo.orderStatusText == '重单-不可深度' ? 2 : $route.query.orderInfo.orderStatusText == '重单-可深度' ? 2 : $route.query.orderInfo.orderStatusText == '未成交' ? 2 : 4 -->
       <!-- $route.query.orderInfo.orderStatusText == '未派单' ? 0 : $route.query.orderInfo.orderStatusText == '已派单' ? 1 : $route.query.orderInfo.isToHospital == true ? 2 : $route.query.orderInfo.orderStatusText == '已成交' ?  3 : $route.query.orderInfo.orderStatusText == '已接单' ? 1 : $route.query.orderInfo.orderStatusText == '重单-不可深度' ? 2 : $route.query.orderInfo.orderStatusText == '重单-可深度' ? 2 : $route.query.orderInfo.orderStatusText == '未成交' ? 2 : 0 -->
       <van-steps
         :active="$route.query.orderInfo.orderStatusText == '已成交' ? 3 :  ($route.query.orderInfo.isToHospital == true || $route.query.orderInfo.orderStatusText == '重单-不可深度' || $route.query.orderInfo.orderStatusText == '未成交' ? 2 : ($route.query.orderInfo.orderStatusText == '已派单' || $route.query.orderInfo.orderStatusText == '已接单') ? 1 : 0)"
@@ -36,7 +35,7 @@
           <span>微信号：{{ $route.query.orderInfo.wechatNumber }}</span>
         </div>
         <div class="item_f">
-          <span>手机号：{{ $route.query.orderInfo.encryptPhone }}</span>
+          <span>手机号：{{ $route.query.orderInfo.phone }}</span>
           <span>性别：{{ $route.query.orderInfo.sex }}</span>
         </div>
         <div class="item_f">
@@ -92,6 +91,12 @@
             >到院医院：{{ $route.query.orderInfo.lastDealHospitalName }}</span
           >
         </div>
+        <div class="item_w">
+          <span>医院网咨人员：{{ $route.query.orderInfo.netWorkConsulationName }}</span>
+        </div>
+        <div class="item_w">
+          <span>医院现场咨询人员：{{ $route.query.orderInfo.sceneConsulationName }}</span>
+        </div>
       </div>
 
       <div class="item">
@@ -111,6 +116,9 @@
         </div>
         <div class="item_w">
           <span>归属客服：{{ $route.query.orderInfo.belongEmpName }}</span>
+        </div>
+        <div class="item_w">
+          <span>辅助客服：{{ $route.query.orderInfo.supportEmpName }}</span>
         </div>
         <div class="item_w">
           <span>派单人：{{ $route.query.orderInfo.sendByName }}</span>
@@ -170,7 +178,16 @@
           >
         </div>
         <div class="item_w">
-          <span>咨询内容：{{ $route.query.orderInfo.consultingContent }}</span>
+          <span>
+            咨询内容：{{ $route.query.orderInfo.consultingContent }}
+            <span
+              class="copy"
+              v-clipboard:copy="'订单号：' + $route.query.orderInfo.id + ' ' + '咨询内容：' + $route.query.orderInfo.consultingContent"
+              v-clipboard:success="onCopySuccess"
+              v-if="$route.query.orderInfo.consultingContent"
+              >复制</span
+            >
+          </span>
         </div>
         <div class="item_w">
           <span>备注：{{ $route.query.orderInfo.remark }}</span>
@@ -355,6 +372,14 @@ export default {
       span {
         width: 100%;
         margin: 1px 0;
+      }
+      .copy {
+        background: #5492fe;
+        border-radius: 10px;
+        padding: 0 6px;
+        box-sizing: border-box;
+        color: #fff;
+        margin-left: 10px;
       }
     }
     .item_s {

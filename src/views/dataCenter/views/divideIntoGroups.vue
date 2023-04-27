@@ -132,6 +132,7 @@ export default {
     },
     created(){
         this.getAnchor()
+        this.isLoading = true
         setTimeout(()=>{
             this.getPerformanceByLiveAnchorName()
         },1000)

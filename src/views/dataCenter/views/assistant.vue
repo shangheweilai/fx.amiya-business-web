@@ -34,14 +34,12 @@
 import  * as api from "@/api/order.js";
 
 import assistantDaodao from "../components/assistantDaodao.vue"
-import assistantJina from "../components/assistantJina.vue"
 export default {
     props:{
         liveAnchorBaseInfos:Array
     },
     components:{
         assistantDaodao,
-        assistantJina
     },
     data(){
         return{
@@ -136,7 +134,10 @@ export default {
         // }
         this.getAnchor()
         this.activeItem = sessionStorage.getItem('assistantActive') ? sessionStorage.getItem('assistantActive') : 0
-        this.getcustomerServicePerformance()
+        this.isLoading = true
+        setTimeout(()=>{
+            this.getcustomerServicePerformance()
+        },1000)
     }
 }
 </script>

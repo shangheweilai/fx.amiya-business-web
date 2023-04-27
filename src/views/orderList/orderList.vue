@@ -7,10 +7,7 @@
             class="search"
             @input="blurInput"
         />
-        <!-- <input type="text" v-model="query.keyword" placeholder="请输入关键字"
-            class="search"
-            @input="keywordInput"> -->
-        
+
         <div class="calendar_con" @click="calendarModel = true">
             <i class="iconfont icon-rili search_icon"></i>
             <div>
@@ -28,7 +25,7 @@
         :max-date="maxDate"
         type="range"
       />
-    <div class="list_wrap" >
+    <div class="list_wrap">
       <van-list
         v-model="loading"
         :finished="finished"
@@ -87,7 +84,7 @@
     </div>
 
     <!-- 订单详情 -->
-    <detail/>
+    <detail />
     <!-- <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:#C7DBFF;" v-if="list == [] || list.length==0">加载中...</van-loading> -->
   </div>
 </template>
@@ -96,6 +93,7 @@ import * as api from "@/api/order.js";
 import detail from "../detail/detail.vue"
 export default {
   components: {detail},
+  inject: ["reload"],
   data() {
     return {
         calendarModel:false,
@@ -107,10 +105,10 @@ export default {
         pageSize: 10,
         totalCount: 0,
         keyword:'',
-        startDate: this.$moment()
+        startDate:sessionStorage.getItem('orderList_startDate') ? sessionStorage.getItem('orderList_startDate') :  this.$moment()
           .startOf("month")
           .format("YYYY-MM-DD"),
-        endDate: this.$moment(new Date()).format("YYYY-MM-DD"),
+        endDate: sessionStorage.getItem('orderList_endDate') ? sessionStorage.getItem('orderList_endDate') : this.$moment(new Date()).format("YYYY-MM-DD"),
       },
       list: [],
       loading: false,
@@ -118,28 +116,27 @@ export default {
       error: false,
       startDate:'',
       endDate:'',
-      isLoading:false
+
+      // 滚动位置
+      scrollTop:0
     };
   },
-
+  
   methods: {
-    getByIdOrder(){
-            
-            
-        },
     // 编辑
     editClick(id){
       api.byIdContentPlateFormOrder(id).then(res=>{
-                if(res.code === 0){
-                    this.$router.push({path:'/editRecording',query:{orderInfo:res.data.orderInfo}})
-                }
-            })
+          if(res.code === 0){
+              this.$router.push({path:'/editRecording',query:{orderInfo:res.data.orderInfo}})
+          }else{
+            this.$toast(res.msg);
+          }
+      })
     },
     // 订单详情
     detailClick(value){
       api.getByidContentPlateFormOrder(value).then((res) => {
         if(res.code === 0){
-          // this.detailIfon = res.data.orderInfo
           this.$router.push({
             path:'/detail',
             query:{
@@ -159,28 +156,16 @@ export default {
 
     // 日期搜索
     onConfirm(value) {
-      // this.list = []
-      // this.calendarModel = false;
-      // this.query.startDate = this.$moment(value[0]).format("YYYY-MM-DD")
-      // this.query.endDate = this.$moment(value[1]).format("YYYY-MM-DD")
-      // this.query.pageNum = 1 
-      // this.finished = false;
-      // this.loading = true;
-      // this.onLoad();
       this.query.startDate = this.$moment(value[0]).format("YYYY-MM-DD")
       this.query.endDate = this.$moment(value[1]).format("YYYY-MM-DD")
+      sessionStorage.setItem('orderList_startDate',this.query.startDate)
+      sessionStorage.setItem('orderList_endDate',this.query.endDate)
       this.calendarModel = false
       this.query.pageNum = 1 
     },
 
     // 关键字搜索
     blurInput(value){
-        // this.list = []
-        // this.query.keyword = value
-        // this.query.pageNum = 1 
-        // this.finished = false;
-        // this.loading = true;
-        // this.onLoad();
         this.query.keyword = value
         
     },
@@ -190,62 +175,105 @@ export default {
       this.query.pageNum = 1 
       this.finished = false;
       this.loading = true;
+      // this.getcontentPlateFormOrderLlistWithPage();
       this.onLoad()
     },
-    // 搜索icon
-    // searchClick(){
-    //   this.finished = false;
-    //   this.loading = true;
-    //   this.getcontentPlateFormOrderLlistWithPage()
-    // },
 
     // 获取今日到院订单
     getcontentPlateFormOrderLlistWithPage() {
-      const { pageNum, pageSize ,keyword,startDate,endDate} = this.query;
-      const data = {
-        startDate: startDate ? startDate : null,
-        endDate: endDate ? endDate : null,
-        keyword: keyword,
-        pageNum,
-        pageSize,
-        liveAnchorId:null,
-        belongMonth:null,
-        minAddOrderPrice:null,
-        maxAddOrderPrice:null,
-        appointmentHospital:null,
-        consultationType:null,
-        hospitalDepartmentId:null,
-        orderStatus:null,
-        contentPlateFormId:'',
-        belongEmpId:null,
-        orderSource:-1
-      };
-      this.isLoading = true
-      api.contentPlateFormOrderLlistWithPage(data).then((res) => {
-        if (res.code === 0) {
-          this.isLoading = false
-          const { list, totalCount } = res.data.contentPlatFormOrder;
-          this.list = [...this.list, ...list];
-          this.query.pageNum++;
-          this.loading = list.length == 0 || list ==[] ? null : false;
-          if (this.list.length === totalCount) {
-            this.finished = true;
+      // console.log(this.query.pageNum)
+      return new Promise(resolve=> {
+        const { pageNum, pageSize ,keyword,startDate,endDate} = this.query;
+        const data = {
+          startDate: startDate ? startDate : null,
+          endDate: endDate ? endDate : null,
+          keyword: keyword,
+          pageNum,
+          pageSize,
+          liveAnchorId:null,
+          belongMonth:null,
+          minAddOrderPrice:null,
+          maxAddOrderPrice:null,
+          appointmentHospital:null,
+          consultationType:null,
+          hospitalDepartmentId:null,
+          orderStatus:null,
+          contentPlateFormId:'',
+          belongEmpId:null,
+          orderSource:-1
+        };
+        api.contentPlateFormOrderLlistWithPage(data).then((res) => {
+          if (res.code === 0) {
+            const { list, totalCount } = res.data.contentPlatFormOrder;
+            this.list = [...this.list, ...list];
+            this.query.pageNum++;
+            this.loading = list.length == 0 || list ==[] ? null : false;
+            if (this.list.length === totalCount) {
+              this.finished = true;
+            }
+            resolve()
           }
-        }
-      }).catch(() => {
-          this.error = true;
-        });;
+        }).catch(() => {
+            this.error = true;
+          });;
+        })
     },
 
     onLoad() {
+      if(sessionStorage.getItem("orderListPageNum") && sessionStorage.getItem("orderListScrollTop")) return;
       this.getcontentPlateFormOrderLlistWithPage();
     },
+    
 
+     handleScroll () {
+        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+    },
+
+    // 滚动到之前位置
+    async handleReturnScroll() {
+      let scrollTop = sessionStorage.getItem("orderListScrollTop")
+      let pageNum = sessionStorage.getItem("orderListPageNum")
+      
+      // 请求完毕之后会累加+ 不需要<= 
+      for(let i = 1; i < pageNum; i++) {
+        await this.getcontentPlateFormOrderLlistWithPage()
+      }
+
+      // 滚动到之前的位置
+      this.$nextTick(()=> {
+        // console.log(scrollTop,"scrollTop")
+        document.documentElement.scrollTop = Number(scrollTop);
+        // console.log(document.documentElement.scrollTop,"document.body.scrollTop")
+              // 设置完毕删除session onLoad 哪里判断了 需要删除掉 下次滚动 onload才会滚动
+      sessionStorage.removeItem("orderListScrollTop")
+      sessionStorage.removeItem("orderListPageNum")
+      })
+    }
   },
-  created() {
-    // this.getTodayToHospitalInfo();
+  beforeRouteEnter (to, from, next) {
+    // console.log("beforeRouteEnter")
+    if(from.path === '/workbench') {
+      sessionStorage.removeItem("orderListScrollTop")
+      sessionStorage.removeItem("orderListPageNum")
+      sessionStorage.removeItem("orderList_startDate")
+      sessionStorage.removeItem("orderList_endDate")
+    }
+    next(); 
   },
-};
+  async mounted() {
+    // console.log("mounted")
+    this.handleReturnScroll();
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy () {
+      window.removeEventListener('scroll', this.handleScroll)
+  },
+  destroyed() {
+    sessionStorage.setItem("orderListScrollTop", this.scrollTop)
+    sessionStorage.setItem("orderListPageNum",this.query.pageNum)
+    
+  }
+}
 </script>
 <style lang="less" scoped>
 // /deep/.van-list{

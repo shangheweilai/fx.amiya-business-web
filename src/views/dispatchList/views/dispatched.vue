@@ -121,8 +121,8 @@ export default {
         pageSize: 10,
         totalCount: 0,
         keyword:'',
-        startDate:this.$moment(new Date()).format("YYYY-MM-DD"),
-        endDate: this.$moment(new Date()).format("YYYY-MM-DD"),
+        startDate:sessionStorage.getItem('dis_startDate') ? sessionStorage.getItem('dis_startDate') :   this.$moment(new Date()).format("YYYY-MM-DD"),
+        endDate: sessionStorage.getItem('dis_endDate') ? sessionStorage.getItem('dis_endDate') : this.$moment(new Date()).format("YYYY-MM-DD"),
       },
       list: [],
       loading: false,
@@ -130,6 +130,9 @@ export default {
       error: false,
       startDate:'',
       endDate:'',
+
+      // 滚动位置
+      scrollTop:0
     };
   },
 
@@ -180,6 +183,8 @@ export default {
       // this.onLoad();
       this.query.startDate = this.$moment(value[0]).format("YYYY-MM-DD")
       this.query.endDate = this.$moment(value[1]).format("YYYY-MM-DD")
+      sessionStorage.setItem('dis_startDate',this.query.startDate)
+      sessionStorage.setItem('dis_endDate',this.query.endDate)
       this.calendarModel = false
       this.query.pageNum = 1 
     },
@@ -212,6 +217,7 @@ export default {
 
     // 获取已派单订单
     getContentPlateFormSendOrder() {
+      return new Promise(resolve=> {
       const { pageNum, pageSize ,keyword,startDate,endDate} = this.query;
       const data = {
         startDate: startDate ? startDate : null,
@@ -248,19 +254,67 @@ export default {
           if (this.list.length === totalCount) {
             this.finished = true;
           }
+          resolve()
         }
       }).catch(() => {
           this.error = true;
-        });;
+        });
+       }) 
     },
 
     onLoad() {
+      if(sessionStorage.getItem("dispatchPageNum") && sessionStorage.getItem("dispatchScrollTop")) return;
       this.getContentPlateFormSendOrder();
     },
 
+    handleScroll () {
+        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+    },
+    // 滚动到之前位置
+    async handleReturnScroll() {
+      let scrollTop = sessionStorage.getItem("dispatchScrollTop")
+      let pageNum = sessionStorage.getItem("dispatchPageNum")
+      
+      // 请求完毕之后会累加+ 不需要<= 
+      for(let i = 1; i < pageNum; i++) {
+        await this.getContentPlateFormSendOrder()
+      }
+
+      // 滚动到之前的位置
+      this.$nextTick(()=> {
+        // console.log(scrollTop,"scrollTop")
+        document.documentElement.scrollTop = Number(scrollTop);
+        // console.log(document.documentElement.scrollTop,"document.body.scrollTop")
+              // 设置完毕删除session onLoad 哪里判断了 需要删除掉 下次滚动 onload才会滚动
+      sessionStorage.removeItem("dispatchScrollTop")
+      sessionStorage.removeItem("dispatchPageNum")
+      })
+    }
+
   },
-  created() {
+ beforeRouteEnter (to, from, next) {
+    // console.log("beforeRouteEnter")
+    if(from.path === '/dispatchList') {
+      sessionStorage.removeItem("dispatchScrollTop")
+      sessionStorage.removeItem("dispatchPageNum")
+      sessionStorage.removeItem("dis_startDate")
+      sessionStorage.removeItem("dis_endDate")
+    }
+    next(); 
   },
+  async mounted() {
+    // console.log("mounted")
+    this.handleReturnScroll();
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy () {
+      window.removeEventListener('scroll', this.handleScroll)
+  },
+  destroyed() {
+    sessionStorage.setItem("dispatchScrollTop", this.scrollTop)
+    sessionStorage.setItem("dispatchPageNum",this.query.pageNum)
+    
+  }
 };
 </script>
 <style lang="less" scoped>

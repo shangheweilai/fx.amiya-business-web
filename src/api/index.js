@@ -14,3 +14,11 @@ export const todayToHospitalInfo = (params) => {
         params
     });
 };
+//根据手机号筛选归属客服
+export const getCustomerServiceNameByPhone = (params) => {
+    return http({
+        url: "/businessWechat/BindCustomerService/getCustomerServiceNameByPhone",
+        method: "get",
+        params
+    });
+};

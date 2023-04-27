@@ -93,13 +93,24 @@
                     @confirm="belongMonthListConfirm"
                 />
             </van-popup>
+
             <van-popup v-model="model.appointmentHospitalIdModel" round position="bottom">
                 <van-picker
                     show-toolbar
-                    :columns="list.appointmentHospitalIdName"
+                    :columns="searchColumns"
                     @cancel="model.appointmentHospitalIdModel = false"
                     @confirm="appointmentHospitalIdConfirm"
-                />
+                >
+                <!-- 添加模糊搜素 -->
+                <template #title>
+                    <van-field
+                        v-model="searchKey"
+                        placeholder="请输入医院进行搜索"
+                        clearable
+                        style="width:200px"
+                    />
+                </template>
+                </van-picker>
             </van-popup>
         </div>
         <div class="bottom">
@@ -118,6 +129,9 @@ export default {
     },
     data(){
         return{
+            // 模糊搜索
+            searchKey:'',
+            searchColumns:[],
             // 用于页面展示
             form:{
                 // 订单类型
@@ -190,7 +204,7 @@ export default {
                 orderConsultationTypesName:[],
                 belongMonthListName:['当月','历史'],
                 appointmentHospitalIdName:[]
-            }
+            },
         }
 
     },
@@ -298,6 +312,7 @@ export default {
                     appointmentHospitalIdName.push(item.name)
                 })
                 this.list.appointmentHospitalIdName = appointmentHospitalIdName
+                this.searchColumns = appointmentHospitalIdName
             
             });
         },
@@ -345,6 +360,8 @@ export default {
         appointmentHospitalIdConfirm(value){
             this.form.appointmentHospitalId = value;
             this.model.appointmentHospitalIdModel = false;
+            this.searchKey = ''
+            this.searchColumns = []
             // 取id
             this.joggle.hospitalInfo.map((item) => {
                 if (item.name == value) {
@@ -381,6 +398,15 @@ export default {
         this.form2.belongMonth = belongMonth
         this.form.addOrderPrice = addOrderPrice
         this.form2.addOrderPrice = addOrderPrice
+    },
+     watch: {  //实时监听搜索输入内容
+        searchKey: function () {
+            let key = String( this.searchKey );
+            key =  key.replace( /\s*/g, "" );//去除搜索内容中的空格
+            const reg =  new RegExp( key, "ig" );//匹配规则-i：忽略大小写，g：全局匹配
+            /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+            this.searchColumns = this.list.appointmentHospitalIdName.filter( item => item.match( reg ) !=null );
+        }
     }
 }
 </script>

@@ -2,11 +2,11 @@
   <div class="content">
     <div class="anchor">主播客服信息</div>
     <div>
+        <!-- @click="belongEmpIdClick" -->
       <van-field
         v-model="form.belongEmpId"
         label="绑定客服"
         disabled
-        @click="belongEmpIdClick"
         placeholder="请选择绑定客服"
         class="customer_content"
       />
@@ -58,10 +58,20 @@
     <van-popup v-model="belongEmpIdModel" round position="bottom">
       <van-picker
         show-toolbar
-        :columns="serviceName"
+        :columns="searchColumns"
         @cancel="belongEmpIdModel = false"
         @confirm="belongEmpIdConfirm"
-      />
+      >
+        <!-- 添加模糊搜素 -->
+        <template #title>
+            <van-field
+                v-model="searchKey"
+                placeholder="请输入客服进行搜索"
+                clearable
+                style="width:200px"
+            />
+        </template>
+      </van-picker>
     </van-popup>
     <!-- 平台 -->
     <van-popup v-model="contentPlateFormIdModel" round position="bottom">
@@ -121,6 +131,9 @@ export default {
   },
   data() {
     return {
+      // 医院模糊搜索
+      searchKey:'',
+      searchColumns:[],
       //   用于页面展示
       form: {
         // 客服
@@ -262,8 +275,13 @@ export default {
         let serviceName = [];
         this.anchorCustomerServiceMessageParams.serviceNameList.map((item) => {
           serviceName.push(item.name);
+          if(this.$route.query.belongEmpId == item.name){
+            this.form.belongEmpId = item.name
+            this.form2.belongEmpId = item.id
+          }
         });
         this.serviceName = serviceName;
+        this.searchColumns =serviceName
       });
     },
 
@@ -352,6 +370,8 @@ export default {
     belongEmpIdConfirm(value) {
       this.form.belongEmpId = value;
       this.belongEmpIdModel = false;
+      this.searchKey = ''
+      this.searchColumns = []
       // 取id
       this.anchorCustomerServiceMessageParams.serviceNameList.map((item) => {
         if (item.name == value) {
@@ -452,6 +472,15 @@ export default {
     }
     
   },
+  watch: {  //实时监听搜索输入内容
+      searchKey: function () {
+          let key = String( this.searchKey );
+          key =  key.replace( /\s*/g, "" );//去除搜索内容中的空格
+          const reg =  new RegExp( key, "ig" );//匹配规则-i：忽略大小写，g：全局匹配
+          /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+          this.searchColumns = this.serviceName.filter( item => item.match( reg ) !=null );
+      },
+  }
 };
 </script>
 <style scoped lang="less">

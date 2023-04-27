@@ -106,19 +106,39 @@
         <van-popup v-model="hospitalIdModel" round position="bottom">
           <van-picker
             show-toolbar
-            :columns="hospitalName"
+            :columns="searchColumns"
             @cancel="hospitalIdModel = false"
             @confirm="hospitalIdConfirm"
-          />
+          >
+            <!-- 添加模糊搜素 -->
+            <template #title>
+                <van-field
+                    v-model="searchKey"
+                    placeholder="请输入医院进行搜索"
+                    clearable
+                    style="width:200px"
+                />
+            </template>
+          </van-picker>
         </van-popup>
         <!-- 派单人员 -->
         <van-popup v-model="sendByModel" round position="bottom">
           <van-picker
             show-toolbar
-            :columns="sendByName"
+            :columns="searchColumns2"
             @cancel="sendByModel = false"
             @confirm="sendByConfirm"
-          />
+          >
+            <!-- 添加模糊搜素 -->
+            <template #title>
+                <van-field
+                    v-model="searchKey2"
+                    placeholder="请输入派单人员进行搜索"
+                    clearable
+                    style="width:200px"
+                />
+            </template>
+          </van-picker>
         </van-popup>
 
 
@@ -136,8 +156,15 @@ import * as api from "@/api/order.js";
 import detail from "../../detail/detail.vue"
 export default {
   components: {detail},
+  inject: ["reload"],
   data() {
     return {
+        // 医院模糊搜索
+        searchKey:'',
+        searchColumns:[],
+        // 客服模糊搜索
+        searchKey2:'',
+        searchColumns2:[],
         calendarModel:false,
         minDate: new Date(2020, 1, 1),
         maxDate: new Date(2024, 1, 1),
@@ -147,10 +174,10 @@ export default {
         pageSize: 10,
         totalCount: 0,
         keyword:'',
-        startDate: this.$moment()
+        startDate: sessionStorage.getItem('nodis_startDate') ? sessionStorage.getItem('nodis_startDate') :  this.$moment()
           .startOf("month")
           .format("YYYY-MM-DD"),
-        endDate: this.$moment(new Date()).format("YYYY-MM-DD"),
+        endDate: sessionStorage.getItem('nodis_endDate') ? sessionStorage.getItem('nodis_endDate') :  this.$moment(new Date()).format("YYYY-MM-DD"),
       },
       list: [],
       loading: false,
@@ -185,6 +212,9 @@ export default {
       // 派单人员
       sendByModel:false,
       sendByName:[],
+
+      // 滚动位置
+      scrollTop:0
     };
   },
 
@@ -256,6 +286,7 @@ export default {
                 hospitalName.push(item.name)
             })
             this.hospitalName = hospitalName
+            this.searchColumns =hospitalName
         
         });
     },
@@ -269,6 +300,7 @@ export default {
           sendByName.push(item.name);
         });
         this.sendByName = sendByName;
+        this.searchColumns2 =sendByName
       });
     },
 
@@ -276,6 +308,8 @@ export default {
     hospitalIdConfirm(value){
       this.form.hospitalName = value;
       this.hospitalIdModel = false;
+      this.searchKey = ''
+      this.searchColumns = []
       // 取id
       this.hospitalInfo.map((item) => {
           if (item.name == value) {
@@ -287,6 +321,8 @@ export default {
     sendByConfirm(value){
       this.form.sendByName = value;
       this.sendByModel = false;
+      this.searchKey2 = ''
+      this.searchColumns2 = []
       // 取id
       this.employee.map((item) => {
           if (item.name == value) {
@@ -317,6 +353,8 @@ export default {
       // this.onLoad();
       this.query.startDate = this.$moment(value[0]).format("YYYY-MM-DD")
       this.query.endDate = this.$moment(value[1]).format("YYYY-MM-DD")
+       sessionStorage.setItem('nodis_startDate',this.query.startDate)
+      sessionStorage.setItem('nodis_endDate',this.query.endDate)
       this.calendarModel = false
       this.query.pageNum = 1 
     },
@@ -349,6 +387,7 @@ export default {
 
     // 获取未派单订单
     getunContentPlatFormSendOrderList() {
+      return new Promise(resolve=> {
       const { pageNum, pageSize ,keyword,startDate,endDate} = this.query;
       const data = {
         startDate: startDate ? startDate : null,
@@ -373,22 +412,91 @@ export default {
           if (this.list.length === totalCount) {
             this.finished = true;
           }
+          resolve()
         }
       }).catch(() => {
           this.error = true;
         });;
+        })
     },
 
     onLoad() {
+      if(sessionStorage.getItem("noDispatchPageNum") && sessionStorage.getItem("noDispatchScrollTop")) return;
       this.getunContentPlatFormSendOrderList();
       
     },
 
+    handleScroll () {
+        this.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+    },
+
+    // 滚动到之前位置
+    async handleReturnScroll() {
+      let scrollTop = sessionStorage.getItem("noDispatchScrollTop")
+      let pageNum = sessionStorage.getItem("noDispatchPageNum")
+      
+      // 请求完毕之后会累加+ 不需要<= 
+      for(let i = 1; i < pageNum; i++) {
+        await this.getunContentPlatFormSendOrderList()
+      }
+
+      // 滚动到之前的位置
+      this.$nextTick(()=> {
+        // console.log(scrollTop,"scrollTop")
+        document.documentElement.scrollTop = Number(scrollTop);
+        // console.log(document.documentElement.scrollTop,"document.body.scrollTop")
+              // 设置完毕删除session onLoad 哪里判断了 需要删除掉 下次滚动 onload才会滚动
+      sessionStorage.removeItem("noDispatchScrollTop")
+      sessionStorage.removeItem("noDispatchPageNum")
+      })
+    }
+
+
+
   },
+  beforeRouteEnter (to, from, next) {
+    // console.log("beforeRouteEnter")
+    if(from.path === '/dispatchList') {
+      sessionStorage.removeItem("noDispatchScrollTop")
+      sessionStorage.removeItem("noDispatchPageNum")
+      sessionStorage.removeItem("nodis_startDate")
+      sessionStorage.removeItem("nodis_endDate")
+    }
+    next(); 
+  },
+  async mounted() {
+    // console.log("mounted")
+    this.handleReturnScroll();
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy () {
+      window.removeEventListener('scroll', this.handleScroll)
+  },
+  destroyed() {
+    sessionStorage.setItem("noDispatchScrollTop", this.scrollTop)
+    sessionStorage.setItem("noDispatchPageNum",this.query.pageNum)
+  },
+
   created() {
     this.getHospitalInfo()
     this.getCustomerServiceNameList()
   },
+   watch: {  //实时监听搜索输入内容
+      searchKey: function () {
+          let key = String( this.searchKey );
+          key =  key.replace( /\s*/g, "" );//去除搜索内容中的空格
+          const reg =  new RegExp( key, "ig" );//匹配规则-i：忽略大小写，g：全局匹配
+          /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+          this.searchColumns = this.hospitalName.filter( item => item.match( reg ) !=null );
+      },
+      searchKey2: function () {
+          let key2 = String( this.searchKey2 );
+          key2 =  key2.replace( /\s*/g, "" );//去除搜索内容中的空格
+          const reg =  new RegExp( key2, "ig" );//匹配规则-i：忽略大小写，g：全局匹配
+          /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+          this.searchColumns2 = this.sendByName.filter( item => item.match( reg ) !=null );
+      }
+  }
 };
 </script>
 <style lang="less" scoped>

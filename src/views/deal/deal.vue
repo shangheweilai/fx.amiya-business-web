@@ -146,10 +146,20 @@
             <van-popup v-model="model.lastDealHospitalModel" round position="bottom">
                 <van-picker
                     show-toolbar
-                    :columns="list.hospitalInfoName"
+                    :columns="searchColumns"
                     @cancel="model.lastDealHospitalModel = false"
                     @confirm="hospitalInfoConfirm"
-                />
+                >
+                    <!-- 添加模糊搜素 -->
+                    <template #title>
+                        <van-field
+                            v-model="searchKey"
+                            placeholder="请输入医院进行搜索"
+                            clearable
+                            style="width:200px"
+                        />
+                    </template>
+                </van-picker>
             </van-popup>
             <van-popup v-model="model.toHospitalTypeModel" round position="bottom">
                 <van-picker
@@ -207,6 +217,9 @@ export default {
     },
     data(){
         return{
+            // 模糊搜索
+            searchKey:'',
+            searchColumns:[],
             currentDate: this.$moment().format("YYYY-MM-DD"),
             currentDate2:this.$moment().format("YYYY-MM-DD"),
             minDate: new Date(2020, 1, 1),
@@ -487,6 +500,7 @@ export default {
                     hospitalInfoName.push(item.name)
                 })
                 this.list.hospitalInfoName = hospitalInfoName
+                this.searchColumns = hospitalInfoName
             
             });
         },
@@ -496,6 +510,8 @@ export default {
         hospitalInfoConfirm(value){
             this.form.lastDealHospitalName = value;
             this.model.lastDealHospitalModel = false;
+            this.searchKey = ''
+            this.searchColumns = []
             // 取id
             this.joggle.hospitalInfo.map((item) => {
                 if (item.name == value) {
@@ -565,6 +581,15 @@ export default {
         this.getcontentPlateFormOrderDealPerformanceType()
         this.getcontentPlateFormOrderToHospitalTypeList()
         this.getHospitalInfo()
+    },
+     watch: {  //实时监听搜索输入内容
+        searchKey: function () {
+            let key = String( this.searchKey );
+            key =  key.replace( /\s*/g, "" );//去除搜索内容中的空格
+            const reg =  new RegExp( key, "ig" );//匹配规则-i：忽略大小写，g：全局匹配
+            /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+            this.searchColumns = this.list.hospitalInfoName.filter( item => item.match( reg ) !=null );
+        }
     }
 }
 </script>
