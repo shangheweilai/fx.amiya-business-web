@@ -496,6 +496,10 @@ export default {
     },
     // 获取所有员工
     getEmployeeByPositionId() {
+      // 线上职位id
+        // positionId:29
+        // 测试1
+        // positionId:1
       const data = {
         positionId:29
       }

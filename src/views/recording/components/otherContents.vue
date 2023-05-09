@@ -143,7 +143,8 @@ export default {
       api.contentPlateFormAddOrder(data).then((res) => {
         if(res.code === 0){
             this.$toast("录单成功");
-            this.$router.push('/orderList')
+            // this.$router.push('/orderList')
+            this.$router.push('/noDispatch')
             sessionStorage.removeItem('anchorFormName')
             sessionStorage.removeItem('anchorFormId')
             sessionStorage.removeItem('orderFormName')

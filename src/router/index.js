@@ -252,6 +252,16 @@ const routes = [{
         component: () =>
             import ('@/views/personal/views/hospital/hospital'),
     },
+    {
+        path: '/reservationList',
+        name: 'reservationList',
+        meta: {
+            title: "客户预约日程",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/personal/views/reservationList/reservationList'),
+    },
 ]
 
 const router = new VueRouter({

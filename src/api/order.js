@@ -330,3 +330,11 @@ export const getEmployeeByPositionId = (params) => {
         params
     });
 };
+// 主播获取客户预约日程信息列表（分页）
+export const getCustomerAppointmentSchedule = (params) => {
+    return http({
+        url: "/businessWechat/CustomerAppointmentSchedule/listWithPage",
+        method: "get",
+        params
+    });
+};

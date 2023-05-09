@@ -45,10 +45,16 @@
         <span>主播数据</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
+      <div class="item" @click="appmentionClick">
+        <span>客户预约日程</span>
+        <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
+      </div>
       <div class="item"  @click="$router.push('/hospital')">
         <span>医院排名</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
+      <!-- 31是主播 线上职位id v-if="employeeInfo.positionId == 31" -->
+      
     </div>
     <!-- <div class="item_con">
       <div class="item" @click="$toast('敬请期待！')">
@@ -114,6 +120,23 @@ export default {
           this.rank = res.data.rank
           sessionStorage.setItem('rank',res.data.rank)
         }
+      })
+    },
+    // 预约
+    appmentionClick(){
+      // 啊美雅职位列表查看主播数据为false时  没有权限查看主播信息页面
+      if(sessionStorage.getItem('readLiveAnchorData') == 'false'){
+        this.$toast('您当前的角色暂时无法进入，请联系管理员进行角色升级！')
+        return
+      }
+      // 如果没有绑定主播基础信息时 禁止进入页面
+      if(!this.employeeInfo.liveAnchorBaseId){
+        this.$toast('你的账号暂未绑定主播，请在管理端绑定后重试！')
+        return
+      }
+      this.$router.push({
+        path:'/reservationList',
+        query:{liveAnchorBaseId:this.employeeInfo.liveAnchorBaseId}
       })
     },
     // 主播信息

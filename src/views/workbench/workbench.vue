@@ -75,7 +75,7 @@
                         <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
                     </div>
                     <div v-else>
-                        <div class="red">该顾客手机号已绑定了啊美雅客服，若仍需要录单，您可以向主管提交录单申请！</div> 
+                        <div class="red">该顾客手机号已绑定了 {{CustomerServiceNameByPhone}}，若仍需要录单，您可以向主管提交录单申请！</div> 
                         <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
                         <!-- <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
                         <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">确认</van-button> -->

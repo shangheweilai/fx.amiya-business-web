@@ -362,7 +362,7 @@ export default {
             this.form.appointmentHospitalId = value;
             this.model.appointmentHospitalIdModel = false;
             this.searchKey = ''
-            this.searchColumns = []
+            // this.searchColumns = []
             // 取id
             this.joggle.hospitalInfo.map((item) => {
                 if (item.name == value) {

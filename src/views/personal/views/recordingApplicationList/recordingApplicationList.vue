@@ -114,8 +114,10 @@ export default {
       recordApplication: false,
       form: {
         id: "",
-        acceptBy: 104,
-        acceptByName: "虞郑韡",
+        // acceptBy: 104,
+        // acceptByName: "虞郑韡",
+        acceptBy: 220,
+        acceptByName: "张凌玥",
         // acceptBy: 1,
         // acceptByName: "管理员",
         phone: "",

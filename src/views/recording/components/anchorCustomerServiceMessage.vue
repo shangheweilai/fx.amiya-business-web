@@ -92,13 +92,31 @@
       />
     </van-popup>
     <!-- 主播微信号 -->
-    <van-popup v-model="liveAnchorWeChatNoModel" round position="bottom">
+    <!-- <van-popup v-model="liveAnchorWeChatNoModel" round position="bottom">
       <van-picker
         show-toolbar
         :columns="liveAnchorWeChatNoName"
         @cancel="liveAnchorWeChatNoModel = false"
         @confirm="liveAnchorWeChatNoConfirm"
       />
+    </van-popup> -->
+    <van-popup v-model="liveAnchorWeChatNoModel" round position="bottom">
+      <van-picker
+        show-toolbar
+        :columns="searchColumns2"
+        @cancel="liveAnchorWeChatNoModel = false"
+        @confirm="liveAnchorWeChatNoConfirm"
+        >
+        <!-- 添加模糊搜素 -->
+        <template #title>
+            <van-field
+                v-model="searchKey2"
+                placeholder="请输入微信号进行搜索"
+                clearable
+                style="width:200px"
+            />
+        </template>
+      </van-picker>
     </van-popup>
     <!-- 科室 -->
     <van-popup v-model="hospitalDepartmentIdModel" round position="bottom">
@@ -134,6 +152,9 @@ export default {
       // 医院模糊搜索
       searchKey:'',
       searchColumns:[],
+      // 微信号模糊搜索
+      searchKey2:'',
+      searchColumns2:[],
       //   用于页面展示
       form: {
         // 客服
@@ -249,12 +270,12 @@ export default {
       
     },
     liveAnchorWeChatNoClick() {
-      if (!this.form.liveAnchorId) {
-        this.$toast("请先选择主播IP");
-        return;
-      }
+      // if (!this.form.liveAnchorId) {
+      //   this.$toast("请先选择主播IP");
+      //   return;
+      // }
       this.liveAnchorWeChatNoModel = true;
-      this.getLiveAnchorWechatInfo(this.form2.liveAnchorId)
+      // this.getLiveAnchorWechatInfo(this.form2.liveAnchorId)
     },
     goodsIdClick(){
       if (!this.form.hospitalDepartmentId) {
@@ -346,20 +367,24 @@ export default {
     // 获取获取微信号
     getLiveAnchorWechatInfo(value) {
       const data ={
-        liveanchorId:value
+        liveanchorId:''
       }
       api.LiveAnchorWechatInfo(data).then((res) => {
-        this.anchorCustomerServiceMessageParams.WechatList =
-          res.data.liveAnchorWechatInfos;
-          if(res.data.liveAnchorWechatInfos==[]){
-            this.$toast('暂无数据')
-            return
-          }
-          let liveAnchorWeChatNoName = [];
-        this.anchorCustomerServiceMessageParams.WechatList.map((item) => {
-          liveAnchorWeChatNoName.push(item.name);
-        });
-        this.liveAnchorWeChatNoName = liveAnchorWeChatNoName;
+        if(res.code === 0){
+          this.anchorCustomerServiceMessageParams.WechatList =
+            res.data.liveAnchorWechatInfos;
+            if(res.data.liveAnchorWechatInfos==[]){
+              this.$toast('暂无数据')
+              return
+            }
+            let liveAnchorWeChatNoName = [];
+          this.anchorCustomerServiceMessageParams.WechatList.map((item) => {
+            liveAnchorWeChatNoName.push(item.name);
+          });
+          this.liveAnchorWeChatNoName = liveAnchorWeChatNoName;
+        this.searchColumns2 =liveAnchorWeChatNoName
+
+        }
       });
     },
     onConfirm(value) {
@@ -371,7 +396,6 @@ export default {
       this.form.belongEmpId = value;
       this.belongEmpIdModel = false;
       this.searchKey = ''
-      this.searchColumns = []
       // 取id
       this.anchorCustomerServiceMessageParams.serviceNameList.map((item) => {
         if (item.name == value) {
@@ -409,6 +433,7 @@ export default {
     liveAnchorWeChatNoConfirm(value) {
       this.form.liveAnchorWeChatNo = value;
       this.liveAnchorWeChatNoModel = false;
+      this.searchKey2 = ''
       // 取id
       this.anchorCustomerServiceMessageParams.WechatList.map((item) => {
         if (item.name == value) {
@@ -443,6 +468,7 @@ export default {
     this.getContentPlatFormValidList();
     this.getCustomerServiceNameList();
     this.getAmiyaHospitalDepartmentLists();
+    this.getLiveAnchorWechatInfo()
     // this.getAmiyaGoodsDemandLists();
     // 用于切到到订单详情时保留之前填写的数据
     // let anchorCustomerServiceMessageId = JSON.parse(sessionStorage.getItem('anchorCustomerServiceMessageId'))
@@ -479,6 +505,13 @@ export default {
           const reg =  new RegExp( key, "ig" );//匹配规则-i：忽略大小写，g：全局匹配
           /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
           this.searchColumns = this.serviceName.filter( item => item.match( reg ) !=null );
+      },
+      searchKey2: function () {
+          let key = String( this.searchKey2 );
+          key =  key.replace( /\s*/g, "" );//去除搜索内容中的空格
+          const reg =  new RegExp( key, "ig" );//匹配规则-i：忽略大小写，g：全局匹配
+          /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+          this.searchColumns2 = this.liveAnchorWeChatNoName.filter( item => item.match( reg ) !=null );
       },
   }
 };
