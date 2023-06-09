@@ -130,6 +130,15 @@
                 </div>
             </div>
         </div>
+        <div class="pit_con2">
+            <div class="pit_item">
+                <div class="pit"></div>
+                <div class="pit_content">
+                    <div>辅助订单业绩</div>
+                    <div class="pit_num">{{performance.supportPerformance ? performance.supportPerformance : 0}}w</div>
+                </div>
+            </div>
+        </div>
         <van-popup v-model="timeModel" position="bottom" style="height: 50%" round >
             <van-datetime-picker
                 v-model="currentDate"

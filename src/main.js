@@ -30,7 +30,7 @@ Vue.prototype.$axios = axios
  */
 import moment from "moment";
 Vue.prototype.$moment = moment;
-Vue.use(Viewer)
+// Vue.use(Viewer)
 Vue.use(VueClipboard)
 Vue.use(VeTable);
 Vue.use(Vant);
@@ -46,6 +46,11 @@ Vue.use(Row);
 Vue.use(Col);
 Vue.use(Checkbox);
 Vue.use(CheckboxGroup);
+Vue.use(Viewer, {
+    defaultOptions: {
+        zIndex: 9999, // 这里设置层级高度
+    }
+})
 
 function isMobile() {
     let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);

@@ -172,7 +172,7 @@
         </div>
         <div class="item_w">
           <span
-            >抖店订单号：{{
+            >三方单号：{{
               $route.query.orderInfo.otherContentPlatFormOrderId
             }}</span
           >

@@ -338,3 +338,10 @@ export const getCustomerAppointmentSchedule = (params) => {
         params
     });
 };
+// 消费类型
+export const ContentPlatFormOrderDealInfoTypeList = () => {
+    return http({
+        url: "/businessWechat/ContentPlatFormOrderDealInfo/typeList",
+        method: "get",
+    });
+};

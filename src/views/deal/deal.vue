@@ -30,7 +30,7 @@
                 disabled
                 placeholder="请选择到院类型"
                 class="customer_content"
-                @click="model.toHospitalTypeModel = true"
+                @click="toHospitalTypeClick"
                 v-if="form.isToHospital == true"
             />
             <van-field
@@ -80,6 +80,15 @@
                 v-if="form.isFinish == true"
             />
             <van-field
+                v-model="form.consumptionTypeName"
+                label="消费类型"
+                disabled
+                placeholder="请选择消费类型"
+                class="customer_content"
+                @click="consumptionTypeClick"
+                v-if="form.isFinish == true"
+            />
+            <van-field
                 v-model="form.unDealReason"
                 label="未成交原因"
                 placeholder="请输入未成交原因"
@@ -100,14 +109,14 @@
                 </div>
                 <van-uploader :after-read="afterReadClick" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize" :before-read="beforeRead" v-if="form.unDealPictureUrl.length<1"/>
             </div>
-            <van-field
+            <!-- <van-field
                 v-model="form.otherContentPlatFormOrderId"
-                label="抖店订单号"
-                placeholder="请输入抖店订单号"
+                label="三方单号"
+                placeholder="请输入三方单号"
                 class="customer_content"
                 type="textarea"
                 :rows="2"
-            />
+            /> -->
             <van-field
                 v-model="form.lastProjectStage"
                 label="后期项目铺垫"
@@ -199,24 +208,44 @@
                     @confirm="contentPlateFormOrderDealPerformanceTypeConfirm"
                 />
             </van-popup>
+            <!-- 消费类型 -->
+             <van-popup v-model="model.consumptionTypeModel" round position="bottom">
+                <van-picker
+                    show-toolbar
+                    :columns="list.consumptionTypeListName"
+                    @cancel="model.consumptionTypeModel = false"
+                    @confirm="consumptionTypeConfirm"
+                />
+            </van-popup>
         </div>
+
+        <!-- 明细 -->
+        <van-divider :style="{ color: '#1989fa', borderColor: '#1989fa', padding: '0 16px' }" v-if="form.isFinish === true">明细栏</van-divider>
+        <detail :orderId="$route.query.orderId" @handle="handle" v-if="form.isFinish === true"/>
+
+
         <div class="bottom">
             <!-- <van-button round block type="info"  class="button" @click="prevStep">上一步</van-button> -->
-            <van-button round block type="info"  class="button" @click="submite">完成</van-button>
+            <!-- <van-button round block type="info"  class="button" v-if="isLoading == true">加载中...</van-button> -->
+            <van-button round block type="info"  class="button" @click="submite" >完成</van-button>
         </div>
     </div>
     </div>
 </template>
 <script>
 import * as api from "@/api/order.js";
-
+import detail from "./cmoponents/detail.vue"
 export default {
+    components:{
+        detail
+    },
     props:{
         active:Number,
         anchorCustomerServiceMessage:Object
     },
     data(){
         return{
+            isLoading:false,
             // 模糊搜索
             searchKey:'',
             searchColumns:[],
@@ -262,7 +291,12 @@ export default {
                 // 三方订单号
                 otherContentPlatFormOrderId:'',
                 // 邀约凭证
-                invitationDocuments:[]
+                invitationDocuments:[],
+                // 消费类型
+                consumptionType:null,
+                consumptionTypeName:null,
+                // 明细
+                addContentPlatFormOrderDealDetailsVoList:[]
             },
             // 获取接口数据
             joggle:{
@@ -277,19 +311,85 @@ export default {
                 toHospitalTypeModel:false,
                 toHospitalDateModel:false,
                 dealDateModel:false,
-                dealPerformanceTypeModel:false
+                dealPerformanceTypeModel:false,
+                consumptionTypeModel:false
             },
             // 用于页面展示数据
             list:{
                 hospitalInfoName:[],
                 orderTypesName:[],
-                contentPlateFormOrderDealPerformanceTypeName:[]
+                contentPlateFormOrderDealPerformanceTypeName:[],
+                consumptionTypeListName:[]
                 
-            }
+            },
+            // 消费类型
+            typeList:[],
         }
 
     },
     methods:{
+        handle(value){
+            this.form.addContentPlatFormOrderDealDetailsVoList = value
+        },
+        // 到院类型弹窗
+        toHospitalTypeClick(){
+            this.model.toHospitalTypeModel = true
+        },
+        // 消费类型弹窗
+        consumptionTypeClick(){
+            // 退款消费
+            if(this.form.toHospitalType == 4){
+
+            }else{
+                this.model.consumptionTypeModel = true
+            }
+        },
+        // 消费类型确认弹窗
+        consumptionTypeConfirm(value){
+             this.form.consumptionTypeName = value;
+            this.model.consumptionTypeModel = false;
+            // 取id
+            this.typeList.map((item) => {
+                if (item.name == value) {
+                    this.form.consumptionType = item.id;
+                }
+            });
+        },
+        // 消费类型
+        getContentPlatFormOrderDealInfoTypeList(){
+            api.ContentPlatFormOrderDealInfoTypeList().then(res=>{
+                if(res.code == 0){
+                    this.typeList = res.data.typeList
+                    let consumptionTypeListName=[]
+                    this.typeList.map(item=>{
+                        consumptionTypeListName.push(item.name)
+                    })
+                    this.list.consumptionTypeListName = consumptionTypeListName
+                }
+            })
+        },
+        // 到院类型确认弹窗
+        orderTypesConfirm(value){
+            this.form.toHospitalTypeName = value;
+            this.model.toHospitalTypeModel = false;
+            // 取id
+            this.joggle.orderTypes.map((item) => {
+                if (item.name == value) {
+                    this.form.toHospitalType = item.id;
+                    if(item.id == 4){
+                        this.form.consumptionType = 2
+                        this.form.consumptionTypeName = '退款消费'
+                        return
+                    }else{
+                        // this.form.consumptionType = null
+                        this.form.consumptionTypeName = null
+                        // this.model.consumptionTypeModel = false
+                    }
+                    return
+                }
+                
+            });
+        },
         // 未成交截图
         beforeRead(file) {
             if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
@@ -392,7 +492,7 @@ export default {
         },
         submite(){
             const {isFinish,lastDealHospitalId,isToHospital,toHospitalType,toHospitalDate,dealAmount,lastProjectStage,dealPictureUrl,unDealReason,
-            unDealPictureUrl,dealDate,dealPerformanceType,isAcompanying,commissionRatio,otherContentPlatFormOrderId,invitationDocuments
+            unDealPictureUrl,dealDate,dealPerformanceType,isAcompanying,commissionRatio,otherContentPlatFormOrderId,invitationDocuments,consumptionType,addContentPlatFormOrderDealDetailsVoList
             } = this.form
             if(isToHospital == true){
                 if(!lastDealHospitalId){
@@ -421,6 +521,10 @@ export default {
                     this.$toast("请选择业绩类型");
                     return
                 }
+                if(consumptionType == null){
+                    this.$toast("请选择消费类型");
+                    return
+                }
             }
             if(isFinish == false){
                if(!unDealReason){
@@ -445,17 +549,54 @@ export default {
             isAcompanying,
             commissionRatio:0,
             otherContentPlatFormOrderId,
-            invitationDocuments:invitationDocuments
+            invitationDocuments:invitationDocuments,
+            consumptionType,
+            addContentPlatFormOrderDealDetailsVoList:isFinish == false  || dealAmount == 0 ? [] : addContentPlatFormOrderDealDetailsVoList
            }
-           api.finishContentPlateFormOrderByEmployee(data).then((res) => {
-                if(res.code === 0){
-                    this.$toast('确认成功')
-                    this.$router.go(-1)
+           if(isFinish == true){
+            if(dealAmount == 0){
+              api.finishContentPlateFormOrderByEmployee(data).then((res) => {
+                if (res.code === 0) {
+                  this.$toast('确认成功')
+                  this.$router.go(-1)
+                }else {
+                  this.$toast(res.msg)
+                }
+              });
+              return
+            }else{
+                let price = 0
+                if(addContentPlatFormOrderDealDetailsVoList.length == 0 || addContentPlatFormOrderDealDetailsVoList == []){
+                  this.$toast('请填写成交明细！')
+                  return
+                }
+                addContentPlatFormOrderDealDetailsVoList.map(item=>{
+                  price += Number(item.price)
+                  return
+                })
+                if(price*100 != dealAmount*100){
+                  this.$toast('成交明细合计与成金金额不一致，请认真核对！')
+                  return
+                }
+              api.finishContentPlateFormOrderByEmployee(data).then((res) => {
+                if (res.code === 0) {
+                  this.$toast('确认成功')
+                  this.$router.go(-1)
                 }else{
                     this.$toast(res.msg)
                 }
-           })
-
+              });
+              return
+            }
+          }
+          api.finishContentPlateFormOrderByEmployee(data).then((res) => {
+            if (res.code === 0) {
+              this.$toast('确认成功')
+              this.$router.go(-1)
+            }else{
+                this.$toast(res.msg)
+            }
+          });
         },
         isToHospitalClick(value){
             if(value == false){
@@ -531,16 +672,7 @@ export default {
             
             });
         },
-        orderTypesConfirm(value){
-            this.form.toHospitalTypeName = value;
-            this.model.toHospitalTypeModel = false;
-            // 取id
-            this.joggle.orderTypes.map((item) => {
-                if (item.name == value) {
-                this.form.toHospitalType = item.id;
-                }
-            });
-        },
+        
         confirmFn(value){
             this.form.toHospitalDate = this.$moment(value).format("YYYY-MM-DD");
             this.model.toHospitalDateModel = false;
@@ -581,6 +713,7 @@ export default {
         this.getcontentPlateFormOrderDealPerformanceType()
         this.getcontentPlateFormOrderToHospitalTypeList()
         this.getHospitalInfo()
+        this.getContentPlatFormOrderDealInfoTypeList()
     },
      watch: {  //实时监听搜索输入内容
         searchKey: function () {
