@@ -345,3 +345,11 @@ export const ContentPlatFormOrderDealInfoTypeList = () => {
         method: "get",
     });
 };
+// 修改头像
+export const updateAvatar = (data) => {
+    return http({
+        url: "/businessWechat/AmiyaEmployee/updateAvatar",
+        method: "put",
+        data
+    });
+};

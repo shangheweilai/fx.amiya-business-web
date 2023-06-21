@@ -3,7 +3,19 @@
         <div class="my_data" >
             <div class="item">
                 <span>头像</span>
-                <van-image width="30" height="30" :src="employeeInfo.avatar" />
+                <!-- <van-uploader :after-read="afterReadClick" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize" :before-read="beforeRead" v-if="this.form.avatar.length<1"/>
+                <van-image width="30" height="30" :src="employeeInfo.avatar" v-else/> -->
+                <div  class="img_content">
+                    <div v-for="(item,index) in form.avatar" :key="index" style="display:flex;" @click="deletClick(index)">
+                    <div class="img_item">
+                        <viewer v-if="item"  baseLayerPicker ="true" >
+                          <img :src="item" alt=""  class="img" >
+                        </viewer>
+                        <!-- <span class="opacity_con"  @click="deletClick(index)">x</span> -->
+                    </div>
+                    </div>
+                    <van-uploader :after-read="afterReadClick" :max-count="1" :max-size="1 * 1024 * 1024" @oversize="onOversize" :before-read="beforeRead" v-if="form.avatar.length<1"/>
+                </div>
             </div>
         </div>
         <div class="content">
@@ -28,6 +40,8 @@
     </div>
 </template>
 <script>
+import * as api from "@/api/order.js";
+
 import editPassword from '@/components/editPassword/editPassword.vue'
 export default {
     components:{
@@ -35,15 +49,62 @@ export default {
     },
     data(){
         return{
+             // 头像
+            form:{
+                avatar:[sessionStorage.getItem('avatar') ? sessionStorage.getItem('avatar') : 'https://ameiya.oss-cn-hangzhou.aliyuncs.com/9a17d0afbb844465b90462e96d0702bb.jpg']
+            },
             // 是否显示弹窗
             isPassword:false,
             // 获取父页面数据
             employeeInfo:this.$route.query.employeeInfo,
+
             isPassword:false,
+            
             employeeType:sessionStorage.getItem('employeeType')
         }
     },
     methods:{
+        beforeRead(file) {
+        if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
+            this.$toast("请上传正确格式的图片！");
+            return false;
+        }
+        return true;
+        },
+        onOversize(file) {
+        this.$toast("只能上传5M以内的图片！");
+        },
+        deletClick(index){
+        this.form.avatar.splice(index, 1)
+        },
+        afterReadClick(file){
+        // 此时可以自行将文件上传至服务器
+        let content = file.file;
+            let data = new FormData();
+            data.append('uploadfile',content);
+            api.upload(data).then(res=>{
+            if(res.code == 0){
+                this.form.avatar.push(res.data.url)
+                this.updateAvatar()
+                return
+            }else if(res.code == 404){
+                this.$toast("上传失败！");
+                return
+            }
+            })
+        },
+        // 修改头像
+        updateAvatar(){
+            const data = {
+                id:sessionStorage.getItem('employeeId'),
+                url:this.form.avatar[0]
+            }
+            api.updateAvatar(data).then(res=>{
+                if(res.code === 0){
+                    sessionStorage.setItem('avatar',res.data.avatar)
+                }
+            })
+        },
         // 关闭子组件修改密码弹窗
         isPasswordChange(value){
             this.isPassword = value
@@ -61,7 +122,11 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-
+/deep/ .van-uploader__upload{
+    width: 30px;
+    height: 30px;
+    margin-top: 7px;
+}
 /deep/.van-image__img {
   border-radius: 50%;
   margin-top: 2px;
@@ -87,6 +152,30 @@ export default {
             justify-content: space-between;
             border-radius: 7px;
             align-items: center;
+            .img_content{
+                display: flex;
+                .img_item{
+                position:relative;
+                margin-right:5px;
+                .img{
+                    width:30px;
+                    height:30px;
+                    margin-top: 3px;
+                    border-radius: 50%;
+                }
+                .opacity_con{
+                    background:#000;
+                    position:absolute;
+                    right:0;
+                    top:0;
+                    opacity:0.2;
+                    padding:1px 4px;
+                    box-sizing:border-box;
+                    color:#fff;
+                    margin-top: 7px;
+                }
+                }
+            }
         }
     }
     .my_data3 {

@@ -38,6 +38,13 @@
         disabled
       />
       <van-field
+        v-model="form.addWorkTypeName"
+        label="申请类型"
+        disabled
+        placeholder="请选择申请类型"
+        class="customer_content"
+      />
+      <van-field
         v-model="form.hospitalName"
         label="医院"
         disabled
@@ -124,6 +131,8 @@ export default {
         hospitalId: null,
         hospitalName: "",
         sendRemark: "",
+        addWorkType:1,
+        addWorkTypeName:'录单申请'
       },
       // 医院模糊搜索
       searchKey: "",
@@ -198,7 +207,7 @@ export default {
       this.form.sendRemark = ''
     },
     submite() {
-      const { acceptBy, hospitalId, phone,  sendRemark } = this.form;
+      const { acceptBy, hospitalId, phone,  sendRemark,addWorkType } = this.form;
       if (!acceptBy) {
         this.$toast("请选择接收人");
         return;
@@ -216,6 +225,7 @@ export default {
         acceptBy: Number(acceptBy),
         phone,
         sendRemark: sendRemark,
+        addWorkType
       };
       api.addContentPlatFormOrderAddWork(data).then((res) => {
         if (res.code === 0) {

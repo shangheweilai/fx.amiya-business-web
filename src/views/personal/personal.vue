@@ -165,6 +165,7 @@ export default {
       api.AmiyaEmployee(this.employeeId).then((res) => {
         if (res.code === 0) {
           this.employeeInfo = res.data.employeeInfo;
+          sessionStorage.setItem('avatar',res.data.employeeInfo.avatar)
         } else {
           this.$toast(res.msg);
         }

@@ -118,6 +118,13 @@
               disabled
             />
             <van-field
+              v-model="form.addWorkTypeName"
+              label="申请类型"
+              disabled
+              placeholder="请选择申请类型"
+              class="customer_content"
+            />
+            <van-field
               v-model="form.hospitalName"
               label="医院"
               disabled
@@ -294,6 +301,8 @@ export default {
         hospitalId: null,
         hospitalName: "",
         sendRemark: "",
+        addWorkType:null,
+        addWorkTypeName:''
       },
       // 医院模糊搜索
       searchKey: "",
@@ -434,7 +443,7 @@ export default {
       this.transferModel = false
     },
     submite() {
-      const { acceptBy, hospitalId, phone, id, sendRemark } = this.form;
+      const { acceptBy, hospitalId, phone, id, sendRemark,addWorkType } = this.form;
       if (!acceptBy) {
         this.$toast("请选择接收人");
         return;
@@ -453,6 +462,7 @@ export default {
         acceptBy: Number(acceptBy),
         phone,
         sendRemark: sendRemark,
+        addWorkType
       };
       api.updateContentPlatFormOrderAddWork(data).then((res) => {
         if (res.code === 0) {
@@ -568,6 +578,9 @@ export default {
         this.form.acceptBy = value.acceptBy;
         this.form.acceptByName = value.acceptByEmpName;
         this.form.phone = value.phone;
+        // 只要在企业微信修改录单申请 订单都改为录单申请 如需改绑请在系统端修改
+        this.form.addWorkType = 1;
+        this.form.addWorkTypeName = '录单申请';
         this.form.id = value.id;
       }
       
