@@ -353,3 +353,10 @@ export const updateAvatar = (data) => {
         data
     });
 };
+// 获客方式列表
+export const shoppingCartGetCustomerTypeList = () => {
+    return http({
+        url: `/businessWechat/ContentPlateFormOrder/shoppingCartGetCustomerTypeList`,
+        method: "get",
+    });
+};

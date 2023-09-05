@@ -33,9 +33,8 @@
         label="手机号"
         placeholder="请输入手机号"
         class="customer_content"
-        type="number"
-        number
         disabled
+        maxlength="11"
       />
       <van-field
         v-model="form.addWorkTypeName"
@@ -121,10 +120,10 @@ export default {
       recordApplication: false,
       form: {
         id: "",
-        // acceptBy: 104,
-        // acceptByName: "虞郑韡",
-        acceptBy: 220,
-        acceptByName: "张凌玥",
+        acceptBy: 104,
+        acceptByName: "虞郑韡",
+        // acceptBy: 220,
+        // acceptByName: "张凌玥",
         // acceptBy: 1,
         // acceptByName: "管理员",
         phone: "",

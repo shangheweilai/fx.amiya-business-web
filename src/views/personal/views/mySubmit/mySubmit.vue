@@ -113,8 +113,6 @@
               label="手机号"
               placeholder="请输入手机号"
               class="customer_content"
-              type="number"
-              number
               disabled
             />
             <van-field

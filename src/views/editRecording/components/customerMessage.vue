@@ -15,7 +15,6 @@
         placeholder="请输入手机号"
         class="customer_content"
         @input="phoneInput"
-        type="number"
         maxlength="11"
         disabled
       />

@@ -57,7 +57,7 @@
         <!-- 录单查重 -->
         <van-popup v-model="duplicateCheckModel" position="bottom" class="dispatch_content" round :close-on-click-overlay="false">
             <div class="phone_title">请输入手机号进行查询</div>
-            <van-field v-model="phone"  maxlength="11" type="number" />
+            <van-field v-model="phone"  maxlength="11"  />
 
             <!-- <div v-if="CustomerServiceNameByPhone">
                 <div v-if="CustomerServiceNameByPhone == '未绑定' || employeeName == CustomerServiceNameByPhone" class="green">该顾客手机号是新顾客或已绑定在您的账号下，可按照正常流程进行操作</div>
@@ -75,7 +75,8 @@
                         <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
                     </div>
                     <div v-else>
-                        <div class="red">该顾客手机号已绑定了 {{CustomerServiceNameByPhone}}，若仍需要录单，您可以向主管提交录单申请！</div> 
+                        <!-- <div class="red">该顾客手机号已绑定了 {{CustomerServiceNameByPhone}}，若仍需要录单，您可以向主管提交录单申请！</div>  -->
+                        <div class="red">该顾客手机号已绑定了啊美雅客服，若仍需要录单，您可在管理端向主管提交录单申请！</div> 
                         <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
                         <!-- <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
                         <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">确认</van-button> -->
@@ -212,12 +213,12 @@ export default {
         // 根据客户手机号查询
         duplicateCheck() {
             if (!this.phone) {
-                this.$Message.warning("请输入客户手机号");
+                this.$toast("请输入客户手机号");
                 return;
             }
             if (this.phone) {
                 if (!/^1[3456789]\d{9}$/.test(this.phone)) {
-                this.$Message.warning("请输入正确的手机号");
+                this.$toast("请输入正确的手机号");
                 return false;
                 }
             }

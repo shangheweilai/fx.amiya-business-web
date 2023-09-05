@@ -113,6 +113,7 @@ export default {
         depositAmount:Number(orderMessage.depositAmount),
         orderSource:Number(orderMessage.orderSource),
         orderType:Number(orderMessage.orderType),
+        getCustomerType:Number(orderMessage.getCustomerType),
         // 其他内容
         consultingContent:otherContents.consultingContent,
         lateProjectStage:otherContents.lateProjectStage,

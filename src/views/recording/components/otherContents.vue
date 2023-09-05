@@ -131,6 +131,7 @@ export default {
         depositAmount:Number(orderFormId.depositAmount),
         orderSource:Number(orderFormId.orderSource),
         orderType:Number(orderFormId.orderType),
+        getCustomerType:Number(orderFormId.getCustomerType),
         // 其他内容
         consultingContent:otherForm.consultingContent,
         lateProjectStage:otherForm.lateProjectStage,

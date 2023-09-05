@@ -53,6 +53,9 @@
             }}</span
           >
         </div>
+        <div class="item_f">
+          <span>获客方式：{{ $route.query.orderInfo.getCustomerTypeText }}</span>
+        </div>
       </div>
 
       <div class="item">
@@ -163,13 +166,17 @@
             >面诊类型：{{ $route.query.orderInfo.consultationTypeText }}</span
           >
         </div>
-        <div class="item_w">
+        <div class="item_f">
+          <span>业绩类型：{{ $route.query.orderInfo.dealPerformanceTypeText }}</span>
+          <!-- <span>获客方式：{{ $route.query.orderInfo.getCustomerTypeText }}</span> -->
+        </div>
+        <!-- <div class="item_w">
           <span
             >业绩类型：{{
               $route.query.orderInfo.dealPerformanceTypeText
             }}</span
           >
-        </div>
+        </div> -->
         <div class="item_w">
           <span
             >三方单号：{{
@@ -199,6 +206,9 @@
         </div>
         <div class="item_w">
           <span>未派单原因：{{ $route.query.orderInfo.unSendReason }}</span>
+        </div>
+        <div class="item_w">
+          <span>未成交原因：{{ $route.query.orderInfo.unDealReason }}</span>
         </div>
       </div>
 

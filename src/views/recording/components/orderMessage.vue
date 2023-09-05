@@ -44,6 +44,14 @@
                 @click="model.consultationTypeModel = true"
             />
             <van-field
+                v-model="form.getCustomerType"
+                label="获客方式"
+                disabled
+                placeholder="请选择获客方式"
+                class="customer_content"
+                @click="model.getCustomerTypeModel = true"
+            />
+            <van-field
                 v-model="form.belongMonth"
                 label="归属月份"
                 disabled
@@ -61,6 +69,14 @@
             />
         </div>
         <div>
+            <van-popup v-model="model.getCustomerTypeModel" round position="bottom">
+                <van-picker
+                    show-toolbar
+                    :columns="list.getCustomerTypeName"
+                    @cancel="model.getCustomerTypeModel = false"
+                    @confirm="getCustomerTypeConfirm"
+                />
+            </van-popup>
             <van-popup v-model="model.orderTypeModel" round position="bottom">
                 <van-picker
                     show-toolbar
@@ -147,7 +163,9 @@ export default {
                 // 归属月份
                 belongMonth:null,
                 // 下单金额
-                addOrderPrice:null
+                addOrderPrice:null,
+                // 获客方式
+                getCustomerType:null
             },
             // 用于传给接口id
             form2:{
@@ -164,7 +182,9 @@ export default {
                 // 归属月份
                 belongMonth:null,
                 // 下单金额
-                addOrderPrice:null
+                addOrderPrice:null,
+                // 获客方式
+                getCustomerType:null
             },
             // 获取接口数据
             joggle:{
@@ -186,7 +206,9 @@ export default {
                     }
                 ],
                 // 医院
-                hospitalInfo:[]
+                hospitalInfo:[],
+                // 获客方式
+                getCustomerTypeList:[]
             },
             // model
             model:{
@@ -196,6 +218,7 @@ export default {
                 orderSourceModel:false,
                 consultationTypeModel:false,
                 belongMonthModel:false,
+                getCustomerTypeModel:false,
             },
             // 用于页面展示数据
             list:{
@@ -203,7 +226,8 @@ export default {
                 orderSourcesName:[],
                 orderConsultationTypesName:[],
                 belongMonthListName:['当月','历史'],
-                appointmentHospitalIdName:[]
+                appointmentHospitalIdName:[],
+                getCustomerTypeName:[],
             }
         }
 
@@ -233,7 +257,7 @@ export default {
             sessionStorage.setItem('orderFormId',JSON.stringify(this.form2))
         },
         nextStep(){
-            const {orderType,depositAmount,appointmentHospitalId,orderSource,consultationType,belongMonth,addOrderPrice} = this.form
+            const {orderType,depositAmount,appointmentHospitalId,orderSource,consultationType,belongMonth,addOrderPrice,getCustomerType} = this.form
             if(!orderType){
                 this.$toast("请选择订单类型");
                 return
@@ -254,6 +278,10 @@ export default {
                 this.$toast("请选择面诊状态");
                 return
             }
+            if(getCustomerType == null || getCustomerType == ''){
+                this.$toast("请选择获客方式");
+                return
+            }
             if(!belongMonth){
                 this.$toast("请选择归属月份");
                 return
@@ -270,6 +298,18 @@ export default {
             })
             sessionStorage.setItem('orderFormName',JSON.stringify(this.form))
             sessionStorage.setItem('orderFormId',JSON.stringify(this.form2))
+        },
+        // 获客方式列表
+        getshoppingCartGetCustomerTypeList() {
+            api.shoppingCartGetCustomerTypeList().then((res) => {
+                this.joggle.getCustomerTypeList =res.data.typeList;
+                let getCustomerTypeName=[]
+                this.joggle.getCustomerTypeList.map(item=>{
+                    getCustomerTypeName.push(item.name)
+                })
+                this.list.getCustomerTypeName = getCustomerTypeName
+            
+            });
         },
         // 获取订单类型
         getCustomerServiceNameList() {
@@ -332,6 +372,16 @@ export default {
                 }
             });
         },
+        getCustomerTypeConfirm(value){
+            this.form.getCustomerType = value;
+            this.model.getCustomerTypeModel = false;
+            // 取id
+            this.joggle.getCustomerTypeList.map((item) => {
+                if (item.name == value) {
+                this.form2.getCustomerType = item.id;
+                }
+            });
+        },
         orderTypeConfirm(value){
             this.form.orderType = value;
             this.model.orderTypeModel = false;
@@ -384,6 +434,7 @@ export default {
         this.getcontentPlateFormOrderSourceList()
         this.getOrderConsultationTypeLists()
         this.getHospitalInfo()
+        this.getshoppingCartGetCustomerTypeList()
         let orderFormName = JSON.parse(sessionStorage.getItem('orderFormName'))
         let orderFormId = JSON.parse(sessionStorage.getItem('orderFormId'))
         if(orderFormName || orderFormId){
