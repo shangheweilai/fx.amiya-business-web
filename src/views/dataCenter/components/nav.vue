@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="button" @click="detail">查看详情</div>
+                <div class="button" @click="$router.push({path:'/commerce'})">查看详情</div>
             </van-tab>
             <van-tab title="其他收入">
                 <div class="nav">

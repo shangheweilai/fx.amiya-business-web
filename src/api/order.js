@@ -360,3 +360,20 @@ export const shoppingCartGetCustomerTypeList = () => {
         method: "get",
     });
 };
+
+// 获取gmv看板数据
+export const gmvData = (params) => {
+    return http({
+        url: "/businessWechat/TakeGoodsDataBoard/gmvData",
+        method: "get",
+        params
+    });
+};
+// 获取业绩趋势折线图数据
+export const gmvDataBrokenLineData = (params) => {
+    return http({
+        url: "/businessWechat/TakeGoodsDataBoard/gmvDataBrokenLineData",
+        method: "get",
+        params
+    });
+};

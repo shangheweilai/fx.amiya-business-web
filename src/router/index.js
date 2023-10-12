@@ -133,6 +133,16 @@ const routes = [{
             import ('@/views/dataCenter/views/naturalSeeding'),
     },
     {
+        path: '/commerce',
+        name: 'commerce',
+        meta: {
+            title: "带货板块",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/dataCenter/views/commerce'),
+    },
+    {
         path: '/assistantDetails',
         name: 'assistantDetails',
         meta: {
