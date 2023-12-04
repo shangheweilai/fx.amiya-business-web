@@ -19,8 +19,8 @@
         <van-popup v-model="timeModel" position="bottom" style="height: 50%" round >
             <van-datetime-picker
                 v-model="currentDate"
-                type="year-month"
-                title="选择年月"
+                type="date"
+                title="选择年月日"
                 :min-date="minDate"
                 :max-date="maxDate"
                 @cancel="timeModel = false"
@@ -58,10 +58,10 @@ export default {
                 },
                 
             ],
-            time:this.$moment().format("YYYY-MM"),
+            time:this.$moment().format("YYYY-MM-DD"),
             minDate: new Date(2020, 0, 1),
             maxDate: new Date(2025, 10, 1),
-            currentDate:  this.$moment().format("YYYY-MM"),
+            currentDate:  this.$moment().format("YYYY-MM-DD"),
             timeModel:false,
             performance:{},
             isLoading:false,
@@ -90,7 +90,7 @@ export default {
             this.timeModel = true
         },
         timeConfirm(value){
-            this.time = this.$moment(value).format("YYYY-MM")
+            this.time = this.$moment(value).format("YYYY-MM-DD")
             this.timeModel = false
             this.getPerformanceByLiveAnchorName()
         },
@@ -114,8 +114,9 @@ export default {
         // 获取主播数据
         getPerformanceByLiveAnchorName(){
             const data ={
-                year:this.$moment(this.time).format("YYYY"),
-                month:this.$moment(this.time).format("MM"),
+                // year:this.$moment(this.time).format("YYYY"),
+                // month:this.$moment(this.time).format("MM"),
+                date:this.$moment(this.time).format("YYYY-MM-DD"),
                 liveAnchorBaseId:this.activeItem == 0 ? sessionStorage.getItem('daodaoid') : sessionStorage.getItem('jinaid'),
                 isSelfLiveAnchor:true
             }
@@ -123,6 +124,7 @@ export default {
             api.PerformanceByLiveAnchorName(data).then((res)=>{
                 if(res.code == 0){
                     this.isLoading = false
+                    // this.performance =  res.data.performance
                     this.performance =  res.data.performance
                 }else{
                     this.$toast(res.msg)

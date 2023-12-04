@@ -265,7 +265,7 @@ export default {
     return {
       calendarModel: false,
       minDate: new Date(2020, 1, 1),
-      maxDate: new Date(2024, 1, 1),
+      maxDate: new Date(2025, 1, 1),
       // 搜索字段
       query: {
         pageNum: 1,

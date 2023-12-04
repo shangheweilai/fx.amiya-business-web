@@ -126,7 +126,7 @@ export default {
     return {
       currentDate: "",
       minDate: new Date(2020, 1, 1),
-      maxDate: new Date(2024, 1, 1),
+      maxDate: new Date(2025, 1, 1),
       // 用于页面展示
       form: {
         // 客户昵称

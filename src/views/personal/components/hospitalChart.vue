@@ -43,30 +43,30 @@ export default {
           formatter: "{b} : {d}%",
         },
         legend: [
-          {
+          legend[0] ? {
             data: [legend[0]],
             y: "30",
             x: "140",
             formatter: function (name) {
-              return name.length > 9 ? name.substr(0, 9) + "..." : name;
+              return   name.length > 9 ? name.substr(0, 9) + "..." : name ;
             },
-          },
-          {
+          }: '',
+          legend[1] ? {
             data: [legend[1]],
             y: "60",
             x: "140",
             formatter: function (name) {
-              return name.length > 9 ? name.substr(0, 9) + "..." : name;
+              return  name.length > 9 ? name.substr(0, 9) + "..." : name ;
             },
-          },
-          {
+          }:'',
+          legend[2] ? {
             data: [legend[2]],
             y: "90",
             x: "140",
             formatter: function (name) {
-              return name.length > 9 ? name.substr(0, 9) + "..." : name;
+              return  name ? name.length > 9 ? name.substr(0, 9) + "..." : name : '';
             },
-          },
+          } : '',
         ],
         grid: {
           containLabel: true,
@@ -135,7 +135,15 @@ export default {
             value: item.totalAchievementRatio,
           };
         }) : [];
-        this.legendList = this.order.length > 3 ? [this.order[0], this.order[1], this.order[2]] : [this.order[0]];
+        // this.legendList = this.order.length > 3 ? [this.order[0], this.order[1], this.order[2]] : [this.order[0]];
+
+        if(this.order.length == 1){
+          this.legendList = [this.order[0]];
+        }else if(this.order.length == 2){
+          this.legendList = [this.order[0], this.order[1]];
+        }else if (this.order.length >=3){
+          this.legendList = [this.order[0], this.order[1], this.order[2]];
+        }
         this.$nextTick(() => {
           this.myEcharts();
         });

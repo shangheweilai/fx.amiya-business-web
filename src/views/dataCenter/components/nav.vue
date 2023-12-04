@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="button" @click="detail">查看详情</div>
+                <div class="button"  @click="$router.push({path:'/performanceDetail',query:{active:1}})">查看详情</div>
             </van-tab>
             <van-tab title="带货板块">
                 <div class="nav">

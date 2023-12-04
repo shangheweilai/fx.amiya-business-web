@@ -120,8 +120,10 @@ export default {
       recordApplication: false,
       form: {
         id: "",
-        acceptBy: 104,
-        acceptByName: "虞郑韡",
+        // acceptBy: 104,
+        // acceptByName: "虞郑韡",
+        acceptBy: 243,
+        acceptByName: "陈飞",
         // acceptBy: 220,
         // acceptByName: "张凌玥",
         // acceptBy: 1,
@@ -302,7 +304,7 @@ export default {
 
 <style scoped lang="less">
 .dispatch_content {
-  height: 50%;
+  height: 55%;
   color: #5492fe;
 }
 .content {

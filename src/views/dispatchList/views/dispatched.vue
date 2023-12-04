@@ -41,10 +41,7 @@
               <div class="item_top">
                 <!-- <span class="copy" v-clipboard:copy="item.id" v-clipboard:success="onCopySuccess">复制</span> -->
                 <div style="color: #000">
-                  订单：<span
-                    v-clipboard:copy="item.orderId"
-                    v-clipboard:success="onCopySuccess"
-                    >{{ item.orderId }}</span
+                  派单编号：<span>{{ item.id }}</span
                   >
                 </div>
                 <div class="item_type">状态：{{ item.orderStatusText }}</div>
@@ -88,6 +85,7 @@
                   </div>
                   <div class="right_content">
                     <div>{{ item.isOldCustomer }}</div>
+                    <div>{{ item.isMainHospital == true ? '主派医院' : '次派医院' }}</div>
                     <!-- <div>
                     <van-radio-group :v-model="item.isOldCustomer" direction="horizontal" >
                       <van-radio :name="item.isOldCustomer" icon-size="12px" checked-color="#fff" disabled>{{item.isOldCustomer}}</van-radio>
@@ -146,7 +144,7 @@ export default {
       radio: "1",
       calendarModel: false,
       minDate: new Date(2020, 1, 1),
-      maxDate: new Date(2024, 1, 1),
+      maxDate: new Date(2025, 1, 1),
       // 搜索字段
       query: {
         pageNum: 1,

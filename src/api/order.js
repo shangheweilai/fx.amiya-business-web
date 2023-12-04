@@ -377,3 +377,19 @@ export const gmvDataBrokenLineData = (params) => {
         params
     });
 };
+// 获取达人业绩
+export const cooperateLiveAnchorPerformanceData = (params) => {
+    return http({
+        url: "/businessWechat/CooperateLiveAnchorAchievement/cooperateLiveAnchorPerformanceData",
+        method: "get",
+        params
+    });
+};
+// 机构排名数据
+export const cooperatehospitalRank = (params) => {
+    return http({
+        url: "/businessWechat/CooperateLiveAnchorAchievement/cooperatehospitalRank",
+        method: "get",
+        params
+    });
+};

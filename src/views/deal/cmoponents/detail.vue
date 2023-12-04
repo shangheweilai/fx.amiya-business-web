@@ -122,7 +122,6 @@ export default {
   methods: {
     // 删除
     detelt(value){
-        console.log(value)
         const findIndex = this.list.findIndex(item=> item.index === value.index);
         this.list.splice(findIndex,1)
     },

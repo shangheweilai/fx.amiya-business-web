@@ -102,10 +102,18 @@
           >
             <van-field
               v-model="form.hospitalName"
-              label="派单医院"
+              label="主派单医院"
               disabled
               @click="hospitalIdModel = true"
-              placeholder="请选择派单医院"
+              placeholder="请选择主派单医院"
+              class="customer_content"
+            />
+            <van-field
+              v-model="form.hospitalName2"
+              label="次派单医院"
+              disabled
+              @click="hospitalIdModel2 = true"
+              placeholder="请选择次派单医院"
               class="customer_content"
             />
             <van-field
@@ -164,6 +172,25 @@
               </template>
             </van-picker>
           </van-popup>
+          <!-- 次派医院 -->
+          <van-popup v-model="hospitalIdModel2" round position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="searchColumns3"
+              @cancel="hospitalIdModel2 = false"
+              @confirm="hospitalIdConfirm2"
+            >
+              <!-- 添加模糊搜素 -->
+              <template #title>
+                <van-field
+                  v-model="searchKey3"
+                  placeholder="请输入医院进行搜索"
+                  clearable
+                  style="width: 200px"
+                />
+              </template>
+            </van-picker>
+          </van-popup>
           <!-- 派单人员 -->
           <van-popup v-model="sendByModel" round position="bottom">
             <van-picker
@@ -202,12 +229,15 @@ export default {
       // 医院模糊搜索
       searchKey: "",
       searchColumns: [],
+      // 次派医院
+      searchKey3: "",
+      searchColumns3: [],
       // 客服模糊搜索
       searchKey2: "",
       searchColumns2: [],
       calendarModel: false,
       minDate: new Date(2020, 1, 1),
-      maxDate: new Date(2024, 1, 1),
+      maxDate: new Date(2025, 1, 1),
       // 搜索字段
       query: {
         pageNum: 1,
@@ -232,9 +262,12 @@ export default {
       dispatchModel: false,
 
       form: {
-        // 派单医院
+        //主派单医院
         hospitalId: null,
         hospitalName: null,
+        // 次派单医院
+        hospitalId2: null,
+        hospitalName2: null,
         // 订单号
         orderId: "",
         // 是否明确时间
@@ -249,6 +282,7 @@ export default {
       },
       //医院model
       hospitalIdModel: false,
+      hospitalIdModel2: false,
       hospitalName: [],
       // 派单人员
       sendByModel: false,
@@ -273,7 +307,7 @@ export default {
       this.dispatchModel = false;
     },
     submite() {
-      const { hospitalId, sendBy, orderId, remark } = this.form;
+      const { hospitalId, sendBy, orderId, remark ,hospitalId2} = this.form;
       if (!hospitalId) {
         this.$toast("请选择派单医院");
         return;
@@ -289,21 +323,66 @@ export default {
         remark,
         isUncertainDate: false,
         appointmentDate: null,
+        otherHospitalId:Number(hospitalId2) ? [Number(hospitalId2)] : []
       };
-      api.ContentPlateFormOrder(data).then((res) => {
-        if (res.code === 0) {
-          this.$toast("派单成功");
-          this.form = {};
-          this.dispatchModel = false;
-          // this.getunContentPlatFormSendOrderList();
-          setTimeout(()=>{
-            this.$router.push('/dispatched')
-          },2000)
+      // api.ContentPlateFormOrder(data).then((res) => {
+      //   if (res.code === 0) {
+      //     this.$toast("派单成功");
+      //     this.form = {};
+      //     this.dispatchModel = false;
+      //     // this.getunContentPlatFormSendOrderList();
+      //     setTimeout(()=>{
+      //       this.$router.push('/dispatched')
+      //     },2000)
           
-        } else {
-          this.$toast(res.msg);
-        }
-      });
+      //   } else {
+      //     this.$toast(res.msg);
+      //   }
+      // });
+      if([Number(hospitalId2)] == [] || [Number(hospitalId2)].length == 0){
+              this.flag = true;
+              api.ContentPlateFormOrder(data).then((res) => {
+                if (res.code === 0) {
+                  this.$toast("派单成功");
+                  this.form = {};
+                  this.dispatchModel = false;
+                  // this.getunContentPlatFormSendOrderList();
+                  setTimeout(()=>{
+                    this.$router.push('/dispatched')
+                  },2000)
+                  
+                } else {
+                  this.$toast(res.msg);
+                }
+              });
+              return
+            }else{
+                for(var i = 0;i<[Number(hospitalId2)].length;i++){
+                  if([Number(hospitalId2)][i] == hospitalId){
+                    let hostpital = this.hospitalInfo.find(item=>item.id == hospitalId).name
+                    // this.$Message.warning( hostpital+ '已存在于主派医院中，请勿重复选择')
+                     this.$toast( hostpital+ '已存在于主派医院中，请勿重复选择')
+                   break
+                  }else{
+                    this.flag = true;
+                    api.ContentPlateFormOrder(data).then((res) => {
+                      if (res.code === 0) {
+                        this.$toast("派单成功");
+                        this.form = {};
+                        this.dispatchModel = false;
+                        // this.getunContentPlatFormSendOrderList();
+                        setTimeout(()=>{
+                          this.$router.push('/dispatched')
+                        },2000)
+                        
+                      } else {
+                        this.$toast(res.msg);
+                      }
+                    });
+                    return
+                  }
+                }
+            }
     },
     // 订单详情
     detailClick(value) {
@@ -332,6 +411,7 @@ export default {
         });
         this.hospitalName = hospitalName;
         this.searchColumns = hospitalName;
+        this.searchColumns3 = hospitalName;
       });
     },
 
@@ -353,11 +433,24 @@ export default {
       this.form.hospitalName = value;
       this.hospitalIdModel = false;
       this.searchKey = "";
-      this.searchColumns = [];
+      // this.searchColumns = [];
       // 取id
       this.hospitalInfo.map((item) => {
         if (item.name == value) {
           this.form.hospitalId = item.id;
+        }
+      });
+    },
+    // 次派医院确认弹窗
+    hospitalIdConfirm2(value) {
+      this.form.hospitalName2 = value;
+      this.hospitalIdModel2 = false;
+      this.searchKey3 = "";
+      // this.searchColumns3 = [];
+      // 取id
+      this.hospitalInfo.map((item) => {
+        if (item.name == value) {
+          this.form.hospitalId2 = item.id;
         }
       });
     },
@@ -443,7 +536,7 @@ export default {
             liveAnchorId: null,
             consultationEmpId: null,
             contentPlateFormId: "",
-            // employeeId:-1,
+            employeeId:sessionStorage.getItem("employeeId"),
             orderStatus: null,
             orderSource: -1,
           };
@@ -581,6 +674,18 @@ export default {
         (item) => item.match(reg) != null
       );
     },
+    // 次派医院
+    //实时监听搜索输入内容
+    searchKey3: function () {
+      let key3 = String(this.searchKey3);
+      console.log(key3)
+      key3 = key3.replace(/\s*/g, ""); //去除搜索内容中的空格
+      const reg = new RegExp(key3, "ig"); //匹配规则-i：忽略大小写，g：全局匹配
+      /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+      this.searchColumns3 = this.hospitalName.filter(
+        (item) => item.match(reg) != null
+      );
+    },
   },
 };
 </script>
@@ -606,7 +711,7 @@ export default {
   margin: 5px 0;
 }
 .dispatch_content {
-  height: 43%;
+  height: 50%;
   color: #5492fe;
 }
 .customer_content {

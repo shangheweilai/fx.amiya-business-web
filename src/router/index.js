@@ -272,6 +272,16 @@ const routes = [{
         component: () =>
             import ('@/views/personal/views/reservationList/reservationList'),
     },
+    {
+        path: '/performanceDetail',
+        name: 'performanceDetail',
+        meta: {
+            title: "合作达人",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/dataCenter/views/performanceDetail'),
+    },
 ]
 
 const router = new VueRouter({
