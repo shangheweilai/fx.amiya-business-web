@@ -6,21 +6,21 @@
                     <div class="total_num">{{performance.cueerntMonthTotalPerformance ? performance.cueerntMonthTotalPerformance + 'w': ' -'}}</div>
                     <div class="line"></div>
                     <div class="bot_num">
-                        <span>目标 <span class="num"> {{performance.totalPerformanceTarget ? performance.totalPerformanceTarget + 'w': ' -'}}</span></span>
-                        <span class="bot_r">完成率 <span class="num">{{ performance.totalPerformanceTargetComplete ? performance.totalPerformanceTargetComplete + '%' : '-'}}</span></span>
+                        <span>目标 <div class="num"> {{performance.totalPerformanceTarget ? performance.totalPerformanceTarget + 'w': ' -'}}</div></span>
+                        <span class="bot_r">完成率 <div class="num">{{ performance.totalPerformanceTargetComplete ? performance.totalPerformanceTargetComplete + '%' : '-'}}</div></span>
                     </div>
-                    <div class="bot_num" v-if="title == '总业绩'">
+                    <div class="bot_num" >
                         <span>
                             同比
-                            <span v-if="Math.sign(performance.totalPerformanceYearOnYear)== 1"> <span class="num red"><i class="iconfont icon-xiangshang1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceYearOnYear) + '%'}}</span>
-                            <span v-else-if="Math.sign(performance.totalPerformanceYearOnYear)== -1"><span  class="num green"><i class="iconfont icon-xiangxia1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceYearOnYear) + '%'}}</span>
-                            <span v-else>-</span>
+                            <div v-if="Math.sign(performance.totalPerformanceYearOnYear)== 1"> <span class="num red"><i class="iconfont icon-xiangshang1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceYearOnYear) + '%'}}</div>
+                            <div v-else-if="Math.sign(performance.totalPerformanceYearOnYear)== -1"><span  class="num green"><i class="iconfont icon-xiangxia1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceYearOnYear) + '%'}}</div>
+                            <div v-else>-</div>
                         </span>
-                        <span>
+                        <span class="bot_r">
                             环比
-                            <span v-if="Math.sign(performance.totalPerformanceChainratio)== 1"> <span class="num red"><i class="iconfont icon-xiangshang1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceChainratio) + '%'}}</span>
-                            <span v-else-if="Math.sign(performance.totalPerformanceChainratio)== -1"><span  class="num green"><i class="iconfont icon-xiangxia1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceChainratio) + '%'}}</span>
-                            <span v-else>-</span>
+                            <div v-if="Math.sign(performance.totalPerformanceChainratio)== 1"> <span class="num red"><i class="iconfont icon-xiangshang1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceChainratio) + '%'}}</div>
+                            <div v-else-if="Math.sign(performance.totalPerformanceChainratio)== -1"><span  class="num green"><i class="iconfont icon-xiangxia1 icon_ziy"></i></span>{{ Math.abs(performance.totalPerformanceChainratio) + '%'}}</div>
+                            <div v-else>-</div>
                         </span>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                             <span>{{performance.newCustomerPerformanceRatio ? performance.newCustomerPerformanceRatio + '%' : '-'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -80,7 +80,7 @@
                             <span>{{performance.oldCustomerPerformanceRatio ? performance.oldCustomerPerformanceRatio + '%' : '-'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -115,7 +115,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.existPricePerformanceRatio ?  performance.existPricePerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -147,7 +147,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.zeroPricePerformanceRatio ?  performance.zeroPricePerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -168,7 +168,7 @@
                 </div>
             </div>
 
-            <div class="center">
+            <!-- <div class="center">
                 <div class="cen_left">
                     <div class="new_customer_con">
                         <span class="new_customer"><div>当月派单</div><div>{{title == '总业绩' ? '当月成交业绩' : '当日成交业绩'}}</div></span>
@@ -181,7 +181,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.duringMonthSendDuringMonthDealPerformanceRatio ?  performance.duringMonthSendDuringMonthDealPerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -213,7 +213,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.historySendDuringMonthDealPerformanceRatio ?  performance.historySendDuringMonthDealPerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -247,7 +247,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.videoConsultationPerformanceRatio ?  performance.videoConsultationPerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -279,7 +279,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.pictureConsultationPerformanceRatio ?  performance.pictureConsultationPerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -313,7 +313,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.acompanyingPerformanceRatio ?  performance.acompanyingPerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -345,7 +345,7 @@
                             <span style="margin-left:4px;margin-top:1px">{{ performance.notAcompanyingPerformanceRatio ?  performance.notAcompanyingPerformanceRatio + '%' : ' -'}}</span>
                         </div>
                     </div>
-                    <div class="cen_bot_w" v-if="title == '总业绩'">
+                    <div class="cen_bot_w" >
                         <div class="t_con">
                             <div  class="t_h">同比</div>
                             <span>
@@ -364,7 +364,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
     </div>
 </template>
 <script>
@@ -438,6 +438,7 @@ export default {
                     color: red;
                 }
                 .bot_r{
+                    text-align: right;
                 }
             }
         }

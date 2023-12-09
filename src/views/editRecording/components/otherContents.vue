@@ -114,6 +114,8 @@ export default {
         orderSource:Number(orderMessage.orderSource),
         orderType:Number(orderMessage.orderType),
         getCustomerType:Number(orderMessage.getCustomerType),
+        customerSource:Number(orderMessage.customerSource),
+        customerType:Number(orderMessage.customerType),
         // 其他内容
         consultingContent:otherContents.consultingContent,
         lateProjectStage:otherContents.lateProjectStage,

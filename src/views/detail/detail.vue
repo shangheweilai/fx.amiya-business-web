@@ -55,7 +55,12 @@
         </div>
         <div class="item_f">
           <span>获客方式：{{ $route.query.orderInfo.getCustomerTypeText }}</span>
+          <span>客户类型：{{ $route.query.orderInfo.customerTypeText }}</span>
         </div>
+        <div class="item_f">
+          <span>客户来源：{{ $route.query.orderInfo.customerSourceText }}</span>
+        </div>
+
       </div>
 
       <div class="item">

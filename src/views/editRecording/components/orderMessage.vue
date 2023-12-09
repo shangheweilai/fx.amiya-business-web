@@ -44,6 +44,22 @@
                 @click="model.getCustomerTypeModel = true"
             />
             <van-field
+                v-model="form.customerType"
+                label="客户类型"
+                disabled
+                placeholder="请选择客户类型"
+                class="customer_content"
+                @click="model.customerTypeModel = true"
+            />
+            <van-field
+                v-model="form.customerSource"
+                label="客户来源"
+                disabled
+                placeholder="请选择客户来源"
+                class="customer_content"
+                @click="model.customerSourceModel = true"
+            />
+            <van-field
                 v-model="form.consultationType"
                 label="面诊状态"
                 disabled
@@ -75,6 +91,24 @@
                     :columns="list.getCustomerTypeName"
                     @cancel="model.getCustomerTypeModel = false"
                     @confirm="getCustomerTypeConfirm"
+                />
+            </van-popup>
+             <!-- 客户类型 -->
+            <van-popup v-model="model.customerTypeModel" round position="bottom">
+                <van-picker
+                    show-toolbar
+                    :columns="list.getcustomerTypeListNames"
+                    @cancel="model.customerTypeModel = false"
+                    @confirm="customerTypeConfirm"
+                />
+            </van-popup>
+            <!-- 客户来源 -->
+            <van-popup v-model="model.customerSourceModel" round position="bottom">
+                <van-picker
+                    show-toolbar
+                    :columns="list.getcustomerSourceListNames"
+                    @cancel="model.customerSourceModel = false"
+                    @confirm="customerSourceConfirm"
                 />
             </van-popup>
             <van-popup v-model="model.orderTypeModel" round position="bottom">
@@ -165,7 +199,11 @@ export default {
                 // 下单金额
                 addOrderPrice:null,
                 // 获客方式
-                getCustomerType:null
+                getCustomerType:null,
+                // 客户类型
+                customerType:null,
+                // 客户来源
+                customerSource:null
             },
             // 用于传给接口id
             form2:{
@@ -184,7 +222,11 @@ export default {
                 // 下单金额
                 addOrderPrice:null,
                 // 获客方式
-                getCustomerType:null
+                getCustomerType:null,
+                // 客户类型
+                customerType:null,
+                // 客户来源
+                customerSource:null
             },
             // 获取接口数据
             joggle:{
@@ -208,7 +250,11 @@ export default {
                 // 医院
                 hospitalInfo:[],
                 // 获客方式
-                getCustomerTypeList:[]
+                getCustomerTypeList:[],
+                // 客户类型
+                customerType:null,
+                // 客户来源
+                customerSource:null
             },
             // model
             model:{
@@ -219,6 +265,8 @@ export default {
                 consultationTypeModel:false,
                 belongMonthModel:false,
                 getCustomerTypeModel:false,
+                customerTypeModel:false,
+                customerSourceModel:false
             },
             // 用于页面展示数据
             list:{
@@ -228,6 +276,8 @@ export default {
                 belongMonthListName:['当月','历史'],
                 appointmentHospitalIdName:[],
                 getCustomerTypeName:[],
+                getcustomerTypeListNames:[],
+                getcustomerSourceListNames:[]
             },
         }
 
@@ -255,7 +305,7 @@ export default {
             })
         },
         nextStep(){
-            const {orderType,depositAmount,appointmentHospitalId,orderSource,consultationType,belongMonth,addOrderPrice,getCustomerType} = this.form
+            const {orderType,depositAmount,appointmentHospitalId,orderSource,consultationType,belongMonth,addOrderPrice,getCustomerType,customerType,customerSource} = this.form
             if(!orderType){
                 this.$toast("请选择订单类型");
                 return
@@ -278,6 +328,14 @@ export default {
             }
             if(getCustomerType == null || getCustomerType == ''){
                 this.$toast("请选择获客方式");
+                return
+            }
+            if(customerType == null || customerType == ''){
+                this.$toast("请选择客户类型");
+                return
+            }
+            if(customerSource == null || customerSource == ''){
+                this.$toast("请选择客户来源");
                 return
             }
             if(!belongMonth){
@@ -304,6 +362,30 @@ export default {
                     getCustomerTypeName.push(item.name)
                 })
                 this.list.getCustomerTypeName = getCustomerTypeName
+            
+            });
+        },
+        // 客户类型
+        getcustomerTypeList() {
+            api.customerTypeList().then((res) => {
+                this.joggle.getcustomerTypeList =res.data.sourceList;
+                let getcustomerTypeListName=[]
+                this.joggle.getcustomerTypeList.map(item=>{
+                    getcustomerTypeListName.push(item.name)
+                })
+                this.list.getcustomerTypeListNames = getcustomerTypeListName
+            
+            });
+        },
+        // 客户来源
+        getcustomerSourceList() {
+            api.customerSourceList().then((res) => {
+                this.joggle.getcustomerSourceList =res.data.sourceList;
+                let getcustomerSourceListName=[]
+                this.joggle.getcustomerSourceList.map(item=>{
+                    getcustomerSourceListName.push(item.name)
+                })
+                this.list.getcustomerSourceListNames = getcustomerSourceListName
             
             });
         },
@@ -363,6 +445,28 @@ export default {
             this.joggle.getCustomerTypeList.map((item) => {
                 if (item.name == value) {
                 this.form2.getCustomerType = item.id;
+                }
+            });
+        },
+         // 客户类型
+        customerTypeConfirm(value){
+            this.form.customerType = value;
+            this.model.customerTypeModel = false;
+            // 取id
+            this.joggle.getcustomerTypeList.map((item) => {
+                if (item.name == value) {
+                this.form2.customerType = item.id;
+                }
+            });
+        },
+        // 客户来源
+        customerSourceConfirm(value){
+            this.form.customerSource = value;
+            this.model.customerSourceModel = false;
+            // 取id
+            this.joggle.getcustomerSourceList.map((item) => {
+                if (item.name == value) {
+                this.form2.customerSource = item.id;
                 }
             });
         },
@@ -434,7 +538,9 @@ export default {
         this.getOrderConsultationTypeLists()
         this.getHospitalInfo()
         this.getshoppingCartGetCustomerTypeList()
-        const {orderType,orderTypeText,depositAmount,appointmentHospitalId,appointmentHospitalName,orderSource,orderSourceText,consultationType,consultationTypeText,belongMonth,addOrderPrice,getCustomerType,getCustomerTypeText} = this.$route.query.orderInfo
+        this.getcustomerTypeList()
+        this.getcustomerSourceList()
+        const {orderType,orderTypeText,depositAmount,appointmentHospitalId,appointmentHospitalName,orderSource,orderSourceText,consultationType,consultationTypeText,belongMonth,addOrderPrice,getCustomerType,getCustomerTypeText,customerSource,customerSourceText,customerType,customerTypeText} = this.$route.query.orderInfo
         this.form.orderType = orderTypeText
         this.form2.orderType = orderType
         this.form.depositAmount = depositAmount
@@ -451,6 +557,10 @@ export default {
         this.form2.addOrderPrice = addOrderPrice
         this.form.getCustomerType = getCustomerTypeText
         this.form2.getCustomerType = getCustomerType
+        this.form.customerType = customerTypeText
+        this.form2.customerType = customerType
+        this.form.customerSource = customerSourceText
+        this.form2.customerSource = customerSource
     },
      watch: {  //实时监听搜索输入内容
         searchKey: function () {

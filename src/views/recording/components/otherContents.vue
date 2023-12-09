@@ -132,6 +132,8 @@ export default {
         orderSource:Number(orderFormId.orderSource),
         orderType:Number(orderFormId.orderType),
         getCustomerType:Number(orderFormId.getCustomerType),
+        customerSource:Number(orderFormId.customerSource),
+        customerType:Number(orderFormId.customerType),
         // 其他内容
         consultingContent:otherForm.consultingContent,
         lateProjectStage:otherForm.lateProjectStage,

@@ -360,6 +360,20 @@ export const shoppingCartGetCustomerTypeList = () => {
         method: "get",
     });
 };
+// 获客类型
+export const customerTypeList = () => {
+    return http({
+        url: `/businessWechat/ShoppingCartRegistration/customerTypeList`,
+        method: "get",
+    });
+};
+// 客户来源
+export const customerSourceList = () => {
+    return http({
+        url: `/businessWechat/ShoppingCartRegistration/customerSourceList`,
+        method: "get",
+    });
+};
 
 // 获取gmv看板数据
 export const gmvData = (params) => {
