@@ -116,7 +116,8 @@ export default{
     .left{
         width: 60px;
         height: 100vh;
-        background: linear-gradient(#5492FE,#f5f5f5);
+        // background: linear-gradient(#5492FE,#f5f5f5);
+        background:#709EF7;
         // border-radius: 10px;
         position: fixed;
         left: 0;

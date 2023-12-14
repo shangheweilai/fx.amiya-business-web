@@ -151,7 +151,7 @@ export default {
 <style scoped lang="less">
 .contents{
     width: 100%;
-    background:linear-gradient(#8ab4fe,#f5f5f5);
+    background:#C0D6FE;
     // height: 100vh;
     
     .nav_top_con{
@@ -166,7 +166,8 @@ export default {
             .nav_con_d{
                 display: flex;
                 .daodao{
-                    background: linear-gradient(#6398f8,#4980e6);
+                    // background: linear-gradient(#6398f8,#4980e6);
+                    background:#C0D6FE;
                     padding: 5px 20px;
                     box-sizing: border-box;
                     margin-right: 10px;

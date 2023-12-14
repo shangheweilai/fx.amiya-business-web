@@ -62,7 +62,7 @@
             </van-popup> 
         </div>
         <!-- <van-loading size="24px" vertical text-color="#0094ff" color="#0094ff" style="padding:100px 0 0 50px" v-else>加载中...</van-loading> -->
-        <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:linear-gradient(#8ab4fe,#f5f5f5);margin-left:60px" v-else>加载中...</van-loading>
+        <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:#C0D6FE;margin-left:60px" v-else>加载中...</van-loading>
     </div>
     <!-- <div v-else class="nodate">暂无数据</div> -->
 </template>
@@ -120,7 +120,7 @@ export default {
     padding-left: 60px;
     box-sizing: border-box;
     width: 100%;
-    background:linear-gradient(#8ab4fe,#f5f5f5);
+    background:#C0D6FE;
     // height: 100vh;
     
     .time{

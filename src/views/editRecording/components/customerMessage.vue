@@ -210,7 +210,7 @@ export default {
       });
     },
     nextStep() {
-      const { customerName, phone, city } = this.form;
+      const { customerName, phone, city ,sex} = this.form;
 
       if (!customerName) {
         this.$toast("请输入客户昵称");
@@ -226,6 +226,10 @@ export default {
       }
       if (!city) {
         this.$toast("请输入城市");
+        return;
+      }
+      if (!sex) {
+        this.$toast("请选择性别");
         return;
       }
       this.$emit("edidActive3", {

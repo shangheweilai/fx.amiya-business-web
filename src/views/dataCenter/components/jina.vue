@@ -12,7 +12,7 @@
         </div>
         <div class="no_data">没有更多了</div>
     </div>
-    <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:linear-gradient(#8ab4fe,#f5f5f5);margin-left:60px" v-else>加载中...</van-loading>
+    <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:#C0D6FE;margin-left:60px" v-else>加载中...</van-loading>
 </template>
 <script>
 import jinaPerformance from './jinaPerformance.vue'

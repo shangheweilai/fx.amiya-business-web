@@ -82,7 +82,7 @@
         </van-popup> 
         
     </div>
-    <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:linear-gradient(#8ab4fe,#f5f5f5);margin-left:60px" v-else>加载中...</van-loading>
+    <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:#C0D6FE;margin-left:60px" v-else>加载中...</van-loading>
 </template>
 <script>
 import  * as api from "@/api/order.js";
@@ -152,7 +152,7 @@ export default {
     height: 100vh;
     padding-left: 60px;
     box-sizing: border-box;
-    background:linear-gradient(#8ab4fe,#f5f5f5);
+    background:#C0D6FE;
     font-size: 12px;
     padding-top: 10px;
     .time{

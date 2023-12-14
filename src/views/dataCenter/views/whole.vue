@@ -202,13 +202,13 @@ export default {
   // height: 100vh;
   padding-left: 90px;
   box-sizing: border-box;
-  background: linear-gradient(#8ab4fe, #f5f5f5);
+ background:#C0D6FE;
   padding-bottom: 20px;
   .top {
     padding-top: 20px;
     .top_bg{
       height: 30px;
-      background: linear-gradient(rgb(88, 142, 241), rgb(44, 113, 245));
+      background: linear-gradient(#6398f8,#4980e6);
       width: 90%;
       display: flex;
       justify-content: space-between;

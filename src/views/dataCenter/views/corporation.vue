@@ -89,7 +89,8 @@ export default {
     width: 100%;
     padding-left: 60px;
     box-sizing: border-box;
-    background:linear-gradient(#8ab4fe,#f5f5f5);
+    // background:linear-gradient(#8ab4fe,#f5f5f5);
+    background:#C0D6FE;
     .time{
         font-size: 13px;
         color: #fff;
