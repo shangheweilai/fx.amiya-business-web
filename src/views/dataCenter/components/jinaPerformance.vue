@@ -1,5 +1,5 @@
 <template>
-    <div class="content_i" >
+    <div class="content_i" :style="{height:innerHeight > 800 ? '100vh' : 'auto'}">
         <div class="top">
             <div class="top_con">
                 <div class="top_title">{{title}}</div>
@@ -381,11 +381,11 @@ export default {
     },
     data(){
         return{
-            
+           innerHeight:0
         }
     },
-    methods:{
-        
+    mounted(){
+        this.innerHeight = window.innerHeight
     }
 }
 </script>

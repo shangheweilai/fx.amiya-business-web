@@ -1,5 +1,5 @@
 <template>
-    <div >
+    <div :style="{height:innerHeight > 800 ? '100vh' : 'auto'}">
         <div class="top">
             <div class="top_con">
                 <div class="top_title">{{title}}</div>
@@ -380,9 +380,12 @@ export default {
     },
     data(){
         return{
-           
+           innerHeight:0
         }
     },
+    mounted(){
+        this.innerHeight = window.innerHeight
+    }
 }
 </script>
 <style scoped lang="less">
@@ -403,6 +406,7 @@ export default {
         box-sizing: border-box;
         // margin-top: 10px;
         font-size: 12px;
+        margin-top: 15px;
         .top_con{
             width: 100%;
             background-image: url(../../../assets/dataCenter.png) ;
@@ -463,7 +467,7 @@ export default {
             border-radius: 10px;
             padding: 10px;
             box-sizing: border-box;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             .new_customer_con{
                 display: flex;
                 justify-content: space-between;
