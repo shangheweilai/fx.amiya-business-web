@@ -1,7 +1,6 @@
 <template>
   <div class="content">
     <!-- 23423 -->
-    
     <van-list
       v-model="loading"
       :finished="finished"
