@@ -1,5 +1,5 @@
 <template>
-    <div class="contents2" v-if="isLoading == false" >
+    <div class="contents2" v-if="isLoading == false" :style="{height:performance.length < 7 ? '100vh' : 'auto'}">
        <div class="assistant_list" v-for="(item,index) in performance" :key="index">
             <div class="assistant_item" @click="$router.push({path:'/assistantDetails',query:{customerServiceId:item.customerServiceId}})">
                 <div class="assistant_left" style="color:#FF0000" v-if="index == 0">{{item.customerServiceName}}</div>
@@ -30,7 +30,7 @@
        </div>
        <!-- <div class="no_data" :style="{height:!performance ? '90%' : '5px',position:'absolute',bottom:!performance ? '40%' : '0px'}">没有更多了</div> -->
        <!-- <div class="no_data" v-if="!performance" :style="{height:!performance ? '94%' : '5px',position:'absolute',bottom:!performance ? '0' : '30px',left:'49%'}">没有更多了</div> -->
-       <div class="no_data">没有更多了</div>
+       <div class="no_data"  v-if="performance.length >0">没有更多了</div>
     </div>
     <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:100px 0 0 50px" v-else>加载中...</van-loading>
 </template>
@@ -53,7 +53,7 @@ export default {
 <style scoped lang="less">
 .contents2{
     width: 100%;
-    height: 100vh;
+    // height: 100vh;
     padding-left: 60px;
     box-sizing: border-box;
     .assistant_list{
@@ -129,6 +129,8 @@ export default {
         // padding: 10px 0;
         // box-sizing: border-box;
         margin-top: 5px;
+        padding-bottom: 20px;
+        box-sizing: border-box;
         
     }
 }

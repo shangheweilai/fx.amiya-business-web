@@ -9,14 +9,14 @@
         class="customer_content"
         @input="customerNameInput"
       />
+      <!-- @input="phoneInput" -->
       <van-field
         v-model="form.phone"
         label="手机号"
         placeholder="请输入手机号"
         class="customer_content"
-        @input="phoneInput"
-        type="number"
         maxlength="11"
+        disabled
       />
       <van-field
         v-model="form.city"
@@ -55,6 +55,18 @@
         class="customer_content"
         @input="wechatNumberInput"
       />
+      <div class="customer_img">顾客照片</div>
+      <div  class="img_content">
+        <div v-for="(item,index) in form2.imgList" :key="index" style="display:flex;">
+          <div class="img_item">
+            <viewer v-if="item"  baseLayerPicker ="true" >
+              <img :src="item" alt=""  class="img" >
+              </viewer>
+            <span class="opacity_con"  @click="deletClick(index)">x</span>
+          </div>
+        </div>
+        <van-uploader :after-read="afterReadClick" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize" :before-read="beforeRead" v-if="form2.imgList.length<5"/>
+      </div>
     </div>
     <div>
       <van-popup v-model="model.sexModel" round position="bottom">
@@ -104,18 +116,21 @@
 </template>
 <script>
 import * as api from "@/api/order.js";
-
+// import upload from "@/components/upload/upload.vue"
 export default {
   props: {
     active: Number,
     anchorCustomerServiceMessage: Object,
     message:Object
   },
+  components:{
+    // upload
+  },
   data() {
     return {
       currentDate: "",
       minDate: new Date(2020, 1, 1),
-      maxDate: new Date(2024, 1, 1),
+      maxDate: new Date(2025, 1, 1),
       // 用于页面展示
       form: {
         // 客户昵称
@@ -149,6 +164,8 @@ export default {
         wechatNumber: "",
         // 城市
         city: "",
+        // 顾客图片
+        imgList:[]
       },
       // 获取接口数据
       joggle: {},
@@ -164,6 +181,53 @@ export default {
     };
   },
   methods: {
+    beforeRead(file) {
+      if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
+        this.$toast("请上传正确格式的图片！");
+        return false;
+      }
+      return true;
+    },
+    onOversize(file) {
+      this.$toast("只能上传5M以内的图片！");
+    },
+    deletClick(index){
+      this.form2.imgList.splice(index, 1)
+    },
+    afterReadClick(file){
+      // 此时可以自行将文件上传至服务器
+      let content = file.file;
+        let data = new FormData();
+        data.append('uploadfile',content);
+        api.upload(data).then(res=>{
+          if(res.code == 0){
+            this.form2.imgList.push(res.data.url)
+            return
+          }else if(res.code == 404){
+            this.$toast("上传失败！");
+            return
+          }
+        })
+    },
+    // onRead2(file) {
+    //     let content = file.file;
+    //     let data = new FormData();
+    //     data.append('uploadfile',content);
+    //     // api.upload(data).then(res=>{
+    //     //   if(res.code == 0){
+    //     //     console.log(res.data.url)
+    //     //     this.fileList.push(res.data.url)
+    //     //     this.imgList.push(res.data.url)
+    //     //     // this.fileList.push(res.data.url)
+    //     //   }
+    //     // })
+    //     this.$axios.post('https://app.ameiyes.com/fxopenoss/aliyunoss/uploadone',data).then(res=>{
+    //       if(res.code === 0){
+    //         console.log(res.data.url)
+    //         this.fileList.push(res.data.url)
+    //       }
+    //     })
+    // },
     prevStep() {
       this.$emit("edidActive3", {
         active: 1,
@@ -188,7 +252,7 @@ export default {
       sessionStorage.setItem('customerFormId',JSON.stringify(this.form2))
     },
     nextStep() {
-      const { customerName, phone, city } = this.form;
+      const { customerName, phone, city ,sex} = this.form;
 
       if (!customerName) {
         this.$toast("请输入客户昵称");
@@ -204,6 +268,10 @@ export default {
       }
       if (!city) {
         this.$toast("请输入城市");
+        return;
+      }
+      if (!sex) {
+        this.$toast("请选择性别");
         return;
       }
       this.$emit("edidActive3", {
@@ -260,6 +328,8 @@ export default {
     },
   },
   created() {
+    this.form.phone = this.$route.query.phone
+    this.form2.phone = this.$route.query.phone
     let customerFormName = JSON.parse(sessionStorage.getItem('customerFormName'))
     let customerFormId = JSON.parse(sessionStorage.getItem('customerFormId'))
     if(customerFormName || customerFormId){
@@ -278,6 +348,7 @@ export default {
             this.form2.occupation = customerFormId.occupation
             this.form2.wechatNumber = customerFormId.wechatNumber
             this.form2.city = customerFormId.city
+            this.form2.imgList = customerFormId.imgList
           
     }
   },
@@ -285,6 +356,10 @@ export default {
 </script>
 
 <style scoped lang="less">
+/deep/.van-uploader__upload {
+  width:50px;
+  height:50px;
+}
 .content {
   width: 92%;
   background: #fff;
@@ -294,6 +369,32 @@ export default {
   box-shadow: 10px 10px 10px rgba(0, 0.5);
   padding: 10px;
   box-sizing: border-box;
+  .img_content{
+    display: flex;
+    .img_item{
+      position:relative;
+      margin-right:5px;
+      .img{
+        width:50px;
+        height:50px;
+      }
+      .opacity_con{
+        background:#000;
+        position:absolute;
+        right:0;
+        top:0;
+        opacity:0.2;
+        padding:1px 4px;
+        box-sizing:border-box;
+        color:#fff
+      }
+    }
+  }
+  .customer_img{
+    font-size: 13px;
+    color: #5492fe;
+    margin: 10px 0;
+  }
   .anchor {
     border-left: 3px solid #eacebf;
     font-size: 16px;

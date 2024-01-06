@@ -121,6 +121,8 @@ export default {
         phone:customerFormId.phone,
         sex:customerFormId.sex,
         wechatNumber:customerFormId.wechatNumber,
+        customerPictures:customerFormId.imgList,
+
         // 订单信息
         addOrderPrice:Number(orderFormId.addOrderPrice),
         appointmentHospitalId:Number(orderFormId.appointmentHospitalId),
@@ -129,20 +131,23 @@ export default {
         depositAmount:Number(orderFormId.depositAmount),
         orderSource:Number(orderFormId.orderSource),
         orderType:Number(orderFormId.orderType),
+        getCustomerType:Number(orderFormId.getCustomerType),
+        customerSource:Number(orderFormId.customerSource),
+        customerType:Number(orderFormId.customerType),
         // 其他内容
         consultingContent:otherForm.consultingContent,
         lateProjectStage:otherForm.lateProjectStage,
         remark:otherForm.remark,
         unSendReason:otherForm.unSendReason,
         appointmentDate:null,
-        customerPictures:[],
         consultationEmpId:null,
         acceptConsulting:''
       }
       api.contentPlateFormAddOrder(data).then((res) => {
         if(res.code === 0){
             this.$toast("录单成功");
-            this.$router.push('/orderList')
+            // this.$router.push('/orderList')
+            this.$router.push('/noDispatch')
             sessionStorage.removeItem('anchorFormName')
             sessionStorage.removeItem('anchorFormId')
             sessionStorage.removeItem('orderFormName')

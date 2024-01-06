@@ -103,6 +103,8 @@ export default {
         phone:customerMessage.phone,
         sex:customerMessage.sex,
         wechatNumber:customerMessage.wechatNumber,
+        customerPictures:customerMessage.imgList,
+
         // 订单信息
         addOrderPirce:Number(orderMessage.addOrderPrice), 
         appointmentHospitalId:Number(orderMessage.appointmentHospitalId),
@@ -111,13 +113,15 @@ export default {
         depositAmount:Number(orderMessage.depositAmount),
         orderSource:Number(orderMessage.orderSource),
         orderType:Number(orderMessage.orderType),
+        getCustomerType:Number(orderMessage.getCustomerType),
+        customerSource:Number(orderMessage.customerSource),
+        customerType:Number(orderMessage.customerType),
         // 其他内容
         consultingContent:otherContents.consultingContent,
         lateProjectStage:otherContents.lateProjectStage,
         remark:otherContents.remark,
         unSendReason:otherContents.unSendReason,
         appointmentDate:null,
-        customerPictures:[],
         consultationEmpId:0,
         acceptConsulting:''
       }

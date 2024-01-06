@@ -87,7 +87,7 @@ export default {
 </script>
 <style lang="less" scoped>
 /deep/.van-list{
-  min-height: calc(100vh - 100px); overflow: hidden;
+  min-height: 300px; overflow: hidden;
 }
 .list_wrap {
   .item {

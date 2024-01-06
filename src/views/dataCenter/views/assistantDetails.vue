@@ -14,9 +14,13 @@
             </div>
         </div>
         <div class="rate">
-            <div class="rate_item">
+             <div class="rate_item">
                 <div class="rate_num">{{performance.visitNumRatio}}%</div>
-                <div>上门率</div>
+                <div>总上门率</div>
+            </div>
+            <div class="rate_item">
+                <div class="rate_num">{{performance.thisMonthSendThisMonthVisitNumRatio}}%</div>
+                <div>当月上门率</div>
             </div>
             <div class="rate_item">
                 <div  class="rate_num">{{performance.newCustomerPerformance}}w</div>
@@ -55,45 +59,56 @@
             <div class="pit_item">
                 <div class="pit"></div>
                 <div class="pit_content1">
-                    <div>独立业绩</div>
-                    <div class="pit_num">{{performance.notAcompanyingPerformance}}w</div>
-                </div>
-            </div>
-            <div class="pit_item">
-                <div class="pit"></div>
-                <div class="pit_content1">
                     <div>陪诊业绩</div>
                     <div class="pit_num">{{performance.acompanyingPerformance}}w</div>
                 </div>
             </div>
             <div class="pit_item">
                 <div class="pit"></div>
+                <div class="pit_content1">
+                    <div>独立业绩</div>
+                    <div class="pit_num">{{performance.notAcompanyingPerformance}}w</div>
+                </div>
+            </div>
+            <div class="pit_item">
+                <div class="pit"></div>
                 <div class="pit_content2">
-                    <div>独立/陪诊占比</div>
+                    <div>陪诊/独立占比</div>
                     <div class="pit_num">{{performance.isAcompanyingCompare}}</div>
                 </div>
             </div>
         </div>
         <div class="pit_con">
+            
             <div class="pit_item">
                 <div class="pit"></div>
                 <div class="pit_content3">
-                    <div>199业绩</div>
-                    <div class="pit_num">{{performance.havingPricePerformance}}w</div>
-                </div>
-            </div>
-            <div class="pit_item">
-                <div class="pit"></div>
-                <div class="pit_content3">
-                    <div>0元业绩</div>
+                    <div>潜在业绩</div>
                     <div class="pit_num">{{performance.zeroPerformance}}w</div>
                 </div>
             </div>
             <div class="pit_item">
                 <div class="pit"></div>
+                <div class="pit_content3">
+                    <div>有效业绩</div>
+                    <div class="pit_num">{{performance.havingPricePerformance}}w</div>
+                </div>
+            </div>
+            <div class="pit_item">
+                <div class="pit"></div>
                 <div class="pit_content4">
-                    <div>199/0元占比</div>
+                    <div>潜在/有效占比</div>
                     <div class="pit_num">{{performance.zeroAndHavingPriceCompare}}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pit_con2">
+            <div class="pit_item">
+                <div class="pit"></div>
+                <div class="pit_content">
+                    <div>当月派单当月成交业绩</div>
+                    <div class="pit_num">{{performance.thisMonthSendThisMonthDealPerformance}}w</div>
                 </div>
             </div>
         </div>
@@ -110,8 +125,8 @@
             <div class="pit_item">
                 <div class="pit"></div>
                 <div class="pit_content">
-                    <div>当月派单当月成交业绩</div>
-                    <div class="pit_num">{{performance.thisMonthSendThisMonthDealPerformance}}w</div>
+                    <div>当月/历史派单当月成交业绩</div>
+                    <div class="pit_num">{{performance.historyAndThisMonthCompare}}</div>
                 </div>
             </div>
         </div>
@@ -119,8 +134,8 @@
             <div class="pit_item">
                 <div class="pit"></div>
                 <div class="pit_content">
-                    <div>历史/当月派单当月成交业绩</div>
-                    <div class="pit_num">{{performance.historyAndThisMonthCompare}}</div>
+                    <div>辅助订单业绩</div>
+                    <div class="pit_num">{{performance.supportPerformance ? performance.supportPerformance : 0}}w</div>
                 </div>
             </div>
         </div>
@@ -154,18 +169,22 @@ export default{
         }
     },
     methods:{
+        // 返回上一页
         backClick(){
             this.$router.go(-1)
         },
+        // 时间选择
         timeClick(){
             this.currentDate = new Date(this.$moment(this.time).format("YYYY-MM-DD"))
             this.timeModel = true
         },
+        // 时间确认
         timeConfirm(value){
             this.time = this.$moment(value).format("YYYY-MM")
             this.timeModel = false
             this.getcustomerServiceDetailPerformanceById()
         },
+        // 根据客服id获取助理详细业绩
         getcustomerServiceDetailPerformanceById(){
             const data ={
                 year:this.$moment(this.time).format("YYYY"),
@@ -221,7 +240,7 @@ export default{
         }
     }
     .rate{
-        width: 80%;
+        width: 100%;
         display: flex;
         justify-content: space-between;
         text-align: center;
@@ -231,12 +250,13 @@ export default{
             padding: 0 10px;
             box-sizing: border-box;
             flex:1;
-            font-size: 14px;
+            font-size: 12px;
             text-align: center;
             color: #636262;
             .rate_num{
-                font-size: 18px;
+                font-size: 14px;
                 color: #636262;
+                font-weight: bold;
             }
         }
         .rate_item:last-child{

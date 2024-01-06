@@ -76,21 +76,21 @@ export default{
             }
             api.TotalPerformance(data).then((res)=>{
                 if(res.code === 0){
-                    const {selfLiveAnchorPerformanceRatio,otherLiveAnchorPerformanceRatio,commercePerformanceRatio,otherPerformanceRatio} = res.data.performance
+                    const {selfLiveAnchorPerformance,otherLiveAnchorPerformance,commercePerformance,otherPerformance} = res.data.performance
                     this.performance = res.data.performance
                     let proportion = []
                     proportion.push({
                         name:'自播达人',
-                        value:selfLiveAnchorPerformanceRatio
+                        value:selfLiveAnchorPerformance
                     },{
                         name:'合作达人',
-                        value:otherLiveAnchorPerformanceRatio
+                        value:otherLiveAnchorPerformance
                     },{
                         name:'带货业绩',
-                        value:commercePerformanceRatio
+                        value:commercePerformance
                     },{
                         name:'其他业绩',
-                        value:otherPerformanceRatio
+                        value:otherPerformance
                     })
                     this.proportion = proportion
                 }

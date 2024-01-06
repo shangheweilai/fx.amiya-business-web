@@ -12,11 +12,11 @@
         </div>
        <div v-if="active == 1"  class="right">
             <!-- 分组 -->
-            <divideIntoGroups ref="divideIntoGroups"/>
+            <divideIntoGroups ref="divideIntoGroups" />
         </div>
          <div v-if="active == 2"  class="right">
             <!-- 助理 -->
-            <assistant ref="assistant"/>
+            <assistant ref="assistant" />
         </div>
         <div v-if="active == 3"  class="right">
             <!-- 机构 -->
@@ -25,6 +25,7 @@
     </div>
 </template>
 <script>
+import  * as api from "@/api/order.js";
 import corporation from "./corporation.vue"
 import divideIntoGroups from "./divideIntoGroups.vue"
 import assistant from "./assistant.vue"
@@ -56,10 +57,13 @@ export default{
                     id:3,
                     name:'机构'
                 },
-            ]
+            ],
+            // 获取主播
+            liveAnchorBaseInfos:[]
         }
     },
     methods:{
+        
         navClick(value){
             this.active = value
             sessionStorage.setItem('leftActive',value)
@@ -112,7 +116,8 @@ export default{
     .left{
         width: 60px;
         height: 100vh;
-        background: linear-gradient(#5492FE,#f5f5f5);
+        // background: linear-gradient(#5492FE,#f5f5f5);
+        background:#709EF7;
         // border-radius: 10px;
         position: fixed;
         left: 0;

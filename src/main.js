@@ -9,12 +9,17 @@ import '@/assets/js/font.js'
 import 'vant/lib/index.css';
 import "./utils/requestIntercept";
 import "vue-easytable/libs/theme-default/index.css";
+// 表格
 import { VeTable } from "vue-easytable";
 import VueClipboard from 'vue-clipboard2'
+// 浏览大图
 import Viewer from 'v-viewer'
 import 'viewerjs/dist/viewer.css'
 
 Vue.config.productionTip = false
+
+Vue.prototype.$axios = axios
+
 
 // import Vconsole from 'vconsole';
 // const vConsole = new Vconsole()
@@ -25,13 +30,13 @@ Vue.config.productionTip = false
  */
 import moment from "moment";
 Vue.prototype.$moment = moment;
-Vue.use(Viewer)
+// Vue.use(Viewer)
 Vue.use(VueClipboard)
 Vue.use(VeTable);
 Vue.use(Vant);
-Vue.use(CellGroup);
 Vue.use(Toast);
 Vue.use(Dialog);
+Vue.use(CellGroup);
 Vue.use(Empty);
 Vue.use(Button);
 Vue.use(Field);
@@ -41,6 +46,11 @@ Vue.use(Row);
 Vue.use(Col);
 Vue.use(Checkbox);
 Vue.use(CheckboxGroup);
+Vue.use(Viewer, {
+    defaultOptions: {
+        zIndex: 9999, // 这里设置层级高度
+    }
+})
 
 function isMobile() {
     let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
@@ -96,7 +106,7 @@ if (process.env.NODE_ENV === 'production') {
                     } else if (GetQueryString('code')) {
                         // console.log(GetQueryString('code'), 'code')
                         axios({
-                                url: `${process.env.VUE_APP_BASE_URL}/Auth/businessWechatAuth`,
+                                url: `${process.env.VUE_APP_BASE_URL}/businessWechat/Auth/businessWechatAuth`,
                                 method: "get",
                                 params: {
                                     code: GetQueryString('code'),

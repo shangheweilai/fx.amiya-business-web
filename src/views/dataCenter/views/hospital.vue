@@ -1,42 +1,58 @@
 <template>
     <div>
-        <div class="contents" v-if="isLoading == false">
+        <div class="contents" v-if="isLoading == false" :style="{height:performance.length<=3 ? '100vh' : 'auto'}">
             <div class="time" @click="timeClick">
                 <span>{{time}}</span>
                 <i class="iconfont icon-xiangxia time_icon"></i>
             </div>
-            <div class="chart_content" v-if="performance">
+            <div class="chart_content" v-if="performance.length>1">
                 <hospitalChart :performance="performance"/>
             </div>
 
-            <div class="list">
+            <div class="list" v-if="performance.length>1">
                 <div  v-for="(item, index) in performance" :key="index">
                     <div class="item">
                         <img :src="item.hospitalLogo" alt="" class="img" v-if="item.hospitalLogo">
                         <div class="item_right">
                             <div class="right_top">
                                 <span class="hospital">{{item.hospitalName}}</span>
-                                <span class="num">{{item.totalAchievement + 'w'}}</span>
+                                <!-- <span class="num">{{item.totalAchievement + 'w'}}</span> -->
                             </div>
                             <div class="achievement">
-                                <div class="achievement_l">
-                                    <div  class="achi_l">新客业绩 {{item.newCustomerAchievement + 'w'}}</div>
-                                    <div>老客业绩 {{item.oldCustomerAchievement  + 'w'}}</div>
+                                <div class="achievement_left">
+                                    <div class="achievement_l">
+                                        <span>当日 <span  class="num"> {{item.todayTotalAchievement + 'w'}}</span></span>
+                                        <div  class="achi_l">新客 {{item.todayNewCustomerAchievement + 'w'}}</div>
+                                        <div>老客 {{item.todayOldCustomerAchievement  + 'w'}}</div>
+                                    </div>
+                                    <div class="achievement_r">
+                                        <div  class="achi_l">占比 {{item.todayNewOrOldCustomerRate}}</div>
+                                        <div>贡献 {{item.todayTotalAchievementRatio}}%</div>
+                                    </div>
                                 </div>
-                                <div class="achievement_r">
-                                    <div  class="achi_l">占比 {{item.newOrOldCustomerRate}}</div>
-                                    <div>贡献 {{item.totalAchievementRatio}}</div>
+                                <div class="achievement_right">
+                                    <span>当月 <span  class="num"> {{item.totalAchievement + 'w'}}</span></span>
+                                    <div class="achievement_l">
+                                        <div  class="achi_l">新客 {{item.newCustomerAchievement + 'w'}}</div>
+                                        <div>老客 {{item.oldCustomerAchievement  + 'w'}}</div>
+                                    </div>
+                                    <div class="achievement_r">
+                                        <div  class="achi_l">占比 {{item.newOrOldCustomerRate}}</div>
+                                        <div>贡献 {{item.totalAchievementRatio}}%</div>
+                                    </div>
                                 </div>
+                                
                             </div>
+                            
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="no_data" >没有更多了</div>
+            <div class="no_data" v-if="performance.length>1">没有更多了</div>
             <van-popup v-model="timeModel" position="bottom" style="height: 50%" round >
                 <van-datetime-picker
                     v-model="currentDate"
-                    type="year-month"
+                    type="date"
                     title="选择年月"
                     :min-date="minDate"
                     :max-date="maxDate"
@@ -46,8 +62,9 @@
             </van-popup> 
         </div>
         <!-- <van-loading size="24px" vertical text-color="#0094ff" color="#0094ff" style="padding:100px 0 0 50px" v-else>加载中...</van-loading> -->
-        <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:linear-gradient(#8ab4fe,#f5f5f5);margin-left:60px" v-else>加载中...</van-loading>
+        <van-loading size="24px" vertical text-color="#fff" color="#fff" style="height:100vh;padding:140px 0 0 0px;background:#C0D6FE;margin-left:60px" v-else>加载中...</van-loading>
     </div>
+    <!-- <div v-else class="nodate">暂无数据</div> -->
 </template>
 <script>
 import  * as api from "@/api/order.js";
@@ -60,10 +77,10 @@ export default {
     data(){
         return{
             performance:[],
-            time:this.$moment().format("YYYY-MM"),
+            time:this.$moment().format("YYYY-MM-DD"),
             minDate: new Date(2020, 0, 1),
             maxDate: new Date(2025, 10, 1),
-            currentDate:  this.$moment().format("YYYY-MM"),
+            currentDate:  this.$moment().format("YYYY-MM-DD"),
             timeModel:false,
             isLoading:false
         }
@@ -74,14 +91,15 @@ export default {
             this.timeModel = true
         },
         timeConfirm(value){
-            this.time = this.$moment(value).format("YYYY-MM")
+            this.time = this.$moment(value).format("YYYY-MM-DD")
             this.timeModel = false
             this.gethospitalPerformance()
         },
         gethospitalPerformance(){
             const data = {
-                year:this.$moment(this.time).format("YYYY"),
-                month:this.$moment(this.time).format("MM")
+                // year:this.$moment(this.time).format("YYYY"),
+                // month:this.$moment(this.time).format("MM")
+                date:this.$moment(this.time).format("YYYY-MM-DD")
             }
             this.isLoading =true
              api.hospitalPerformance(data).then((res)=>{
@@ -102,7 +120,7 @@ export default {
     padding-left: 60px;
     box-sizing: border-box;
     width: 100%;
-    background:linear-gradient(#8ab4fe,#f5f5f5);
+    background:#C0D6FE;
     // height: 100vh;
     
     .time{
@@ -147,7 +165,8 @@ export default {
                     justify-content: space-between;
                     align-items: center;
                     .hospital{
-                        width: 150px;
+                        // width: 150px;
+                        width: 170px;
                         overflow: hidden; /*超出隐藏*/
                         text-overflow: ellipsis;/*隐藏后添加省略号*/
                         white-space: nowrap;/*强制不换行*/
@@ -163,14 +182,15 @@ export default {
                 .achievement{
                     margin-top: 6px;
                     display: flex;
-                    justify-content: space-between;
+                    justify-content: space-around;
                     width: 100%;
                     color: #767474;
                     font-size: 12px;
-                    .achi_l{
-                        margin-bottom: 5px;
+                    .achievement_right,.achievement_left{
+                        .num{
+                            color: #5492FE;
+                        }
                     }
-
                 }
 
             }
@@ -184,5 +204,15 @@ export default {
         padding-bottom: 10px;
         box-sizing: border-box;
     }
+}
+.nodate{
+    padding-left: 60px;
+    box-sizing: border-box;
+    width: 100%;
+    background:linear-gradient(#8ab4fe,#f5f5f5);
+    height: 100vh;
+    text-align: center;
+    color: #767474;
+    padding-top: 20px;
 }
 </style>
