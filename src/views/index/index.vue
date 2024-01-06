@@ -1,11 +1,11 @@
 <template>
   <div class="content">
     <!-- 123123 -->
-    
+
     <van-list
       v-model="loading"
       :finished="finished"
-      finished-text="没有更多了"
+      finished-text="没有更多了1"
       @load="onLoad"
     >
       <ve-table
