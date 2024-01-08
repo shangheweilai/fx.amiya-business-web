@@ -191,7 +191,7 @@
             </div>
         </div>
 
-        <!-- 数据诊断弹窗123 -->
+        <!-- 数据诊断弹窗 -->
         <van-popup v-model="diagnosisModel"  style="width:90%">
             <div class="diagnosis_con">
                 <div class="rule_title">数据诊断</div>
