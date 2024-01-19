@@ -24,7 +24,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="button" @click="$router.push({path:'/naturalSeeding',query:{active:0}})">查看详情</div>
+                <div class="button" @click="readSelfLiveAnchorDataDetal">查看详情</div>
             </van-tab>
             <van-tab title="合作达人">
                 <div class="nav">
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="button"  @click="$router.push({path:'/performanceDetail',query:{active:1}})">查看详情</div>
+                <div class="button"  @click="readCooperateLiveAnchorDataDetail">查看详情</div>
             </van-tab>
             <van-tab title="带货板块">
                 <div class="nav">
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="button" @click="$router.push({path:'/commerce'})">查看详情</div>
+                <div class="button" @click="readTakeGoodsDataDetail">查看详情</div>
             </van-tab>
             <van-tab title="其他收入">
                 <div class="nav">
@@ -113,12 +113,37 @@ export default{
     data(){
         return{
             active:0,
+            
         }
     },
     methods:{
         detail(){
             this.$toast('敬请期待！')
-        }
+        },
+        // 自播达人
+        readSelfLiveAnchorDataDetal(){
+            if(sessionStorage.getItem('readSelfLiveAnchorData') == 'true'){
+                this.$router.push({path:'/naturalSeeding',query:{active:0}})
+            }else{
+                this.$toast('您当前的角色暂时无法查看，如需查看请联系管理员')
+            }
+        },
+        // 合作达人
+        readCooperateLiveAnchorDataDetail(){
+            if(sessionStorage.getItem('readCooperateLiveAnchorData') == 'true'){
+                this.$router.push({path:'/performanceDetail',query:{active:1}})
+            }else{
+                this.$toast('您当前的角色暂时无法查看，如需查看请联系管理员')
+            }
+        },
+        // 带货板块
+        readTakeGoodsDataDetail(){
+            if(sessionStorage.getItem('readTakeGoodsData') == 'true'){
+                this.$router.push({path:'/commerce'})
+            }else{
+                this.$toast('您当前的角色暂时无法查看，如需查看请联系管理员')
+            }
+        },
     }
 }
 </script>

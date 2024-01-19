@@ -320,6 +320,7 @@ export default{
         }
         .ph_img{
             width: 50px;
+            height:65px;
         }
         
     }
