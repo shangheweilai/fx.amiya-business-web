@@ -58,36 +58,12 @@
         <van-popup v-model="duplicateCheckModel" position="bottom" class="dispatch_content" round :close-on-click-overlay="false">
             <div class="phone_title">请输入手机号进行查询</div>
             <van-field v-model="phone"  maxlength="11"  />
-
-            <!-- <div v-if="CustomerServiceNameByPhone">
-                <div v-if="CustomerServiceNameByPhone == '未绑定' || employeeName == CustomerServiceNameByPhone" class="green">该顾客手机号是新顾客或已绑定在您的账号下，可按照正常流程进行操作</div>
-                <div v-else class="ts red">该顾客手机号已绑定了啊美雅客服，若仍需要录单，您可在管理端向主管提交录单申请！</div>
-            </div>
-            <div class="ts" >温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
-            <div class="bottom">
-                <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
-                <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">下一步</van-button>
-            </div> -->
-            <div v-if="checkStateTexts == '没数据'">
-                <div v-if="CustomerServiceNameByPhone">
-                    <div v-if="CustomerServiceNameByPhone == '未绑定' || employeeName == CustomerServiceNameByPhone" >
-                        <div class="green">该顾客手机号是新顾客或已绑定在您的账号下，可按照正常流程进行操作</div>
-                        <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
-                    </div>
-                    <div v-else>
-                        <!-- <div class="red">该顾客手机号已绑定了 {{CustomerServiceNameByPhone}}，若仍需要录单，您可以向主管提交录单申请！</div>  -->
-                        <div class="red">该顾客手机号已绑定了啊美雅客服，若仍需要录单，您可在管理端向主管提交录单申请！</div> 
-                        <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
-                        <!-- <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
-                        <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">确认</van-button> -->
-                    </div>
-                </div>
-            </div>
-            <div v-else>
-                <div class="red" v-if="checkStateTexts == '未审核'">该订单已在录单申请列表进行申请，请等待审核通过后录单！</div>
-                <div class="red" v-else-if="checkStateTexts == '审核通过'">该订单已在录单申请列表进行申请，请在录单申请中录单！</div>
-                <div class="ts">温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
-            </div>
+                        <div class="green" v-if="checkStateTexts == '未绑定或者是与登录id一样'">该顾客手机号是新顾客或已绑定在您的账号下，可按照正常流程进行操作</div>
+                        <div class="red" v-else-if="checkStateTexts == '绑定在别人名下'">该顾客手机号已绑定了啊美雅客服，若仍需要录单，您可在管理端向主管提交录单申请！</div> 
+                        <div class="red" v-else-if="checkStateTexts == '未审核'">该订单已在录单申请列表进行申请，请等待审核通过后录单！</div>
+                        <div class="red" v-else-if="checkStateTexts == '审核通过'">该订单已在录单申请列表进行申请(审核通过)，请在录单申请中录单！</div>
+                        <div class="red" v-else-if="checkStateTexts == '审核不通过'">该订单已在录单申请列表进行申请，当前审核不通过，请与主管确认数据信息是否正常！</div>
+                        <div class="ts" >温馨提示：查重规则根据该顾客手机号在系统中进行检索，最终反馈结果以系统为准</div>
             <div class="bottom">
                 <van-button round block type="default"  class="button" @click="cancel">取消</van-button>
                 <van-button round block type="info"  class="button" @click="duplicateCheck" :disabled="isFlag == false">下一步</van-button>
@@ -222,7 +198,103 @@ export default {
                 return false;
                 }
             }
-            this.getbyPhoneContentPlatFormOrderAddWork()
+            this.getIsCustomer()
+            // this.getbyPhoneContentPlatFormOrderAddWork()
+        },
+        // 先根据手机号查询是否绑定客服
+        getIsCustomer(){
+            const data ={
+                phone:this.phone
+            }
+            this.CustomerPhone = this.phone
+            this.isFlag= true
+            orderApi.getCustomerServiceNameByPhone(data).then(res=>{
+                if(res.code === 0){
+                    const {CustomerServiceNameByPhone} = res.data
+                    this.CustomerServiceNameByPhone = CustomerServiceNameByPhone
+                    if(CustomerServiceNameByPhone == '未绑定' || sessionStorage.getItem('employeeName') == CustomerServiceNameByPhone){
+                        this.isFlag= false
+                        this.checkStateTexts = '未绑定或者是与登录id一样'
+                        setTimeout(()=>{
+                            this.$router.push({
+                                path:'/recording',
+                                query:{
+                                    phone:this.CustomerPhone,
+                                    belongEmpId:CustomerServiceNameByPhone == '未绑定' ? sessionStorage.getItem('employeeName') : CustomerServiceNameByPhone
+                                }
+                            })
+                        },3000)
+                    }
+                    else{
+                        // 录单申请
+                        this.isFlag= false
+                        orderApi.byPhoneContentPlatFormOrderAddWork(this.phone).then((res) => {
+                            if(res.code === 0){
+                            const {id,checkStateText} = res.data.contentPlatFormOrderAddWork
+                            
+                            if(!id){
+                                this.checkStateTexts = '绑定在别人名下'
+                                setTimeout(()=>{
+                                    this.$router.push({
+                                        path:'/recordingApplicationList',
+                                        query:{
+                                            checkStateText:this.checkStateTexts,
+                                            phone:this.CustomerPhone,
+                                        }
+                                    })
+                                },3000)
+                                return
+                            }else{
+                                if(checkStateText == '未审核'){
+                                this.checkStateTexts = checkStateText
+                                this.isFlag= false
+                                setTimeout(()=>{
+                                    this.$router.push({
+                                        path:'/recordingApplicationList',
+                                        query:{
+                                            checkStateText:checkStateText,
+                                            phone:this.CustomerPhone,
+                                        }
+                                    })
+                                },3000)
+                                return
+                                }else if(checkStateText == '审核通过'){
+                                this.checkStateTexts = checkStateText
+                                this.isFlag= false
+                                setTimeout(()=>{
+                                    this.$router.push({
+                                        path:'/recordingApplicationList',
+                                        query:{
+                                            checkStateText:checkStateText,
+                                            phone:this.CustomerPhone,
+                                        }
+                                    })
+                                },3000)
+                                return
+                                }
+                                else if(checkStateText == '审核不通过'){
+                                this.checkStateTexts = checkStateText
+                                this.isFlag= false
+                                setTimeout(()=>{
+                                    this.$router.push({
+                                        path:'/recordingApplicationList',
+                                        query:{
+                                            checkStateText:checkStateText,
+                                            phone:this.CustomerPhone,
+                                        }
+                                    })
+                                },3000)
+                                
+                                return
+                                }
+                            }
+                            }
+                        })
+                    }
+                }else{
+                    this.$toast(res.msg)
+                }
+            })
         },
         // 根据录单申请手机号获取录单申请信息
         getbyPhoneContentPlatFormOrderAddWork(){
@@ -309,44 +381,6 @@ export default {
                 }
             })
         },
-        // 重单查询
-    //     duplicateCheck(){
-    //         if (!this.phone) {
-    //             this.$toast("请输入客户手机号");
-    //             return;
-    //         }
-    //         if (this.phone) {
-    //             if (!/^1[3456789]\d{9}$/.test(this.phone)) {
-    //                 this.$toast("请输入正确的手机号");
-    //                 return false;
-    //             }
-    //         }
-    //         const data ={
-    //             phone:this.phone
-    //         }
-    //         this.CustomerPhone = this.phone
-    //         this.isFlag= true
-    //         api.getCustomerServiceNameByPhone(data).then(res=>{
-    //             if(res.code === 0){
-    //                 const {CustomerServiceNameByPhone} = res.data
-    //                 this.CustomerServiceNameByPhone = CustomerServiceNameByPhone
-    //                 if(CustomerServiceNameByPhone == '未绑定' || sessionStorage.getItem('employeeName') == CustomerServiceNameByPhone){
-    //                     this.isFlag= false
-    //                     setTimeout(()=>{
-    //                         this.$router.push({
-    //                             path:'/recording',
-    //                             query:{
-    //                                 phone:this.CustomerPhone,
-    //                                 belongEmpId:CustomerServiceNameByPhone == '未绑定' ? sessionStorage.getItem('employeeName') : CustomerServiceNameByPhone
-    //                             }
-    //                         })
-    //                     },3000)
-    //                 }
-    //             }else{
-    //                 this.$toast(res.msg)
-    //             }
-    //         })
-    //     }
     },
     created(){
         
