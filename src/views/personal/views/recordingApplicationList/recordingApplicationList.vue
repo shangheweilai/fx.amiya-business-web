@@ -24,9 +24,9 @@
       <van-field
         v-model="form.acceptByName"
         label="接收人"
-        disabled
         placeholder="请选择接收人"
         class="customer_content"
+        disabled
       />
       <van-field
         v-model="form.phone"
@@ -112,18 +112,20 @@
 </template>
 <script>
 import * as api from "@/api/order.js";
+import {processEnv} from "@/http/baseUrl";
 
 export default {
   data() {
     return {
+      processEnv,
       // 录单申请model
       recordApplication: false,
       form: {
         id: "",
         // acceptBy: 104,
         // acceptByName: "虞郑韡",
-        acceptBy: 243,
-        acceptByName: "陈飞",
+        acceptBy: null,
+        acceptByName: "",
         // acceptBy: 220,
         // acceptByName: "张凌玥",
         // acceptBy: 1,
@@ -172,6 +174,21 @@ export default {
     },
   },
   methods: {
+    // 根据职位为客服主管获取录单人信息
+    getPositionEm(){
+      // console.log(processEnv.VUE_APP_BASE_URL)
+      // 14是线上职位id 32是测试职位id
+      const data = {
+        positionId:processEnv.VUE_APP_BASE_URL == 'https://app.ameiyes.com' ? 14 : 32
+      }
+      api.getEmployeeByPositionId(data).then((res) => {
+        if(res.code == 0){
+          this.employeeList = [res.data.employee[0]]
+          this.form.acceptBy = res.data.employee[0].id
+          this.form.acceptByName = res.data.employee[0].name
+        }
+      })
+    },
     // 判断是否是从录单那里跳转过来的
     recordApplicationclick(){
         if(this.$route.query.phone){
@@ -298,6 +315,7 @@ export default {
     }
     this.getHospitalInfo();
     this.getCustomerServiceNameList();
+    this.getPositionEm()
   },
 };
 </script>

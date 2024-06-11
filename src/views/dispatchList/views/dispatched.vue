@@ -185,6 +185,7 @@ export default {
         query: {
           consultatioType: value.consultatioType,
           orderId: value.orderId,
+          encryptPhone:value.encryptPhone
         },
       });
     },

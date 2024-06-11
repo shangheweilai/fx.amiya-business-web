@@ -42,6 +42,21 @@
                 @click="toHospitalDateClick"
                 v-if="form.isToHospital == true"
             />
+            <van-field
+                v-model="form.fansMeetingName"
+                label="粉丝见面会"
+                disabled
+                placeholder="请选择粉丝见面会"
+                class="customer_content"
+                @click="fansMeetingClick"
+                v-if="form.isToHospital == true"
+            />
+            <div style="color:red;font-size:13px;margin-bottom:5px" v-if="form.isToHospital == true">非必要不用选</div>
+            <div class="switch_content">
+            <van-cell center title="是否参加过见面会" class="switch_con" v-if="form.isToHospital == true">
+                <van-switch v-model="form.isFansMeeting" size="24" class="switch_icon" disabled/>
+            </van-cell>
+            </div>
             <div class="switch_content">
             <van-cell center title="是否陪诊" class="switch_con" v-if="form.isToHospital == true">
                 <van-switch v-model="form.isAcompanying" size="24" class="switch_icon" />
@@ -178,6 +193,14 @@
                     @confirm="orderTypesConfirm"
                 />
             </van-popup>
+            <van-popup v-model="model.fansMeetingModel" round position="bottom">
+                <van-picker
+                    show-toolbar
+                    :columns="list.fansMeetingListName"
+                    @cancel="model.fansMeetingModel = false"
+                    @confirm="fansMeetingConfirm"
+                />
+            </van-popup>
             <van-popup v-model="model.toHospitalDateModel" position="bottom" style="height: 50%" round >
                 <van-datetime-picker
                     v-model="currentDate"
@@ -234,6 +257,7 @@
 </template>
 <script>
 import * as api from "@/api/order.js";
+import * as userApi from "@/api/user.js";
 import detail from "./cmoponents/detail.vue"
 export default {
     components:{
@@ -267,6 +291,11 @@ export default {
                 // 到院类型
                 toHospitalType:null,
                 toHospitalTypeName:null,
+                // 粉丝见面会
+                fansMeetingName:'',
+                fansMeetingId:'',
+                // 是否参加过粉丝见面会
+                isFansMeeting:false,
                 // 到院时间
                 toHospitalDate:this.$moment().format("YYYY-MM-DD"),
                 // 成交金额
@@ -286,6 +315,7 @@ export default {
                 dealPerformanceTypeName:null,
                 // 是否陪诊
                 isAcompanying:false,
+
                 // 佣金比例
                 commissionRatio:null,
                 // 三方订单号
@@ -296,14 +326,15 @@ export default {
                 consumptionType:null,
                 consumptionTypeName:null,
                 // 明细
-                addContentPlatFormOrderDealDetailsVoList:[]
+                addContentPlatFormOrderDealDetailsVoList:[],
             },
             // 获取接口数据
             joggle:{
                 // 医院
                 hospitalInfo:[],
                 orderTypes:[],
-                contentPlateFormOrderDealPerformanceType:[]
+                contentPlateFormOrderDealPerformanceType:[],
+                fansMeetingList:[]
             },
             // model
             model:{
@@ -312,14 +343,16 @@ export default {
                 toHospitalDateModel:false,
                 dealDateModel:false,
                 dealPerformanceTypeModel:false,
-                consumptionTypeModel:false
+                consumptionTypeModel:false,
+                fansMeetingModel:false
             },
             // 用于页面展示数据
             list:{
                 hospitalInfoName:[],
                 orderTypesName:[],
                 contentPlateFormOrderDealPerformanceTypeName:[],
-                consumptionTypeListName:[]
+                consumptionTypeListName:[],
+                fansMeetingListName:[],
                 
             },
             // 消费类型
@@ -328,6 +361,40 @@ export default {
 
     },
     methods:{
+        // 粉丝见面会click
+        fansMeetingClick(value){
+            this.model.fansMeetingModel=true
+        },
+        // 解密手机号
+        getDecryptoPhone(){
+            const data = {
+                encryptPhone:this.$route.query.encryptPhone
+            }
+            userApi.decryptoPhone(data).then(res=>{
+                this.form.phone = res.data.phone
+            })
+        },
+        // 是否参加过粉丝见面会
+        getFansMeetingDetailsisAttendClick(value){
+            
+            console.log(this.form.phone)
+            const {lastDealHospitalId,phone,fansMeetingId} = this.form
+            if(!lastDealHospitalId){
+                this.$toast('请先选择到院医院！')
+                return
+            }
+            const data = {
+                id:value,
+                phone:phone,
+                hospitalId:lastDealHospitalId
+            }
+            api.isAttend(data).then(res=>{
+                if(res.code === 0){
+                this.form.isFansMeeting=res.data.isAttend
+
+                }
+            })
+        },
         handle(value){
             this.form.addContentPlatFormOrderDealDetailsVoList = value
         },
@@ -385,6 +452,21 @@ export default {
                         this.form.consumptionTypeName = null
                         // this.model.consumptionTypeModel = false
                     }
+                    return
+                }
+                
+            });
+        },
+        //粉丝见面会确认弹窗
+        fansMeetingConfirm(value){
+            this.form.fansMeetingName = value;
+            this.model.fansMeetingModel = false;
+            
+            // 取id
+            this.joggle.fansMeetingList.map((item) => {
+                if (item.name == value) {
+                    this.form.fansMeetingId = item.id;
+                    this.getFansMeetingDetailsisAttendClick(item.id)
                     return
                 }
                 
@@ -492,7 +574,7 @@ export default {
         },
         submite(){
             const {isFinish,lastDealHospitalId,isToHospital,toHospitalType,toHospitalDate,dealAmount,lastProjectStage,dealPictureUrl,unDealReason,
-            unDealPictureUrl,dealDate,dealPerformanceType,isAcompanying,commissionRatio,otherContentPlatFormOrderId,invitationDocuments,consumptionType,addContentPlatFormOrderDealDetailsVoList
+            unDealPictureUrl,dealDate,dealPerformanceType,isAcompanying,commissionRatio,otherContentPlatFormOrderId,invitationDocuments,consumptionType,addContentPlatFormOrderDealDetailsVoList,fansMeetingId,isFansMeeting
             } = this.form
             if(isToHospital == true){
                 if(!lastDealHospitalId){
@@ -551,7 +633,8 @@ export default {
             otherContentPlatFormOrderId,
             invitationDocuments:invitationDocuments,
             consumptionType,
-            addContentPlatFormOrderDealDetailsVoList:isFinish == false  || dealAmount == 0 ? [] : addContentPlatFormOrderDealDetailsVoList
+            addContentPlatFormOrderDealDetailsVoList:isFinish == false  || dealAmount == 0 ? [] : addContentPlatFormOrderDealDetailsVoList,
+            fansMeetingId:isFansMeeting == true ? fansMeetingId : ''
            }
            if(isFinish == true){
             if(dealAmount == 0){
@@ -607,6 +690,9 @@ export default {
                 this.form.toHospitalTypeName = ''
                 this.form.toHospitalType = null
                 this.form.isAcompanying = false
+                this.form.fansMeetingName = ''
+                this.form.fansMeetingId = ''
+                this.form.isFansMeeting = false
             }
         },
         isFinishClick(value){
@@ -625,6 +711,9 @@ export default {
                 this.form.dealPerformanceType = null 
                 this.form.dealPerformanceTypeName = null 
                 this.form.dealPictureUrl = []
+                this.form.fansMeetingName = ''
+                this.form.fansMeetingId = ''
+                this.form.isFansMeeting = false
             }else{
                 this.form.isToHospital = true
                 this.form.unDealReason = ''
@@ -652,7 +741,9 @@ export default {
             this.form.lastDealHospitalName = value;
             this.model.lastDealHospitalModel = false;
             this.searchKey = ''
-            this.searchColumns = []
+            // this.searchColumns = []
+            this.form.fansMeetingName = ''
+            this.form.fansMeetingId = ''
             // 取id
             this.joggle.hospitalInfo.map((item) => {
                 if (item.name == value) {
@@ -672,7 +763,18 @@ export default {
             
             });
         },
-        
+        // 获取粉丝见面会
+        getValidKeyAndValue() {
+            api.ValidKeyAndValue().then((res) => {
+                this.joggle.fansMeetingList =res.data.fansMeeting;
+                let fansMeetingListName=[]
+                this.joggle.fansMeetingList.map(item=>{
+                    fansMeetingListName.push(item.name)
+                })
+                this.list.fansMeetingListName = fansMeetingListName
+            
+            });
+        },
         confirmFn(value){
             this.form.toHospitalDate = this.$moment(value).format("YYYY-MM-DD");
             this.model.toHospitalDateModel = false;
@@ -714,6 +816,8 @@ export default {
         this.getcontentPlateFormOrderToHospitalTypeList()
         this.getHospitalInfo()
         this.getContentPlatFormOrderDealInfoTypeList()
+        this.getValidKeyAndValue()
+        this.getDecryptoPhone()
     },
      watch: {  //实时监听搜索输入内容
         searchKey: function () {

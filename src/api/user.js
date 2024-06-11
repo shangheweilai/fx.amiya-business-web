@@ -40,3 +40,11 @@ export const updatePassword = (data) => {
         data
     });
 };
+// 解密手机号
+export const decryptoPhone = (params) => {
+    return http({
+        url: `/businessWechat/Customer/decryptoPhone`,
+        method: "get",
+        params
+    });
+};

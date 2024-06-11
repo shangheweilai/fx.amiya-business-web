@@ -407,3 +407,19 @@ export const cooperatehospitalRank = (params) => {
         params
     });
 };
+// 粉丝见面会 下拉框
+export const ValidKeyAndValue = (params) => {
+    return http({
+        url: "/businessWechat/FansMeetingDetails/ValidKeyAndValue",
+        method: "get",
+        params
+    });
+};
+// 是否参加过粉丝见面会
+export const isAttend = (params) => {
+    return http({
+        url: "/businessWechat/FansMeetingDetails/isAttend",
+        method: "get",
+        params
+    });
+};

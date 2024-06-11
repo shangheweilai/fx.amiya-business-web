@@ -37,7 +37,7 @@
         <span>录单申请列表</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
-      <div class="item"  @click="$router.push('/editCustomer')" v-if="isDirector == 'true'">
+      <div class="item"   v-if="isDirector == 'true'"  @click="customerClick">
         <span>修改绑定客服</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
@@ -49,7 +49,7 @@
         <span>客户预约日程</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
-      <div class="item"  @click="$router.push('/hospital')">
+      <div class="item"    @click="hospitalClick">
         <span>医院排名</span>
         <i class="iconfont icon-jinrujiantouxiao icon_jt"></i>
       </div>
@@ -108,6 +108,7 @@ export default {
     };
   },
   methods: {
+    
     // 获取排名
     getMyRank(){
       const data = {
@@ -121,6 +122,24 @@ export default {
           sessionStorage.setItem('rank',res.data.rank)
         }
       })
+    },
+    // 修改绑定客服
+    customerClick(){
+      // 啊美雅职位列表查看主播数据为false时  没有权限查看主播信息页面
+      if(sessionStorage.getItem('readLiveAnchorData') == 'false'){
+        this.$toast('您当前的角色暂时无法进入，请联系管理员进行角色升级！')
+        return
+      }
+      this.$router.push('/editCustomer')
+    },
+    // 医院排名
+    hospitalClick(){
+      // 啊美雅职位列表查看主播数据为false时  没有权限查看主播信息页面
+      if(sessionStorage.getItem('readLiveAnchorData') == 'false'){
+        this.$toast('您当前的角色暂时无法进入，请联系管理员进行角色升级！')
+        return
+      }
+      this.$router.push('/hospital')
     },
     // 预约
     appmentionClick(){
