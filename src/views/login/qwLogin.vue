@@ -32,6 +32,7 @@
 <script>
 import logo from "@/assets/amy.png" 
 import  * as api from "@/api/user.js"
+import axios from "axios";
 
 export default {
   components: {
@@ -43,7 +44,21 @@ export default {
      userInfo: window.sessionStorage.getItem("userInfo") ? JSON.parse(window.sessionStorage.getItem("userInfo")) : {employeeName:"",userId:''},
     };
   },
+  mounted(){
+     this.getIp()
+  },
   methods: {
+    getIp(){
+        // 获取主机名 
+      axios.get('http://localhost:5000/getMyComputerName').then(res=>{
+          const ip = res.data.split("\n",1);
+          sessionStorage.setItem('hostName',ip[0])
+      })
+      // 获取客户端IP 网络IP
+      axios.get('https://myip.ipip.net/').then(res=>{
+          sessionStorage.setItem('ip',res.data)
+      })
+      },
       onSubmit() {
         if(!this.userInfo.employeeName){
           this.$toast({
@@ -61,10 +76,12 @@ export default {
           });
           return
         }
-        
+       
         const data = { 
           userId :this.userInfo.userId,
-          code :this.userInfo.code
+          code :this.userInfo.code,
+          ip:sessionStorage.getItem("ip"),
+          hostName:sessionStorage.getItem("hostName")
         }
         
         api.qwAmiyaLoginByUserIdAndCode(data).then((res)=>{

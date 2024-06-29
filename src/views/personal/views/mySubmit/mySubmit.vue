@@ -49,6 +49,12 @@
                 <div style="color: #000">
                   审核状态：{{ item.checkStateText }}
                 </div>
+                <viewer v-if="item.picture"  baseLayerPicker ="true" >
+                  <img :src="item.picture" alt=""  class="img" >
+                </viewer>
+               
+              </div>
+              <div class="item_top">
                 <div class="hospital_con">
                   <span style="width:70px">审核时间：</span>
                   <div class="hospital2">
@@ -62,6 +68,7 @@
               </div>
               <div class="remark">申请理由：{{ item.sendRemark }}</div>
               <div class="remark">申请备注：{{ item.checkRemark }}</div>
+              
             </div>
 
             <template #right>
@@ -139,6 +146,18 @@
               type="textarea"
               :rows="4"
             />
+            <div class="customer_img">截图</div>
+            <div  class="img_content">
+              <div v-for="(item,index) in form.imgList" :key="index" style="display:flex;">
+                <div class="img_item">
+                  <viewer v-if="item"  baseLayerPicker ="true" >
+                    <img :src="item" alt=""  class="img2" >
+                    </viewer>
+                  <span class="opacity_con"  @click="deletClick2(index)" >x</span>
+                </div>
+              </div>
+              <van-uploader :after-read="afterReadClick" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize" :before-read="beforeRead" v-if="form.imgList.length<1"/>
+            </div>
             <div class="bottom">
               <van-button
                 round
@@ -300,7 +319,9 @@ export default {
         hospitalName: "",
         sendRemark: "",
         addWorkType:null,
-        addWorkTypeName:''
+        addWorkTypeName:'',
+        // 截图
+        imgList:[]
       },
       // 医院模糊搜索
       searchKey: "",
@@ -369,6 +390,35 @@ export default {
     },
   },
   methods: {
+    afterReadClick(file){
+      // 此时可以自行将文件上传至服务器
+      let content = file.file;
+        let data = new FormData();
+        data.append('uploadfile',content);
+        api.upload(data).then(res=>{
+          if(res.code == 0){
+            this.form.imgList.push(res.data.url)
+            return
+          }else if(res.code == 404){
+            this.$toast("上传失败！");
+            return
+          }
+        })
+    },
+    beforeRead(file) {
+      if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
+        this.$toast("请上传正确格式的图片！");
+        return false;
+      }
+      return true;
+    },
+    onOversize(file) {
+      this.$toast("只能上传5M以内的图片！");
+    },
+    deletClick2(index){
+      this.form.imgList.splice(index, 1)
+      console.log(this.form.imgList)
+    },
     // 录单
     addOrder(value){
       this.$toast('请在系统端录单！')
@@ -439,9 +489,10 @@ export default {
       this.transferForm.acceptBy = null
       this.transferForm.acceptByName = ''
       this.transferModel = false
+      this.form.imgList = []
     },
     submite() {
-      const { acceptBy, hospitalId, phone, id, sendRemark,addWorkType } = this.form;
+      const { acceptBy, hospitalId, phone, id, sendRemark,addWorkType,imgList } = this.form;
       if (!acceptBy) {
         this.$toast("请选择接收人");
         return;
@@ -460,7 +511,8 @@ export default {
         acceptBy: Number(acceptBy),
         phone,
         sendRemark: sendRemark,
-        addWorkType
+        addWorkType,
+        picture:imgList[0]
       };
       api.updateContentPlatFormOrderAddWork(data).then((res) => {
         if (res.code === 0) {
@@ -580,6 +632,7 @@ export default {
         this.form.addWorkType = 1;
         this.form.addWorkTypeName = '录单申请';
         this.form.id = value.id;
+        this.form.imgList = !value.picture ? [] : [value.picture];
       }
       
     },
@@ -736,9 +789,11 @@ export default {
 /deep/ .van-radio__label--disabled {
   color: #fff;
 }
+
 .dispatch_content {
-  height: 50%;
+  height: 65%;
   color: #5492fe;
+ 
 }
 .customer_content {
   width: 90%;
@@ -810,6 +865,35 @@ export default {
 
 .list_wrap {
   margin-top: 55px;
+   .customer_img{
+    font-size: 14px;
+    color: rgba(24, 23, 23, 0.685);
+    margin: 10px 0;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+  .img_content{
+    padding: 0 20px;
+    box-sizing: border-box;
+    .img_item{
+      position:relative;
+      margin-right:5px;
+      .img2{
+        width:50px;
+        height:50px;
+      }
+      .opacity_con{
+        background:#000;
+        position:absolute;
+        right:0;
+        top:0;
+        opacity:0.2;
+        padding:1px 4px;
+        box-sizing:border-box;
+        color:#fff
+      }
+    }
+  }
   .item {
     width: 96%;
     background: #e9f3ff;
@@ -819,6 +903,12 @@ export default {
     font-size: 13px;
     padding: 10px;
     box-sizing: border-box;
+    .img{
+      width: 40px;
+      height: 40px;
+      position: fixed;
+      right: 20px;
+    }
     .item_con {
       background-image: url("../../../../assets/right.png");
       background-size: 100% 100%;

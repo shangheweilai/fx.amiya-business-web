@@ -60,6 +60,18 @@
         type="textarea"
         :rows="4"
       />
+      <div class="customer_img">截图</div>
+      <div  class="img_content">
+        <div v-for="(item,index) in form.imgList" :key="index" style="display:flex;">
+          <div class="img_item">
+            <viewer v-if="item"  baseLayerPicker ="true" >
+              <img :src="item" alt=""  class="img" >
+              </viewer>
+            <span class="opacity_con"  @click="deletClick(index)">x</span>
+          </div>
+        </div>
+        <van-uploader :after-read="afterReadClick" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize" :before-read="beforeRead" v-if="form.imgList.length<1"/>
+      </div>
       <div class="bottom">
         <van-button round block type="default" class="button" @click="cancel"
           >取消</van-button
@@ -135,7 +147,9 @@ export default {
         hospitalName: "",
         sendRemark: "",
         addWorkType:1,
-        addWorkTypeName:'录单申请'
+        addWorkTypeName:'录单申请',
+        // 截图
+        imgList:[]
       },
       // 医院模糊搜索
       searchKey: "",
@@ -174,6 +188,34 @@ export default {
     },
   },
   methods: {
+    afterReadClick(file){
+      // 此时可以自行将文件上传至服务器
+      let content = file.file;
+        let data = new FormData();
+        data.append('uploadfile',content);
+        api.upload(data).then(res=>{
+          if(res.code == 0){
+            this.form.imgList.push(res.data.url)
+            return
+          }else if(res.code == 404){
+            this.$toast("上传失败！");
+            return
+          }
+        })
+    },
+    beforeRead(file) {
+      if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
+        this.$toast("请上传正确格式的图片！");
+        return false;
+      }
+      return true;
+    },
+    onOversize(file) {
+      this.$toast("只能上传5M以内的图片！");
+    },
+    deletClick(index){
+      this.form.imgList.splice(index, 1)
+    },
     // 根据职位为客服主管获取录单人信息
     getPositionEm(){
       // console.log(processEnv.VUE_APP_BASE_URL)
@@ -223,9 +265,10 @@ export default {
       this.form.hospitalId = null
       this.form.hospitalName = ''
       this.form.sendRemark = ''
+      this.form.imgList = []
     },
     submite() {
-      const { acceptBy, hospitalId, phone,  sendRemark,addWorkType } = this.form;
+      const { acceptBy, hospitalId, phone,  sendRemark,addWorkType,imgList } = this.form;
       if (!acceptBy) {
         this.$toast("请选择接收人");
         return;
@@ -243,7 +286,8 @@ export default {
         acceptBy: Number(acceptBy),
         phone,
         sendRemark: sendRemark,
-        addWorkType
+        addWorkType,
+        picture:imgList.length == 0 || !imgList ? '' : imgList[0]
       };
       api.addContentPlatFormOrderAddWork(data).then((res) => {
         if (res.code === 0) {
@@ -359,6 +403,35 @@ export default {
         height: 42px;
         margin: 0 auto;
     }
+  }
+  .customer_img{
+    font-size: 14px;
+    color: rgba(24, 23, 23, 0.685);
+    margin: 10px 0;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+  .img_content{
+    padding: 0 20px;
+    box-sizing: border-box;
+    .img_item{
+      position:relative;
+      margin-right:5px;
+      .img{
+        width:50px;
+        height:50px;
+      }
+      .opacity_con{
+        background:#000;
+        position:absolute;
+        right:0;
+        top:0;
+        opacity:0.2;
+        padding:1px 4px;
+        box-sizing:border-box;
+        color:#fff
+      }
     }
+  }
 }
 </style>
