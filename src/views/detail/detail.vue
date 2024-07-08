@@ -59,6 +59,7 @@
         </div>
         <div class="item_f">
           <span>客户来源：{{ $route.query.orderInfo.customerSourceText }}</span>
+          <span>归属部门：{{ $route.query.orderInfo.belongChannelText }}</span>
         </div>
 
       </div>

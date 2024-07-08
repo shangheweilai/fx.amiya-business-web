@@ -104,7 +104,7 @@ export default {
         sex:customerMessage.sex,
         wechatNumber:customerMessage.wechatNumber,
         customerPictures:customerMessage.imgList,
-
+        belongChannel:customerMessage.belongChannel,
         // 订单信息
         addOrderPirce:Number(orderMessage.addOrderPrice), 
         appointmentHospitalId:Number(orderMessage.appointmentHospitalId),

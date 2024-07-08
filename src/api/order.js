@@ -423,3 +423,10 @@ export const isAttend = (params) => {
         params
     });
 };
+// 获取归属部门
+export const shoppingCartGetBelongChannelList = () => {
+    return http({
+        url: "/businessWechat/ShoppingCartRegistration/shoppingCartGetBelongChannelList",
+        method: "get",
+    });
+};

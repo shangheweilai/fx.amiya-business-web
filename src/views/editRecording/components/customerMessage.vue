@@ -55,6 +55,14 @@
         class="customer_content"
         @input="wechatNumberInput"
       />
+      <van-field
+          v-model="form.belongChannel"
+          label="归属部门"
+          disabled
+          placeholder="请选择归属部门"
+          class="customer_content"
+          @click="model.belongChannelModel = true"
+      />
       <div class="customer_img">顾客照片</div>
       <div  class="img_content">
         <div v-for="(item,index) in form2.imgList" :key="index" style="display:flex;">
@@ -103,6 +111,15 @@
         :min-date="minDate"
         :max-date="maxDate"
       />
+      <!-- 归属部门 -->
+      <van-popup v-model="model.belongChannelModel" round position="bottom">
+          <van-picker
+              show-toolbar
+              :columns="list.belongChannelName"
+              @cancel="model.belongChannelModel = false"
+              @confirm="belongChannelConfirm"
+          />
+      </van-popup>
     </div>
     <div class="bottom">
       <van-button round block type="info" class="button" @click="prevStep"
@@ -143,6 +160,8 @@ export default {
         wechatNumber: "",
         // 城市
         city: "",
+        // 归属部门
+        belongChannel:null
       },
       // 用于传给接口id
       form2: {
@@ -160,22 +179,54 @@ export default {
         wechatNumber: "",
         // 城市
         city: "",
-        imgList:[]
+        imgList:[],
+        // 归属部门
+        belongChannel:null
       },
       // 获取接口数据
-      joggle: {},
+      joggle: {
+        belongChannelList:[]
+      },
       // model
       model: {
         sexModel: false,
         birthdayModel: false,
+        belongChannelModel: false,
       },
       // 用于页面展示数据
       list: {
         sexListName: ["男", "女"],
+        belongChannelName:[]
       },
     };
   },
+  mounted(){
+    this.getshoppingCartGetBelongChannelList()
+  },
   methods: {
+    belongChannelConfirm(value){
+        this.form.belongChannel = value;
+        this.model.belongChannelModel = false;
+        // 取id
+        this.joggle.belongChannelList.map((item) => {
+            if (item.name == value) {
+            this.form2.belongChannel = item.id;
+            }
+        });
+    },
+    // 获取归属部门
+    getshoppingCartGetBelongChannelList() {
+        api.shoppingCartGetBelongChannelList().then((res) => {
+          if(res.code == 0){
+            this.joggle.belongChannelList = res.data.belongChannelList
+            let belongChannelListName=[]
+            this.joggle.belongChannelList.map(item=>{
+                belongChannelListName.push(item.name)
+            })
+            this.list.belongChannelName = belongChannelListName
+          }
+        });
+    },
     beforeRead(file) {
       if (!/(jpg|jpeg|png|JPG|PNG)/i.test(file.type)) {
         this.$toast("请上传正确格式的图片！");
@@ -232,6 +283,10 @@ export default {
         this.$toast("请选择性别");
         return;
       }
+      if (this.form2.belongChannel == null ) {
+        this.$toast("请选择归属部门");
+        return;
+      }
       this.$emit("edidActive3", {
         active: 3,
         anchorCustomerServiceMessage: this.form2,
@@ -284,7 +339,7 @@ export default {
     },
   },
   created() {
-    const {customerName,sex,birthday,occupation,wechatNumber,phone,city,customerPictures} = this.$route.query.orderInfo
+    const {customerName,sex,birthday,occupation,wechatNumber,phone,city,customerPictures,belongChannel,belongChannelText} = this.$route.query.orderInfo
     this.form.customerName = customerName
     this.form2.customerName = customerName
     this.form.sex = sex
@@ -300,6 +355,8 @@ export default {
     this.form2.imgList = customerPictures
     this.form.city = city
     this.form2.city = city
+    this.form.belongChannel = belongChannelText
+    this.form2.belongChannel = belongChannel
   },
 };
 </script>
