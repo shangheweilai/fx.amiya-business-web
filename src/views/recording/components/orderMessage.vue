@@ -383,7 +383,11 @@ export default {
         },
         // 客户来源
         getcustomerSourceList() {
-            api.customerSourceList().then((res) => {
+            const data = {
+                contentPlatFormId:JSON.parse(sessionStorage.getItem('anchorFormId')).contentPlateFormId,
+                channel:JSON.parse(sessionStorage.getItem('anchorFormId')).belongChannel
+            }
+            api.customerSourceList(data).then((res) => {
                 this.joggle.getcustomerSourceList =res.data.sourceList;
                 let getcustomerSourceListName=[]
                 this.joggle.getcustomerSourceList.map(item=>{

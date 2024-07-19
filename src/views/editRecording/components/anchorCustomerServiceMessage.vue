@@ -11,6 +11,14 @@
         class="customer_content"
       /> -->
       <van-field
+          v-model="form.belongChannel"
+          label="归属部门"
+          disabled
+          placeholder="请选择归属部门"
+          class="customer_content"
+          @click="belongChannelModel = true"
+      />
+      <van-field
         v-model="form.contentPlateFormId"
         label="主播平台"
         disabled
@@ -73,6 +81,15 @@
         </template>
       </van-picker>
     </van-popup>
+    <!-- 归属部门 -->
+      <van-popup v-model="belongChannelModel" round position="bottom">
+          <van-picker
+              show-toolbar
+              :columns="belongChannelName"
+              @cancel="belongChannelModel = false"
+              @confirm="belongChannelConfirm"
+          />
+      </van-popup>
     <!-- 平台 -->
     <van-popup v-model="contentPlateFormIdModel" round position="bottom">
       <van-picker
@@ -167,6 +184,8 @@ export default {
         hospitalDepartmentId: "",
         // 需求
         goodsId: "",
+        // 归属部门
+        belongChannel:null
       },
       //   用于传给你后端数据
       form2: {
@@ -182,6 +201,8 @@ export default {
         hospitalDepartmentId: "",
         // 需求
         goodsId: "",
+        // 归属部门
+        belongChannel:null
       },
       belongEmpIdModel: false,
       contentPlateFormIdModel: false,
@@ -189,6 +210,7 @@ export default {
       liveAnchorWeChatNoModel: false,
       hospitalDepartmentIdModel: false,
       goodsIdModel: false,
+      belongChannelModel: false,
       // 取名字
       serviceName: [],
       terraceName: [],
@@ -196,6 +218,8 @@ export default {
       liveAnchorWeChatNoName: [],
       hospitalDepartmentName: [],
       goodsName: [],
+      belongChannelName:[],
+      belongChannelList:[],
       // 主播信息参数
       anchorCustomerServiceMessageParams: {
         // 客服
@@ -215,7 +239,7 @@ export default {
   },
   methods: {
     nextStep(){
-        const {belongEmpId,contentPlateFormId,liveAnchorId,liveAnchorWeChatNo,hospitalDepartmentId,goodsId} = this.form2
+        const {belongEmpId,contentPlateFormId,liveAnchorId,liveAnchorWeChatNo,hospitalDepartmentId,goodsId,belongChannel} = this.form2
         if(!belongEmpId){
             this.$toast("请选择绑定客服");
             return
@@ -223,6 +247,10 @@ export default {
         if(!contentPlateFormId){
             this.$toast("请选择主播平台");
             return
+        }
+        if (belongChannel == null ) {
+          this.$toast("请选择归属部门");
+          return;
         }
         if(!liveAnchorId){
             this.$toast("请选择主播IP");
@@ -240,12 +268,37 @@ export default {
             this.$toast("请选择需求");
             return
         }
-        // sessionStorage.setItem('anchorCustomerServiceMessageId',JSON.stringify(this.form2))
-        // sessionStorage.setItem('anchorCustomerServiceMessageName',JSON.stringify(this.form))
+        
         this.$emit('edidActive',{
           active:1,
           anchorCustomerServiceMessage:this.form2
         })
+        sessionStorage.setItem('anchorFormId',JSON.stringify(this.form2))
+        sessionStorage.setItem('anchorFormName',JSON.stringify(this.form))
+    },
+    belongChannelConfirm(value){
+        this.form.belongChannel = value;
+        this.belongChannelModel = false;
+        // 取id
+        this.belongChannelList.map((item) => {
+            if (item.name == value) {
+            this.form2.belongChannel = item.id;
+            }
+        });
+        console.log(this.form2,this.form)
+    },
+    // 获取归属部门
+    getshoppingCartGetBelongChannelList() {
+        api.shoppingCartGetBelongChannelList().then((res) => {
+          if(res.code == 0){
+            this.belongChannelList = res.data.belongChannelList
+            let belongChannelListName=[]
+            this.belongChannelList.map(item=>{
+                belongChannelListName.push(item.name)
+            })
+            this.belongChannelName = belongChannelListName
+          }
+        });
     },
     contentPlateFormIdClick(){
         this.contentPlateFormIdModel = true
@@ -462,7 +515,9 @@ export default {
     this.getCustomerServiceNameList();
     this.getAmiyaHospitalDepartmentLists();
     this.getLiveAnchorWechatInfo()
-    const {belongEmpName,belongEmpId,contentPlateFormId,contentPlateFormName,liveAnchorId,liveAnchorName,liveAnchorWeChatNo,hospitalDepartmentName,hospitalDepartmentId,goodsName,goodsId,liveAnchorBaseWechatId} = this.$route.query.orderInfo
+    this.getshoppingCartGetBelongChannelList()
+    // 获取接口详情
+    const {belongEmpName,belongEmpId,contentPlateFormId,contentPlateFormName,liveAnchorId,liveAnchorName,liveAnchorWeChatNo,hospitalDepartmentName,hospitalDepartmentId,goodsName,goodsId,liveAnchorBaseWechatId,belongChannel,belongChannelText} = this.$route.query.orderInfo
     this.form.belongEmpId = belongEmpName
     this.form2.belongEmpId = belongEmpId
     this.form.contentPlateFormId = contentPlateFormName
@@ -478,6 +533,8 @@ export default {
     // this.getAmiyaGoodsDemandLists(hospitalDepartmentId)
     this.form.goodsId = goodsName
     this.form2.goodsId = goodsId
+    this.form.belongChannel = belongChannelText
+    this.form2.belongChannel = belongChannel
 
     // this.getAmiyaGoodsDemandLists();
     // 用于切到到订单详情时保留之前填写的数据

@@ -11,6 +11,14 @@
         class="customer_content"
       />
       <van-field
+          v-model="form.belongChannel"
+          label="归属部门"
+          disabled
+          placeholder="请选择归属部门"
+          class="customer_content"
+          @click="belongChannelModel = true"
+      />
+      <van-field
         v-model="form.contentPlateFormId"
         label="主播平台"
         disabled
@@ -73,6 +81,15 @@
         </template>
       </van-picker>
     </van-popup>
+    <!-- 归属部门 -->
+      <van-popup v-model="belongChannelModel" round position="bottom">
+          <van-picker
+              show-toolbar
+              :columns="belongChannelName"
+              @cancel="belongChannelModel = false"
+              @confirm="belongChannelConfirm"
+          />
+      </van-popup>
     <!-- 平台 -->
     <van-popup v-model="contentPlateFormIdModel" round position="bottom">
       <van-picker
@@ -169,6 +186,8 @@ export default {
         hospitalDepartmentId: "",
         // 需求
         goodsId: "",
+        // 归属部门
+        belongChannel:''
       },
       //   用于传给你后端数据
       form2: {
@@ -184,6 +203,8 @@ export default {
         hospitalDepartmentId: "",
         // 需求
         goodsId: "",
+        // 归属部门
+        belongChannel:null
       },
       belongEmpIdModel: false,
       contentPlateFormIdModel: false,
@@ -191,6 +212,7 @@ export default {
       liveAnchorWeChatNoModel: false,
       hospitalDepartmentIdModel: false,
       goodsIdModel: false,
+      belongChannelModel: false,
       // 取名字
       serviceName: [],
       terraceName: [],
@@ -198,6 +220,8 @@ export default {
       liveAnchorWeChatNoName: [],
       hospitalDepartmentName: [],
       goodsName: [],
+      belongChannelList:[],
+      belongChannelName:[],
       // 主播信息参数
       anchorCustomerServiceMessageParams: {
         // 客服
@@ -217,11 +241,15 @@ export default {
   },
   methods: {
     nextStep(){
-        const {belongEmpId,contentPlateFormId,liveAnchorId,liveAnchorWeChatNo,hospitalDepartmentId,goodsId} = this.form2
+        const {belongEmpId,contentPlateFormId,liveAnchorId,liveAnchorWeChatNo,hospitalDepartmentId,goodsId,belongChannel} = this.form2
         if(!belongEmpId){
             this.$toast("请选择绑定客服");
             return
         }
+        if (belongChannel == null ) {
+        this.$toast("请选择归属部门");
+        return;
+      }
         if(!contentPlateFormId){
             this.$toast("请选择主播平台");
             return
@@ -250,6 +278,29 @@ export default {
         })
         sessionStorage.setItem('anchorFormName',JSON.stringify(this.form))
         sessionStorage.setItem('anchorFormId',JSON.stringify(this.form2))
+    },
+    // 获取归属部门
+    getshoppingCartGetBelongChannelList() {
+        api.shoppingCartGetBelongChannelList().then((res) => {
+          if(res.code == 0){
+            this.belongChannelList = res.data.belongChannelList
+            let belongChannelListName=[]
+            this.belongChannelList.map(item=>{
+                belongChannelListName.push(item.name)
+            })
+            this.belongChannelName = belongChannelListName
+          }
+        });
+    },
+    belongChannelConfirm(value){
+        this.form.belongChannel = value;
+        this.belongChannelModel = false;
+        // 取id
+        this.belongChannelList.map((item) => {
+            if (item.name == value) {
+            this.form2.belongChannel = item.id;
+            }
+        });
     },
     contentPlateFormIdClick(){
         this.contentPlateFormIdModel = true
@@ -469,6 +520,7 @@ export default {
     this.getCustomerServiceNameList();
     this.getAmiyaHospitalDepartmentLists();
     this.getLiveAnchorWechatInfo()
+    this.getshoppingCartGetBelongChannelList()
     // this.getAmiyaGoodsDemandLists();
     // 用于切到到订单详情时保留之前填写的数据
     // let anchorCustomerServiceMessageId = JSON.parse(sessionStorage.getItem('anchorCustomerServiceMessageId'))
@@ -488,6 +540,7 @@ export default {
       this.form.liveAnchorWeChatNo = anchorFormName.liveAnchorWeChatNo
       this.form.hospitalDepartmentId = anchorFormName.hospitalDepartmentId
       this.form.goodsId = anchorFormName.goodsId
+      this.form.belongChannel = anchorFormName.belongChannel
 
       this.form2.belongEmpId = anchorFormId.belongEmpId
       this.form2.contentPlateFormId = anchorFormId.contentPlateFormId
@@ -495,6 +548,7 @@ export default {
       this.form2.liveAnchorWeChatNo = anchorFormId.liveAnchorWeChatNo
       this.form2.hospitalDepartmentId = anchorFormId.hospitalDepartmentId
       this.form2.goodsId = anchorFormId.goodsId
+      this.form2.belongChannel = anchorFormId.belongChannel
     }
     
   },

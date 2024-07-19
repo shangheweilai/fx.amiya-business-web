@@ -254,7 +254,8 @@ export default {
                 // 客户类型
                 customerType:null,
                 // 客户来源
-                customerSource:null
+                customerSource:null,
+                getcustomerSourceList:[]
             },
             // model
             model:{
@@ -352,6 +353,8 @@ export default {
                 active:2,
                 anchorCustomerServiceMessage:this.form2
             })
+            // sessionStorage.setItem('orderFormName',JSON.stringify(this.form))
+            // sessionStorage.setItem('orderFormId',JSON.stringify(this.form2))
         },
         // 获客方式列表
         getshoppingCartGetCustomerTypeList() {
@@ -379,7 +382,11 @@ export default {
         },
         // 客户来源
         getcustomerSourceList() {
-            api.customerSourceList().then((res) => {
+            const data = {
+                contentPlatFormId:JSON.parse(sessionStorage.getItem('anchorFormId')).contentPlateFormId,
+                channel:JSON.parse(sessionStorage.getItem('anchorFormId')).belongChannel
+            }
+            api.customerSourceList(data).then((res) => {
                 this.joggle.getcustomerSourceList =res.data.sourceList;
                 let getcustomerSourceListName=[]
                 this.joggle.getcustomerSourceList.map(item=>{
@@ -559,8 +566,11 @@ export default {
         this.form2.getCustomerType = getCustomerType
         this.form.customerType = customerTypeText
         this.form2.customerType = customerType
-        this.form.customerSource = customerSourceText
-        this.form2.customerSource = customerSource
+        if(customerSource){
+            this.form.customerSource = customerSourceText
+            this.form2.customerSource = customerSource
+        }
+        
     },
      watch: {  //实时监听搜索输入内容
         searchKey: function () {

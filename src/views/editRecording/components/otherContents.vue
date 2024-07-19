@@ -86,6 +86,13 @@ export default {
         anchorCustomerServiceMessage: this.form,
       });
       const {anchorCustomerServiceMessage,customerMessage,orderMessage,otherContents} = this.message
+
+      sessionStorage.setItem('otherForm',JSON.stringify(this.form))
+      let anchorFormId = JSON.parse(sessionStorage.getItem('anchorFormId'))
+      // let orderFormId = JSON.parse(sessionStorage.getItem('orderFormId'))
+      // let customerFormId = JSON.parse(sessionStorage.getItem('customerFormId'))
+      // let otherForm = JSON.parse(sessionStorage.getItem('otherForm'))
+
       const data = {
         id:this.$route.query.orderInfo.id,
         // 主播客服数据
@@ -95,6 +102,8 @@ export default {
         hospitalDepartmentId:anchorCustomerServiceMessage.hospitalDepartmentId,
         liveAnchorId:Number(anchorCustomerServiceMessage.liveAnchorId),
         liveAnchorWeChatNo:anchorCustomerServiceMessage.liveAnchorWeChatNo,
+        belongChannel:anchorFormId.belongChannel,
+
         // 客户信息
         birthday:customerMessage.birthday ? customerMessage.birthday : null,
         city:customerMessage.city,
@@ -104,7 +113,6 @@ export default {
         sex:customerMessage.sex,
         wechatNumber:customerMessage.wechatNumber,
         customerPictures:customerMessage.imgList,
-        belongChannel:customerMessage.belongChannel,
         // 订单信息
         addOrderPirce:Number(orderMessage.addOrderPrice), 
         appointmentHospitalId:Number(orderMessage.appointmentHospitalId),

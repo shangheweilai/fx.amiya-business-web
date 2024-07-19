@@ -368,10 +368,11 @@ export const customerTypeList = () => {
     });
 };
 // 客户来源
-export const customerSourceList = () => {
+export const customerSourceList = (params) => {
     return http({
         url: `/businessWechat/ShoppingCartRegistration/customerSourceList`,
         method: "get",
+        params
     });
 };
 
