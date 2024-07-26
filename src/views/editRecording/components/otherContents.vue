@@ -4,10 +4,19 @@
     <div>
       <van-field
         v-model="form.consultingContent"
-        label="咨询内容"
-        placeholder="请输入咨询内容"
+        label="主派咨询内容"
+        placeholder="请输入主派咨询内容"
         class="customer_content"
         @input="consultingContentInput"
+        type="textarea"
+        :rows="4"
+      />
+      <van-field
+        v-model="form.consultingContent2"
+        label="次派咨询内容"
+        placeholder="请输入次派咨询内容"
+        class="customer_content"
+        @input="consultingContentInput2"
         type="textarea"
         :rows="4"
       />
@@ -63,6 +72,7 @@ export default {
       form: {
         // 咨询内容
         consultingContent: "",
+        consultingContent2: "",
         // 未派单原因
         unSendReason: "",
         // 后期铺垫
@@ -126,6 +136,7 @@ export default {
         customerType:Number(orderMessage.customerType),
         // 其他内容
         consultingContent:otherContents.consultingContent,
+        consultingContent2:otherContents.consultingContent2,
         lateProjectStage:otherContents.lateProjectStage,
         remark:otherContents.remark,
         unSendReason:otherContents.unSendReason,
@@ -146,6 +157,9 @@ export default {
     consultingContentInput(value) {
       this.form.consultingContent = value;
     },
+    consultingContentInput2(value) {
+      this.form.consultingContent2 = value;
+    },
     unSendReasonInput(value) {
       this.form.unSendReason = value;
     },
@@ -158,8 +172,9 @@ export default {
     
   },
   created() {
-    const {consultingContent,unSendReason,lateProjectStage,remark} = this.$route.query.orderInfo
+    const {consultingContent,unSendReason,lateProjectStage,remark,consultingContent2} = this.$route.query.orderInfo
     this.form.consultingContent = consultingContent
+    this.form.consultingContent2 = consultingContent2
     this.form.unSendReason = unSendReason
     this.form.lateProjectStage = lateProjectStage
     this.form.remark = remark

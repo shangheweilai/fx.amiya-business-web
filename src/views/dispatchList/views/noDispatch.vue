@@ -148,7 +148,8 @@
                 type="info"
                 class="button"
                 @click="submite"
-                >确认</van-button
+                :disabled="isDispatch == true"
+                > {{isDispatch == false ? '确认' : '加载中...'}}</van-button
               >
             </div>
           </van-popup>
@@ -290,6 +291,8 @@ export default {
 
       // 滚动位置
       scrollTop: 0,
+      // 派单时加载中
+      isDispatch:false,
     };
   },
 
@@ -341,11 +344,13 @@ export default {
       // });
       if([Number(hospitalId2)] == [] || [Number(hospitalId2)].length == 0){
               this.flag = true;
+              this.isDispatch = true
               api.ContentPlateFormOrder(data).then((res) => {
                 if (res.code === 0) {
                   this.$toast("派单成功");
                   this.form = {};
                   this.dispatchModel = false;
+                  this.isDispatch = false
                   // this.getunContentPlatFormSendOrderList();
                   setTimeout(()=>{
                     this.$router.push('/dispatched')
@@ -353,6 +358,9 @@ export default {
                   
                 } else {
                   this.$toast(res.msg);
+                  setTimeout(()=>{
+                    this.isDispatch = false
+                  })
                 }
               });
               return
@@ -365,11 +373,13 @@ export default {
                    break
                   }else{
                     this.flag = true;
+                    this.isDispatch = true
                     api.ContentPlateFormOrder(data).then((res) => {
                       if (res.code === 0) {
                         this.$toast("派单成功");
                         this.form = {};
                         this.dispatchModel = false;
+                        this.isDispatch = false
                         // this.getunContentPlatFormSendOrderList();
                         setTimeout(()=>{
                           this.$router.push('/dispatched')
@@ -377,6 +387,9 @@ export default {
                         
                       } else {
                         this.$toast(res.msg);
+                        setTimeout(()=>{
+                          this.isDispatch = false
+                        })
                       }
                     });
                     return

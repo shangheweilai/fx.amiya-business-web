@@ -192,12 +192,24 @@
         </div>
         <div class="item_w">
           <span>
-            咨询内容：{{ $route.query.orderInfo.consultingContent }}
+            主派咨询内容：{{ $route.query.orderInfo.consultingContent }}
             <span
               class="copy"
               v-clipboard:copy="'订单号：' + $route.query.orderInfo.id + ' ' + '咨询内容：' + $route.query.orderInfo.consultingContent"
               v-clipboard:success="onCopySuccess"
               v-if="$route.query.orderInfo.consultingContent"
+              >复制</span
+            >
+          </span>
+        </div>
+        <div class="item_w">
+          <span>
+            次派咨询内容：{{ $route.query.orderInfo.consultingContent2 }}
+            <span
+              class="copy"
+              v-clipboard:copy="'订单号：' + $route.query.orderInfo.id + ' ' + '咨询内容：' + $route.query.orderInfo.consultingContent2"
+              v-clipboard:success="onCopySuccess"
+              v-if="$route.query.orderInfo.consultingContent2"
               >复制</span
             >
           </span>

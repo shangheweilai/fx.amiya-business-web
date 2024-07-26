@@ -42,6 +42,23 @@
                 @click="toHospitalDateClick"
                 v-if="form.isToHospital == true"
             />
+            <div class="switch_content">
+                <van-cell center title="是否陪诊" class="switch_con" v-if="form.isToHospital == true">
+                    <van-switch v-model="form.isAcompanying" size="24" class="switch_icon" />
+                </van-cell>
+            </div>
+            <div class="customer_img">邀约凭证</div>
+            <div  class="img_content">
+                <div v-for="(item,index) in form.invitationDocuments" :key="index" style="display:flex;">
+                <div class="img_item">
+                    <viewer v-if="item"  baseLayerPicker ="true" >
+                    <img :src="item" alt=""  class="img" >
+                    </viewer>
+                    <span class="opacity_con"  @click="deletClick2(index)">x</span>
+                </div>
+                </div>
+                <van-uploader :after-read="afterReadClick2" :max-count="5" :max-size="5 * 1024 * 1024" @oversize="onOversize2" :before-read="beforeRead2" v-if="form.invitationDocuments.length<5"/>
+            </div>
             <van-field
                 v-model="form.fansMeetingName"
                 label="粉丝见面会"
@@ -53,14 +70,39 @@
             />
             <div style="color:red;font-size:13px;margin-bottom:5px" v-if="form.isToHospital == true">非必要不用选</div>
             <div class="switch_content">
-            <van-cell center title="是否参加过见面会" class="switch_con" v-if="form.isToHospital == true">
-                <van-switch v-model="form.isFansMeeting" size="24" class="switch_icon" disabled/>
-            </van-cell>
+                <van-cell center title="是否参加过见面会" class="switch_con" v-if="form.isToHospital == true">
+                    <van-switch v-model="form.isFansMeeting" size="24" class="switch_icon" disabled/>
+                </van-cell>
             </div>
+            <van-field
+                v-model="form.fansMeetingProject"
+                label="见面会铺垫项目"
+                placeholder="请输入见面会铺垫项目"
+                class="customer_content"
+                type="input"
+                v-if="form.isFansMeeting == true"
+            />
+            <van-field
+                v-model="form.followUpContent"
+                label="追踪内容"
+                placeholder="请输入追踪内容"
+                class="customer_content"
+                type="input"
+                v-if="form.isFansMeeting == true"
+            />
+            <van-field
+                v-model="form.nextAppointmentDate"
+                label="下次邀约时间"
+                disabled
+                placeholder="请选择下次邀约时间"
+                class="customer_content"
+                @click="nextAppointmentDateClick"
+                v-if="form.isFansMeeting == true"
+            />
             <div class="switch_content">
-            <van-cell center title="是否陪诊" class="switch_con" v-if="form.isToHospital == true">
-                <van-switch v-model="form.isAcompanying" size="24" class="switch_icon" />
-            </van-cell>
+                <van-cell center title="是否需要机构再次邀约" class="switch_con" v-if="form.isFansMeeting == true">
+                    <van-switch v-model="form.isNeedHospitalHelp" size="24" class="switch_icon" />
+                </van-cell>
             </div>
             <div class="switch_content">
             <van-cell center title="是否成交" class="switch_con">
@@ -152,18 +194,7 @@
                 </div>
                 <van-uploader :after-read="afterReadClick3" :max-count="1" :max-size="5 * 1024 * 1024" @oversize="onOversize3" :before-read="beforeRead3" v-if="form.dealPictureUrl.length<1"/>
             </div>
-            <div class="customer_img">邀约凭证</div>
-            <div  class="img_content">
-                <div v-for="(item,index) in form.invitationDocuments" :key="index" style="display:flex;">
-                <div class="img_item">
-                    <viewer v-if="item"  baseLayerPicker ="true" >
-                    <img :src="item" alt=""  class="img" >
-                    </viewer>
-                    <span class="opacity_con"  @click="deletClick2(index)">x</span>
-                </div>
-                </div>
-                <van-uploader :after-read="afterReadClick2" :max-count="5" :max-size="5 * 1024 * 1024" @oversize="onOversize2" :before-read="beforeRead2" v-if="form.invitationDocuments.length<5"/>
-            </div>
+            
         </div>
 
         <div>
@@ -210,6 +241,17 @@
                     :show-toolbar="true"
                     @cancel="model.toHospitalDateModel = false"
                     @confirm="confirmFn"
+                />
+            </van-popup> 
+            <van-popup v-model="model.nextAppointmentDateModel" position="bottom" style="height: 50%" round >
+                <van-datetime-picker
+                    v-model="currentDate3"
+                    type="date"
+                    :min-date="minDate"
+                    :max-date="maxDate"
+                    :show-toolbar="true"
+                    @cancel="model.nextAppointmentDateModel = false"
+                    @confirm="confirmFn3"
                 />
             </van-popup> 
             <van-popup v-model="model.dealDateModel" position="bottom" style="height: 50%" round >
@@ -275,6 +317,7 @@ export default {
             searchColumns:[],
             currentDate: this.$moment().format("YYYY-MM-DD"),
             currentDate2:this.$moment().format("YYYY-MM-DD"),
+            currentDate3:this.$moment().format("YYYY-MM-DD"),
             minDate: new Date(2020, 1, 1),
             maxDate: new Date(2026, 1, 1),
             // 用于页面展示
@@ -327,6 +370,14 @@ export default {
                 consumptionTypeName:null,
                 // 明细
                 addContentPlatFormOrderDealDetailsVoList:[],
+                // 下次要约时间
+                nextAppointmentDate:this.$moment().format("YYYY-MM-DD"),
+                // 见面会铺垫项目
+                fansMeetingProject:'',
+                // 追踪内容
+                followUpContent:'',
+                // 是否需要机构协助邀约
+                isNeedHospitalHelp:false,
             },
             // 获取接口数据
             joggle:{
@@ -344,7 +395,8 @@ export default {
                 dealDateModel:false,
                 dealPerformanceTypeModel:false,
                 consumptionTypeModel:false,
-                fansMeetingModel:false
+                fansMeetingModel:false,
+                nextAppointmentDateModel:false
             },
             // 用于页面展示数据
             list:{
@@ -572,9 +624,14 @@ export default {
             this.model.toHospitalDateModel = true;
             this.currentDate = new Date(this.$moment(myDate).format("YYYY-MM-DD"))
         },
+        nextAppointmentDateClick(){
+           var myDate = new Date();  
+            this.model.nextAppointmentDateModel = true;
+            this.currentDate3 = new Date(this.$moment(myDate).format("YYYY-MM-DD"))
+        },
         submite(){
             const {isFinish,lastDealHospitalId,isToHospital,toHospitalType,toHospitalDate,dealAmount,lastProjectStage,dealPictureUrl,unDealReason,
-            unDealPictureUrl,dealDate,dealPerformanceType,isAcompanying,commissionRatio,otherContentPlatFormOrderId,invitationDocuments,consumptionType,addContentPlatFormOrderDealDetailsVoList,fansMeetingId,isFansMeeting
+            unDealPictureUrl,dealDate,dealPerformanceType,isAcompanying,commissionRatio,otherContentPlatFormOrderId,invitationDocuments,consumptionType,addContentPlatFormOrderDealDetailsVoList,fansMeetingId,isFansMeeting,fansMeetingProject,followUpContent,nextAppointmentDate,isNeedHospitalHelp
             } = this.form
             if(isToHospital == true){
                 if(!lastDealHospitalId){
@@ -634,7 +691,12 @@ export default {
             invitationDocuments:invitationDocuments,
             consumptionType,
             addContentPlatFormOrderDealDetailsVoList:isFinish == false  || dealAmount == 0 ? [] : addContentPlatFormOrderDealDetailsVoList,
-            fansMeetingId:isFansMeeting == true ? fansMeetingId : ''
+            fansMeetingId:isFansMeeting == true ? fansMeetingId : '',
+            fansMeetingProject:isFansMeeting == true ? fansMeetingProject : '',
+            followUpContent:isFansMeeting == true ? followUpContent : '',
+            nextAppointmentDate:isFansMeeting == true ? nextAppointmentDate : null,
+            isNeedHospitalHelp:isFansMeeting == true ? isNeedHospitalHelp : false,
+
            }
            if(isFinish == true){
             if(dealAmount == 0){
@@ -782,6 +844,10 @@ export default {
         confirmFn2(value){
             this.form.dealDate = this.$moment(value).format("YYYY-MM-DD");
             this.model.dealDateModel = false;
+        },
+        confirmFn3(value){
+            this.form.nextAppointmentDate = this.$moment(value).format("YYYY-MM-DD");
+            this.model.nextAppointmentDateModel = false;
         },
         dealAmountInput(value){
             this.form.dealAmount = value

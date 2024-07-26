@@ -4,10 +4,19 @@
     <div>
       <van-field
         v-model="form.consultingContent"
-        label="咨询内容"
-        placeholder="请输入咨询内容"
+        label="主派咨询内容"
+        placeholder="请输入主派咨询内容"
         class="customer_content"
         @input="consultingContentInput"
+        type="textarea"
+        :rows="4"
+      />
+      <van-field
+        v-model="form.consultingContent2"
+        label="次派咨询内容"
+        placeholder="请输入次派咨询内容"
+        class="customer_content"
+        @input="consultingContentInput2"
         type="textarea"
         :rows="4"
       />
@@ -61,8 +70,9 @@ export default {
     return {
       // 用于页面展示
       form: {
-        // 咨询内容
+        // 主派咨询内容
         consultingContent: "",
+        consultingContent2: "",
         // 未派单原因
         unSendReason: "",
         // 后期铺垫
@@ -80,6 +90,7 @@ export default {
         anchorCustomerServiceMessage:{
             // 咨询内容
             consultingContent: "",
+            consultingContent2: "",
             // 未派单原因
             unSendReason: "",
             // 后期铺垫
@@ -113,6 +124,7 @@ export default {
         hospitalDepartmentId:anchorFormId.hospitalDepartmentId,
         liveAnchorId:Number(anchorFormId.liveAnchorId),
         liveAnchorWeChatNo:anchorFormId.liveAnchorWeChatNo,
+        belongChannel:anchorFormId.belongChannel,
         // 客户信息
         birthday:customerFormId.birthday ? customerFormId.birthday : null,
         city:customerFormId.city,
@@ -122,7 +134,6 @@ export default {
         sex:customerFormId.sex,
         wechatNumber:customerFormId.wechatNumber,
         customerPictures:customerFormId.imgList,
-        belongChannel:customerFormId.belongChannel,
 
         // 订单信息
         addOrderPrice:Number(orderFormId.addOrderPrice),
@@ -137,6 +148,7 @@ export default {
         customerType:Number(orderFormId.customerType),
         // 其他内容
         consultingContent:otherForm.consultingContent,
+        consultingContent2:otherForm.consultingContent2,
         lateProjectStage:otherForm.lateProjectStage,
         remark:otherForm.remark,
         unSendReason:otherForm.unSendReason,
@@ -166,6 +178,9 @@ export default {
     consultingContentInput(value) {
       this.form.consultingContent = value;
     },
+    consultingContentInput2(value) {
+      this.form.consultingContent2 = value;
+    },
     unSendReasonInput(value) {
       this.form.unSendReason = value;
     },
@@ -181,6 +196,7 @@ export default {
     let otherForm = JSON.parse(sessionStorage.getItem('otherForm'))
     if(otherForm){
         this.form.consultingContent = otherForm.consultingContent
+        this.form.consultingContent2 = otherForm.consultingContent2
         this.form.unSendReason = otherForm.unSendReason
         this.form.lateProjectStage = otherForm.lateProjectStage
         this.form.remark = otherForm.remark
