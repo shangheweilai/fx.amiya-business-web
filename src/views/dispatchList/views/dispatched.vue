@@ -176,6 +176,8 @@ export default {
       // this.defaultDate = [this.query.startDate,this.query.endDate]
     },
     affirm(value) {
+      // this.$toast("系统正在维护中，请稍后！");
+      // return;
       if (value.orderStatusText == "重单-不可深度") {
         this.$toast("你当前状态是重单-不可深度，不能点击确认！");
         return;
@@ -185,7 +187,10 @@ export default {
         query: {
           consultatioType: value.consultatioType,
           orderId: value.orderId,
-          encryptPhone:value.encryptPhone
+          encryptPhone:value.encryptPhone,
+          sendOrderId:value.id,
+          sendHospital:value.sendHospitalId,
+          sendHospitalName:value.sendHospital,
         },
       });
     },

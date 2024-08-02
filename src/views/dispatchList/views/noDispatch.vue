@@ -302,6 +302,8 @@ export default {
       // this.defaultDate = [this.query.startDate,this.query.endDate]
     },
     dispatchClick(value) {
+      // this.$toast("系统正在维护中，请稍后！");
+      // return;
       this.dispatchModel = true;
       this.form.orderId = value;
     },

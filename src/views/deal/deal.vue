@@ -15,13 +15,13 @@
                     <van-switch v-model="form.isToHospital" size="24" class="switch_icon" :disabled="form.isFinish == true" @change="isToHospitalClick(form.isToHospital)"/>
                 </van-cell>
             </div>
+                <!-- @click="model.lastDealHospitalModel = true" -->
             <van-field
                 v-model="form.lastDealHospitalName"
                 label="到院医院"
                 disabled
                 placeholder="请选择到院医院"
                 class="customer_content"
-                @click="model.lastDealHospitalModel = true"
                 v-if="form.isToHospital == true"
             />
             <van-field
@@ -412,6 +412,10 @@ export default {
         }
 
     },
+    mounted(){
+        this.form.lastDealHospitalName = this.$route.query.sendHospitalName
+        this.form.lastDealHospitalId = this.$route.query.sendHospital
+    },
     methods:{
         // 粉丝见面会click
         fansMeetingClick(value){
@@ -696,6 +700,7 @@ export default {
             followUpContent:isFansMeeting == true ? followUpContent : '',
             nextAppointmentDate:isFansMeeting == true ? nextAppointmentDate : null,
             isNeedHospitalHelp:isFansMeeting == true ? isNeedHospitalHelp : false,
+            sendOrderId:this.$route.query.sendOrderId
 
            }
            if(isFinish == true){
@@ -747,8 +752,8 @@ export default {
             if(value == false){
                 // this.form.toHospitalDate = this.$moment().format("YYYY-MM-DD"),
                 this.currentDate = ''
-                this.form.lastDealHospitalId = null
-                this.form.lastDealHospitalName = ''
+                // this.form.lastDealHospitalId = null
+                // this.form.lastDealHospitalName = ''
                 this.form.toHospitalTypeName = ''
                 this.form.toHospitalType = null
                 this.form.isAcompanying = false
@@ -761,8 +766,8 @@ export default {
             if(value == false){
                 // this.form.toHospitalDate =  this.$moment().format("YYYY-MM-DD"),
                 this.currentDate = ''
-                this.form.lastDealHospitalId = null
-                this.form.lastDealHospitalName = ''
+                // this.form.lastDealHospitalId = null
+                // this.form.lastDealHospitalName = ''
                 this.form.toHospitalTypeName = ''
                 this.form.toHospitalType = null
                 this.form.isAcompanying = false
