@@ -82,6 +82,7 @@
                 class="customer_content"
                 @input="addOrderPriceInput"
                 type="number"
+                :disabled="isPrice == 'true'"
             />
         </div>
         <div>
@@ -278,7 +279,9 @@ export default {
                 getCustomerTypeName:[],
                 getcustomerTypeListNames:[],
                 getcustomerSourceListNames:[]
-            }
+            },
+            // 判断下单金额是否可修改
+            isPrice:false
         }
 
     },
@@ -312,10 +315,16 @@ export default {
                 this.$toast("请选择订单类型");
                 return
             }
-            if(depositAmount==2){
-                this.$toast("请输入定金金额");
-                return
+            if(orderType == '定金订单'){
+                if(!depositAmount){
+                    this.$toast("请输入定金金额");
+                    return
+                }
             }
+            // if(depositAmount==2){
+            //     this.$toast("请输入定金金额");
+            //     return
+            // }
             if(!appointmentHospitalId){
                 this.$toast("请选择预约门店");
                 return
@@ -538,6 +547,9 @@ export default {
         },
     },
     created(){
+        this.isPrice = sessionStorage.getItem('isPrice')
+        this.form.addOrderPrice = sessionStorage.getItem('priceNumber')
+        this.form2.addOrderPrice = sessionStorage.getItem('priceNumber')
         this.getCustomerServiceNameList()
         this.getcontentPlateFormOrderSourceList()
         this.getOrderConsultationTypeLists()

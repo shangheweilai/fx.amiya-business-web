@@ -82,6 +82,7 @@
                 class="customer_content"
                 @input="addOrderPriceInput"
                 type="number"
+                disabled
             />
         </div>
         <div>
@@ -311,10 +312,16 @@ export default {
                 this.$toast("请选择订单类型");
                 return
             }
-            if(depositAmount==2){
-                this.$toast("请输入定金金额");
-                return
+            if(orderType == '定金订单'){
+                if(!depositAmount){
+                    this.$toast("请输入定金金额");
+                    return
+                }
             }
+            // if(depositAmount==2){
+            //     this.$toast("请输入定金金额");
+            //     return
+            // }
             if(!appointmentHospitalId){
                 this.$toast("请选择预约门店");
                 return
@@ -570,7 +577,8 @@ export default {
             this.form.customerSource = customerSourceText
             this.form2.customerSource = customerSource
         }
-        
+        this.isPrice = sessionStorage.getItem('isPrice')
+        console.log(isPrice)
     },
      watch: {  //实时监听搜索输入内容
         searchKey: function () {

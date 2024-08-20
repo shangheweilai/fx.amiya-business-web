@@ -431,3 +431,12 @@ export const shoppingCartGetBelongChannelList = () => {
         method: "get",
     });
 };
+
+//根据小黄车登记手机号获取小黄车登记信息
+export const byPhoneAndLiveAnchorId = (params) => {
+    return http({
+        url: `/businessWechat/ShoppingCartRegistration/byPhoneAndLiveAnchorId`,
+        method: "get",
+        params
+    });
+};

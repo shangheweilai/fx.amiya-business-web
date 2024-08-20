@@ -319,6 +319,23 @@ export default {
       this.form2.liveAnchorWeChatNo = null
       this.getLiveAnchor(this.form2.contentPlateFormId);
       
+      
+    },
+     // 根据小黄车登记手机号获取小黄车登记信息
+    getbyPhoneAndLiveAnchorId(){
+      console.log(this.$route.query)
+      const data = {
+        phone:this.$route.query.phone,
+        liveAnchorId:this.form2.liveAnchorId,
+      }
+      api.byPhoneAndLiveAnchorId(data).then((res)=>{
+        if(res.code === 0){
+          const { price} = res.data.shoppingCartRegistrationInfo
+          let price2= price > 0 ? true : false
+          sessionStorage.setItem('isPrice',price2)
+          sessionStorage.setItem('priceNumber',price)
+        }
+      })
     },
     liveAnchorWeChatNoClick() {
       // if (!this.form.liveAnchorId) {
@@ -479,6 +496,7 @@ export default {
           this.form2.liveAnchorId = item.id;
         }
       });
+      this.getbyPhoneAndLiveAnchorId()
     },
     // 主播微信号
     liveAnchorWeChatNoConfirm(value) {
