@@ -440,3 +440,11 @@ export const byPhoneAndLiveAnchorId = (params) => {
         params
     });
 };
+// //根据医院获取医院账户
+export const getByHospitalIdList = (params) => {
+    return http({
+        url: `/businessWechat/HospitalInfo/getByHospitalIdList`,
+        method: "get",
+        params
+    });
+};

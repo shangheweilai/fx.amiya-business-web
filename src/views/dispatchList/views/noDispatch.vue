@@ -108,6 +108,18 @@
               placeholder="请选择主派单医院"
               class="customer_content"
             />
+            <van-cell center title="是否指定医生账号" class="customer_content" >
+                <van-switch v-model="form.isSpecifyHospitalEmployee" size="24" class="switch_icon" :disabled="!form.hospitalName" @click="isSpecifyHospitalEmployeeClick(form.isSpecifyHospitalEmployee)"/>
+            </van-cell>
+            <van-field
+              v-model="form.hospitalEmployeeName"
+              label="医生账号"
+              disabled
+              @click="hospitalEmployeeModel = true"
+              placeholder="请选择医生账号"
+              class="customer_content"
+              v-if="form.isSpecifyHospitalEmployee == true"
+            />
             <van-field
               v-model="form.hospitalName2"
               label="次派单医院"
@@ -166,6 +178,25 @@
               <template #title>
                 <van-field
                   v-model="searchKey"
+                  placeholder="请输入医院进行搜索"
+                  clearable
+                  style="width: 200px"
+                />
+              </template>
+            </van-picker>
+          </van-popup>
+          <!-- 指定医院  -->
+          <van-popup v-model="hospitalEmployeeModel" round position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="searchColumns4"
+              @cancel="hospitalEmployeeModel = false"
+              @confirm="hospitalEmployeeConfirm"
+            >
+              <!-- 添加模糊搜素 -->
+              <template #title>
+                <van-field
+                  v-model="searchKey4"
                   placeholder="请输入医院进行搜索"
                   clearable
                   style="width: 200px"
@@ -233,6 +264,9 @@ export default {
       // 次派医院
       searchKey3: "",
       searchColumns3: [],
+      //指定医院
+      searchKey4: "",
+      searchColumns4: [],
       // 客服模糊搜索
       searchKey2: "",
       searchColumns2: [],
@@ -280,10 +314,16 @@ export default {
         // 派单人员
         sendBy: null,
         sendByName: "",
+        // 是否为指定医院账户
+        isSpecifyHospitalEmployee:false,
+        // 医院账户
+        hospitalEmployeeId:null,
+        hospitalEmployeeName:''
       },
       //医院model
       hospitalIdModel: false,
       hospitalIdModel2: false,
+      hospitalEmployeeModel:false,
       hospitalName: [],
       // 派单人员
       sendByModel: false,
@@ -293,10 +333,42 @@ export default {
       scrollTop: 0,
       // 派单时加载中
       isDispatch:false,
+      // 医院账户
+      hospitalIdList:[],
+      hospitalIdListName:[]
     };
   },
 
   methods: {
+    isSpecifyHospitalEmployeeClick(value){
+         if(value == true){
+          this.getByHospitalIdList()
+          
+        }else{
+          this.form.hospitalEmployeeId = null
+          this.form.hospitalEmployeeName = ''
+          this.form.isSpecifyHospitalEmployee == false
+        }
+    },
+    // 根据医院获取医院账户
+    getByHospitalIdList(){
+      this.form.hospitalEmployeeId = null
+      this.form.hospitalEmployeeName = ''
+      const data = {
+        hospitalId:this.form.hospitalId
+      }
+      api.getByHospitalIdList(data).then(res=>{
+        if(res.code == 0){
+          this.hospitalIdList = res.data.employee
+          let hospitalIdListName = [];
+          this.hospitalIdList.map((item) => {
+            hospitalIdListName.push(item.name);
+          });
+          this.hospitalIdListName = hospitalIdListName;
+           this.searchColumns4 = hospitalIdListName;
+          }
+      })
+    },
     calendarClick() {
       this.calendarModel = true;
       // this.defaultDate = [this.query.startDate,this.query.endDate]
@@ -312,15 +384,20 @@ export default {
       this.dispatchModel = false;
     },
     submite() {
-      const { hospitalId, sendBy, orderId, remark ,hospitalId2} = this.form;
+      const { hospitalId, sendBy, orderId, remark ,hospitalId2,isSpecifyHospitalEmployee,hospitalEmployeeId} = this.form;
       if (!hospitalId) {
         this.$toast("请选择派单医院");
+        return;
+      }
+      if(isSpecifyHospitalEmployee == true &&  !hospitalEmployeeId){
+        this.$toast("请选择指定医院");
         return;
       }
       if (!sendBy) {
         this.$toast("请选择派单人员");
         return;
       }
+      
       const data = {
         orderId,
         hospitalId: Number(hospitalId),
@@ -328,7 +405,9 @@ export default {
         remark,
         isUncertainDate: false,
         appointmentDate: null,
-        otherHospitalId:Number(hospitalId2) ? [Number(hospitalId2)] : []
+        otherHospitalId:Number(hospitalId2) ? [Number(hospitalId2)] : [],
+        isSpecifyHospitalEmployee,
+        hospitalEmployeeId:isSpecifyHospitalEmployee == true ? hospitalEmployeeId : 0
       };
       // api.ContentPlateFormOrder(data).then((res) => {
       //   if (res.code === 0) {
@@ -453,6 +532,20 @@ export default {
       this.hospitalInfo.map((item) => {
         if (item.name == value) {
           this.form.hospitalId = item.id;
+        }
+      });
+      this.getByHospitalIdList()
+    },
+    // 指定医院
+    hospitalEmployeeConfirm(value){
+      this.form.hospitalEmployeeName = value;
+      this.hospitalEmployeeModel = false;
+      this.searchKey4 = "";
+      // this.searchColumns = [];
+      // 取id
+      this.hospitalIdList.map((item) => {
+        if (item.name == value) {
+          this.form.hospitalEmployeeId = item.id;
         }
       });
     },
@@ -693,11 +786,21 @@ export default {
     //实时监听搜索输入内容
     searchKey3: function () {
       let key3 = String(this.searchKey3);
-      console.log(key3)
       key3 = key3.replace(/\s*/g, ""); //去除搜索内容中的空格
       const reg = new RegExp(key3, "ig"); //匹配规则-i：忽略大小写，g：全局匹配
       /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
       this.searchColumns3 = this.hospitalName.filter(
+        (item) => item.match(reg) != null
+      );
+    },
+    // 指定医院
+    //实时监听搜索输入内容
+    searchKey4: function () {
+      let key4 = String(this.searchKey4);
+      key4 = key4.replace(/\s*/g, ""); //去除搜索内容中的空格
+      const reg = new RegExp(key4, "ig"); //匹配规则-i：忽略大小写，g：全局匹配
+      /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+      this.searchColumns4 = this.hospitalIdListName.filter(
         (item) => item.match(reg) != null
       );
     },
@@ -726,7 +829,7 @@ export default {
   margin: 5px 0;
 }
 .dispatch_content {
-  height: 50%;
+  height: 60%;
   color: #5492fe;
 }
 .customer_content {
@@ -739,6 +842,9 @@ export default {
   .van-field__label {
     width: 70px;
     color: #5492fe;
+  }
+  /deep/ .van-switch {
+    display: flex;
   }
 }
 .search_content {
