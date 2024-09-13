@@ -578,7 +578,6 @@ export default {
             this.form2.customerSource = customerSource
         }
         this.isPrice = sessionStorage.getItem('isPrice')
-        console.log(isPrice)
     },
      watch: {  //实时监听搜索输入内容
         searchKey: function () {

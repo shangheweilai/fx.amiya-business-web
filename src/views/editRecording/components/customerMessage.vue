@@ -55,7 +55,11 @@
         class="customer_content"
         @input="wechatNumberInput"
       />
-      
+      <div class="switch_content">
+          <van-cell center title="是否为日不落直播"  class="switch_con">
+              <van-switch v-model="form2.isRiBuLuoLiving" size="24" />
+          </van-cell>
+      </div>
       <div class="customer_img">顾客照片</div>
       <div  class="img_content">
         <div v-for="(item,index) in form2.imgList" :key="index" style="display:flex;">
@@ -164,6 +168,8 @@ export default {
         // 城市
         city: "",
         imgList:[],
+        // 是否为日不落直播
+        isRiBuLuoLiving:false
       },
       
       // model
@@ -293,7 +299,7 @@ export default {
     },
   },
   created() {
-    const {customerName,sex,birthday,occupation,wechatNumber,phone,city,customerPictures} = this.$route.query.orderInfo
+    const {customerName,sex,birthday,occupation,wechatNumber,phone,city,customerPictures,isRiBuLuoLiving} = this.$route.query.orderInfo
     this.form.customerName = customerName
     this.form2.customerName = customerName
     this.form.sex = sex
@@ -309,6 +315,7 @@ export default {
     this.form2.imgList = customerPictures
     this.form.city = city
     this.form2.city = city
+    this.form2.isRiBuLuoLiving = isRiBuLuoLiving
     
   },
 };
@@ -319,6 +326,16 @@ export default {
   width:50px;
   height:50px;
 }
+/deep/ .van-cell {
+  padding: 10px 0;
+}
+/deep/.switch_con{
+    width: 160px;
+    color: #5492fe;
+    // margin-left: -17px;
+    display: flex;
+    align-items: center;
+}
 .content {
   width: 92%;
   background: #fff;
@@ -328,6 +345,14 @@ export default {
   box-shadow: 10px 10px 10px rgba(0, 0.5);
   padding: 10px;
   box-sizing: border-box;
+  .switch_content{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #bbd3ff;
+        // padding: 10px 0;
+        // box-sizing: border-box;
+  }
   .img_content{
     display: flex;
     .img_item{

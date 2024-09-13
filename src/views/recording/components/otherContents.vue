@@ -134,6 +134,7 @@ export default {
         sex:customerFormId.sex,
         wechatNumber:customerFormId.wechatNumber,
         customerPictures:customerFormId.imgList,
+        isRiBuLuoLiving:customerFormId.isRiBuLuoLiving,
 
         // 订单信息
         addOrderPrice:Number(orderFormId.addOrderPrice),

@@ -123,6 +123,7 @@ export default {
         sex:customerMessage.sex,
         wechatNumber:customerMessage.wechatNumber,
         customerPictures:customerMessage.imgList,
+        isRiBuLuoLiving:customerMessage.isRiBuLuoLiving,
         // 订单信息
         addOrderPirce:Number(orderMessage.addOrderPrice), 
         appointmentHospitalId:Number(orderMessage.appointmentHospitalId),
