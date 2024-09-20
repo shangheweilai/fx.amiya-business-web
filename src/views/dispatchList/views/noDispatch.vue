@@ -108,6 +108,23 @@
               placeholder="请选择主派单医院"
               class="customer_content"
             />
+            <van-cell center title="是否选择推单平台" class="customer_content" style="padding-bottom:20px ">
+                <van-switch v-model="form.isPushOrderPlatform" size="24" class="switch_icon" />
+                
+            </van-cell>
+            <div style="font-size:12px;color:red;position:relative;left:100px;top:-20px;left:20px">若未找到推单平台则需手动关闭此按钮</div>
+            <van-field
+              v-model="form.thirdPartContentplatformInfoName"
+              label="推单平台"
+              disabled
+              @click="thirdPartContentplatformInfoIdModel = true"
+              placeholder="请选择推单平台"
+              class="customer_content"
+              v-if="form.isPushOrderPlatform == true"
+              style="padding-bottom:15px"
+            />
+            <!-- !form.hospitalName && thirdPartContentplatformInfo == [] || thirdPartContentplatformInfo.length==0 -->
+            <div style="font-size:12px;color:red;position:relative;left:100px;top:-17px" v-if="form.isPushOrderPlatform == true && !form.hospitalName">请选择主派医院</div>
             <van-cell center title="是否指定医生账号" class="customer_content" >
                 <van-switch v-model="form.isSpecifyHospitalEmployee" size="24" class="switch_icon" :disabled="!form.hospitalName" @click="isSpecifyHospitalEmployeeClick(form.isSpecifyHospitalEmployee)"/>
             </van-cell>
@@ -179,6 +196,25 @@
                 <van-field
                   v-model="searchKey"
                   placeholder="请输入医院进行搜索"
+                  clearable
+                  style="width: 200px"
+                />
+              </template>
+            </van-picker>
+          </van-popup>
+          <!-- 推单平台  -->
+          <van-popup v-model="thirdPartContentplatformInfoIdModel" round position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="searchColumns5"
+              @cancel="thirdPartContentplatformInfoIdModel = false"
+              @confirm="thirdPartContentplatformInfoIdConfirm"
+            >
+              <!-- 添加模糊搜素 -->
+              <template #title>
+                <van-field
+                  v-model="searchKey5"
+                  placeholder="请输入推单平台搜索"
                   clearable
                   style="width: 200px"
                 />
@@ -267,6 +303,9 @@ export default {
       //指定医院
       searchKey4: "",
       searchColumns4: [],
+      //推单平台
+      searchKey5: "",
+      searchColumns5: [],
       // 客服模糊搜索
       searchKey2: "",
       searchColumns2: [],
@@ -318,12 +357,22 @@ export default {
         isSpecifyHospitalEmployee:false,
         // 医院账户
         hospitalEmployeeId:null,
-        hospitalEmployeeName:''
+        hospitalEmployeeName:'',
+        // 是否选择推单平台
+        isPushOrderPlatform:true,
+        // 推单平台
+        thirdPartContentplatformInfoId:'',
+        thirdPartContentplatformInfoName:'',
+        // 派单编号
+        dispatchId:null
       },
       //医院model
       hospitalIdModel: false,
       hospitalIdModel2: false,
       hospitalEmployeeModel:false,
+      // 推单平台
+      thirdPartContentplatformInfoIdModel:false,
+      
       hospitalName: [],
       // 派单人员
       sendByModel: false,
@@ -335,11 +384,81 @@ export default {
       isDispatch:false,
       // 医院账户
       hospitalIdList:[],
-      hospitalIdListName:[]
+      hospitalIdListName:[],
+      // 推单平台
+      thirdPartContentplatformInfo:[],
+      thirdPartContentplatformInfoNameList:[],
     };
   },
 
   methods: {
+    // 根据主派医院查询推单平台
+    getValidKeyAndValue() {
+      const data = {
+        hospitalId:this.form.hospitalId
+      }
+      api.ContentPlateFormSendOrderValidKeyAndValue(data).then((res) => {
+        if (res.code == 0) {
+          const {thirdPartContentplatformInfo} = res.data
+          this.form.thirdPartContentplatformInfoName = thirdPartContentplatformInfo.length == 0 ||  thirdPartContentplatformInfo == [] ? '' : thirdPartContentplatformInfo[0].name 
+          this.form.thirdPartContentplatformInfoId = thirdPartContentplatformInfo.length == 0 ||  thirdPartContentplatformInfo == [] ? '' :  thirdPartContentplatformInfo[0].id 
+          this.thirdPartContentplatformInfo = thirdPartContentplatformInfo
+          let thirdPartContentplatformInfoNameList = [];
+          this.thirdPartContentplatformInfo.map((item) => {
+            thirdPartContentplatformInfoNameList.push(item.name);
+          });
+          this.thirdPartContentplatformInfoNameList = thirdPartContentplatformInfoNameList;
+          this.searchColumns5 = thirdPartContentplatformInfoNameList;
+          
+        }
+      });
+    },
+    // 根据订单号获取派单编号
+    getsendOrderInfoList(){
+      const data = {
+        contentPlatformId:this.form.orderId,
+        pageNum:1,
+        pageSize:10
+      }
+      api.sendOrderInfoList(data).then(res=>{
+        if(res.code === 0){
+          const {list} =res.data.sendOrderInfoList
+          this.form.dispatchId = list.length == 0 || list == [] ? null :  list[0].id
+          // 是否为推单打开时 调用推单接口 
+          if(this.form.isPushOrderPlatform == true) {
+            this.pushOrders()
+          }else{
+            this.form = {};
+          }
+        }
+      })
+    },
+    // 推单
+    pushOrders() {
+      const {thirdPartContentplatformInfoId, dispatchId,orderId,hospitalId,} = this.form
+      const data = {
+        thirdPartContentplatformInfoId: thirdPartContentplatformInfoId,
+        hospitalId: hospitalId,
+        orderId: orderId,
+        sendOrderId: dispatchId,
+        YWLX: 'P',
+      };
+      
+      api.getIsRepeateByHospitalIdAndThirdPartIdToLangZi(data).then((res) => {
+        if (res.code == 0) {
+          this.form = {};
+          this.$toast({
+            content: res.data.hospitalContentplatformCode.remsg,
+            duration: 3,
+          });
+        } else {
+          setTimeout(() => {
+            this.flag = false;
+          }, 3000);
+        }
+      });
+    },
+    // 是否指定医院
     isSpecifyHospitalEmployeeClick(value){
          if(value == true){
           this.getByHospitalIdList()
@@ -349,6 +468,10 @@ export default {
           this.form.hospitalEmployeeName = ''
           this.form.isSpecifyHospitalEmployee == false
         }
+        // // 是否选择推单平台
+        // if(this.form.hospitalId){
+        //   this.getValidKeyAndValue()
+        // }
     },
     // 根据医院获取医院账户
     getByHospitalIdList(){
@@ -382,15 +505,21 @@ export default {
     cancel() {
       this.form = {};
       this.dispatchModel = false;
+      this.form.isPushOrderPlatform = true
     },
     submite() {
-      const { hospitalId, sendBy, orderId, remark ,hospitalId2,isSpecifyHospitalEmployee,hospitalEmployeeId} = this.form;
+      const { hospitalId, sendBy, orderId, remark ,hospitalId2,isSpecifyHospitalEmployee,hospitalEmployeeId,isPushOrderPlatform,thirdPartContentplatformInfoId} = this.form;
+      console.log(isPushOrderPlatform,thirdPartContentplatformInfoId)
       if (!hospitalId) {
         this.$toast("请选择派单医院");
         return;
       }
       if(isSpecifyHospitalEmployee == true &&  !hospitalEmployeeId){
         this.$toast("请选择指定医院");
+        return;
+      }
+      if (isPushOrderPlatform == true &&  thirdPartContentplatformInfoId == '') {
+        this.$toast("请选择推单平台");
         return;
       }
       if (!sendBy) {
@@ -409,6 +538,7 @@ export default {
         isSpecifyHospitalEmployee,
         hospitalEmployeeId:isSpecifyHospitalEmployee == true ? hospitalEmployeeId : 0
       };
+      
       // api.ContentPlateFormOrder(data).then((res) => {
       //   if (res.code === 0) {
       //     this.$toast("派单成功");
@@ -429,14 +559,14 @@ export default {
               api.ContentPlateFormOrder(data).then((res) => {
                 if (res.code === 0) {
                   this.$toast("派单成功");
-                  this.form = {};
+                  // this.form = {};
+                  this.getsendOrderInfoList()
                   this.dispatchModel = false;
                   this.isDispatch = false
                   // this.getunContentPlatFormSendOrderList();
                   setTimeout(()=>{
                     this.$router.push('/dispatched')
                   },2000)
-                  
                 } else {
                   this.$toast(res.msg);
                   setTimeout(()=>{
@@ -458,7 +588,8 @@ export default {
                     api.ContentPlateFormOrder(data).then((res) => {
                       if (res.code === 0) {
                         this.$toast("派单成功");
-                        this.form = {};
+                        // this.form = {};
+                        this.getsendOrderInfoList()
                         this.dispatchModel = false;
                         this.isDispatch = false
                         // this.getunContentPlatFormSendOrderList();
@@ -535,6 +666,20 @@ export default {
         }
       });
       this.getByHospitalIdList()
+      this.getValidKeyAndValue()
+    },
+    // 推单平台
+    thirdPartContentplatformInfoIdConfirm(value){
+      this.form.thirdPartContentplatformInfoName = value;
+      this.thirdPartContentplatformInfoIdModel = false;
+      this.searchKey5 = "";
+      // this.searchColumns = [];
+      // 取id
+      this.thirdPartContentplatformInfoIdList.map((item) => {
+        if (item.name == value) {
+          this.form.thirdPartContentplatformInfoId = item.id;
+        }
+      });
     },
     // 指定医院
     hospitalEmployeeConfirm(value){
@@ -567,7 +712,7 @@ export default {
       this.form.sendByName = value;
       this.sendByModel = false;
       this.searchKey2 = "";
-      this.searchColumns2 = [];
+      // this.searchColumns2 = [];
       // 取id
       this.employee.map((item) => {
         if (item.name == value) {
@@ -804,6 +949,17 @@ export default {
         (item) => item.match(reg) != null
       );
     },
+    // 推单平台
+    //实时监听搜索输入内容
+    searchKey5: function () {
+      let key5 = String(this.searchKey5);
+      key5 = key5.replace(/\s*/g, ""); //去除搜索内容中的空格
+      const reg = new RegExp(key5, "ig"); //匹配规则-i：忽略大小写，g：全局匹配
+      /* 进行筛选，将筛选后的数据放入新的数组中，‘name’键可根据需要搜索的key进行调整 */
+      this.searchColumns5 = this.thirdPartContentplatformInfoNameList.filter(
+        (item) => item.match(reg) != null
+      );
+    },
   },
 };
 </script>
@@ -829,7 +985,7 @@ export default {
   margin: 5px 0;
 }
 .dispatch_content {
-  height: 60%;
+  height: 80%;
   color: #5492fe;
 }
 .customer_content {
@@ -888,7 +1044,6 @@ export default {
   font-size: 25px;
   color: #fff;
 }
-
 .list_wrap {
   margin-top: 55px;
   .item_con {

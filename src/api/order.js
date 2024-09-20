@@ -448,3 +448,27 @@ export const getByHospitalIdList = (params) => {
         params
     });
 };
+// //根据订单号获取派单编号
+export const sendOrderInfoList = (params) => {
+    return http({
+        url: `/businessWechat/ContentPlateFormSendOrder/sendOrderInfoList`,
+        method: "get",
+        params
+    });
+};
+// 推单接口
+export const getIsRepeateByHospitalIdAndThirdPartIdToLangZi = (params) => {
+    return http({
+        url: `/businessWechat/ContentPlateFormSendOrder/getIsRepeateByHospitalIdAndThirdPartIdToLangZi`,
+        method: "get",
+        params
+    });
+};
+// 获取有效的三方平台信息 （下拉框）
+export const ContentPlateFormSendOrderValidKeyAndValue = (params) => {
+    return http({
+        url: `/businessWechat/ContentPlateFormSendOrder/ValidKeyAndValue`,
+        method: "get",
+        params
+    });
+};
