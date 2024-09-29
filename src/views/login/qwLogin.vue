@@ -33,6 +33,7 @@
 import logo from "@/assets/amy.png" 
 import  * as api from "@/api/user.js"
 import axios from "axios";
+import * as myApi from "@/api/my.js";
 
 export default {
   components: {
@@ -48,6 +49,27 @@ export default {
      this.getIp()
   },
   methods: {
+    // 获取该员工登录的账号信息
+    getAmiyaEmployee() {
+      let employeeId = Number(sessionStorage.getItem("employeeId"))
+      myApi.AmiyaEmployee(employeeId).then((res) => {
+        if (res.code === 0) {
+          const {liveAnchorBaseId} = res.data.employeeInfo
+          sessionStorage.setItem('liveAnchorBaseId',liveAnchorBaseId)
+        } else {
+          this.$toast(res.msg);
+        }
+      });
+    },
+    // 获取按钮权限
+    getPermissions(){
+      api.collection().then((res) => {
+        if(res.code === 0){
+          const {permissions} =  res.data.permissions
+            sessionStorage.setItem("permissions", JSON.stringify(permissions));
+        }
+      })
+    },
     getIp(){
         // 获取主机名 
       axios.get('http://localhost:5000/getMyComputerName').then(res=>{
@@ -104,7 +126,10 @@ export default {
             sessionStorage.setItem('readSelfLiveAnchorData',readSelfLiveAnchorData)
             sessionStorage.setItem('readCooperateLiveAnchorData',readCooperateLiveAnchorData)
             sessionStorage.setItem('readTakeGoodsData',readTakeGoodsData)
-
+            // 按钮权限
+            this.getPermissions()
+            // 根据员工id获取基础主播
+            this.getAmiyaEmployee()
             this.$toast.success('登录成功');
             this.$router.push({path:'/workbench'});
           }

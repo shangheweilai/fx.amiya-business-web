@@ -20,17 +20,18 @@
         </div>
         <div class="report_content">
             <div class="report_list">
+                <div class="report_item" @click="$router.push('/smallYellowCarRegistration')">
+                <!-- icon-baobiaozhongxin  -->
+                    <i class="iconfont  icon-weimingming-1 report_icons1"></i>
+                    <div  class="report_title" >小黄车</div>
+                </div>
                 <div class="report_item" @click="duplicateCheckModel = true">
                     <i class="iconfont icon-kehuguanli report_icons2"></i>
                     <div class="report_title">录单</div>
                 </div>
-                <div class="report_item" @click="$router.push('/orderList')">
-                    <i class="iconfont icon-baobiaozhongxin report_icons1"></i>
-                    <div  class="report_title" >订单列表</div>
-                </div>
                 <div class="report_item">
-                    <i class="iconfont icon-zy_yuyue report_icons"></i>
-                    <div  class="report_title" @click="$router.push('/dispatchList')">派单列表</div>
+                    <i class="iconfont icon-dingdanliebiao1 report_icons2"></i>
+                    <div  class="report_title" @click="$router.push('/dispatchList')">订单列表</div>
                 </div>
                 <div class="report_item">
                     <i class="iconfont icon-zy_yuyue report_icons"></i>

@@ -1,5 +1,10 @@
 <template>
     <div class="content">
+        
+        <div class="item" @click="$router.push('/orderList')">
+            <i class="iconfont icon-dingdanliebiao icon_order"></i>
+            <span class="title2">订单列表</span>
+        </div>
         <div class="item" @click="$router.push('/noDispatch')">
             <i class="iconfont icon-weiwanchengpaidan icon_dispatch"></i>
             <span class="title">未派单列表</span>
@@ -35,6 +40,14 @@
         .title{
             font-size: 16px;
             margin-left: -34px;
+        }
+        .icon_order{
+            font-size: 30px;
+            margin-left: 30px;
+        }
+        .title2{
+            font-size: 16px;
+            margin-left: 10px;
         }
     }
 }

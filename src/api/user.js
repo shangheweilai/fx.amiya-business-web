@@ -48,3 +48,11 @@ export const decryptoPhone = (params) => {
         params
     });
 };
+// 获取按钮权限
+export const collection = (params) => {
+    return http({
+        url: `/businessWechat/Permission/collection`,
+        method: "get",
+        params
+    });
+};

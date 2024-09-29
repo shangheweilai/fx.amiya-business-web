@@ -472,3 +472,43 @@ export const ContentPlateFormSendOrderValidKeyAndValue = (params) => {
         params
     });
 };
+// 获取带货产品类型
+export const shoppingCartTakeGoodsProductTypeList = (params) => {
+    return http({
+        url: `/businessWechat/ShoppingCartRegistration/shoppingCartTakeGoodsProductTypeList`,
+        method: "get",
+        params
+    });
+};
+// 获取获客方式
+export const shoppingCartGetCustomerType = (params) => {
+    return http({
+        url: `/businessWechat/ShoppingCartRegistration/shoppingCartGetCustomerTypeList`,
+        method: "get",
+        params
+    });
+};
+// 获取重要程度
+export const emergencyLevels = (params) => {
+    return http({
+        url: `/businessWechat/ShoppingCartRegistration/emergencyLevels`,
+        method: "get",
+        params
+    });
+};
+// 根据主播id获取客服姓名列表
+export const customerServiceNameListByBaseLiveAnchorId = (params) => {
+    return http({
+        url: `/businessWechat/AmiyaEmployee/customerServiceNameListByBaseLiveAnchorId`,
+        method: "get",
+        params
+    });
+};
+// 根据平台id获取主播IP和主播基础id
+export const LiveAnchorvalidList = (params) => {
+    return http({
+        url: `/businessWechat/LiveAnchor/validList`,
+        method: "get",
+        params
+    });
+};

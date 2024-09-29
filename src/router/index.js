@@ -282,6 +282,26 @@ const routes = [{
         component: () =>
             import ('@/views/dataCenter/views/performanceDetail'),
     },
+    {
+        path: '/smallYellowCarRegistration',
+        name: 'smallYellowCarRegistration',
+        meta: {
+            title: "小黄车",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/smallYellowCarRegistration/smallYellowCarRegistration'),
+    },
+    {
+        path: '/addYellowCar',
+        name: 'addYellowCar',
+        meta: {
+            title: "小黄车添加",
+            keepAlive: false,
+        },
+        component: () =>
+            import ('@/views/addYellowCar/addYellowCar'),
+    },
 ]
 
 const router = new VueRouter({
