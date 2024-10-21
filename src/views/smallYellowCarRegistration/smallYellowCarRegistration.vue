@@ -88,7 +88,10 @@
               </div>
               <div class="item_justify">
                 <div>指派：{{ item.assignEmpName }}</div>
-                <div>备注：{{ item.remark }}</div>
+                <div>微信号：{{ item.customerWechatNo }}</div>
+              </div>
+              <div class="item_justify">
+                <div style="width:100%">备注：{{ item.remark }}</div>
               </div>
             </div>
 

@@ -73,6 +73,18 @@
       @input="subPhoneInput"
     />
     <van-field
+      v-model="form.customerWechatNo"
+      label="微信号"
+      placeholder="请输入微信号"
+      class="customer_content"
+    />
+    <van-field
+      v-model="form.fromTitle"
+      label="词条"
+      placeholder="请输入词条"
+      class="customer_content"
+    />
+    <van-field
       v-model="form.price"
       label="下单金额"
       placeholder="请输入下单金额"
@@ -706,6 +718,10 @@ export default {
         isReContent: false,
         // 追评原因
         reContent: "",
+        // 微信号
+        customerWechatNo:'',
+        // 词条
+        fromTitle:'',
       },
       // 线索截图
       imgList: [],
@@ -1330,6 +1346,8 @@ export default {
         badReviewContent,
         isReContent,
         reContent,
+        customerWechatNo,
+        fromTitle
       } = this.form;
       if (!recordDate) {
         this.$toast("请选择登记时间！");
@@ -1445,6 +1463,8 @@ export default {
         badReviewContent,
         isReContent,
         reContent,
+        customerWechatNo,
+        fromTitle
       };
       if (phone) {
         if (!/^1[3456789]\d{9}$/.test(phone)) {
