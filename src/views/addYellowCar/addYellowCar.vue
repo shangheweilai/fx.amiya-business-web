@@ -1466,12 +1466,12 @@ export default {
         customerWechatNo,
         fromTitle
       };
-      if (phone) {
-        if (!/^1[3456789]\d{9}$/.test(phone)) {
-          this.$toast("请输入正确的手机号");
-          return false;
-        }
-      }
+      // if (phone) {
+      //   if (!/^1[3456789]\d{9}$/.test(phone)) {
+      //     this.$toast("请输入正确的手机号");
+      //     return false;
+      //   }
+      // }
       this.isDispatch = true;
       smallYellowCarRegistrationApi
         .addShoppingCartRegistration(data)

@@ -197,6 +197,7 @@ export default {
       color: #2D8CF0;
       font-size: 14px;
       margin-top: 10px;
+      cursor: pointer;
     }
   }
  

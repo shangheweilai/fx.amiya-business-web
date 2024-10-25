@@ -222,6 +222,7 @@ export default {
       color: #2d8cf0;
       font-size: 14px;
       margin-top: 10px;
+      cursor: pointer;
     }
   }
 }
