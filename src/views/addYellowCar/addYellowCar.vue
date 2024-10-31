@@ -664,7 +664,7 @@ export default {
         // 辅助号码
         subPhone: "",
         // 下单金额
-        price: null,
+        price: 0,
         // 客户来源
         source: null,
         sourceName: "",

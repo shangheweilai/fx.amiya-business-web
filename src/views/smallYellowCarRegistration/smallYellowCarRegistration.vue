@@ -102,12 +102,12 @@
                 text="指派"
                 @click="employeeParams.id = item.id;assignModel = true"
               />
-              <van-button
+              <!-- <van-button
                 square
                 color="linear-gradient(to bottom, red,red)"
                 text="删除"
                 @click="deleteClick(item.id)"
-              />
+              /> -->
             </template>
           </van-swipe-cell>
         </div>
