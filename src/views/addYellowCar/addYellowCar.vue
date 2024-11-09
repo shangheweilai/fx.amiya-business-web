@@ -1365,10 +1365,10 @@ export default {
         this.$toast("请选择主播IP！");
         return;
       }
-      if (!liveAnchorWechatNoName) {
-        this.$toast("请选择微信号！");
-        return;
-      }
+      // if (!liveAnchorWechatNoName) {
+      //   this.$toast("请选择微信号！");
+      //   return;
+      // }
       if (!customerNickName) {
         this.$toast("请输入客户昵称！");
         return;
