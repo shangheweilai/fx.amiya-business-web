@@ -332,6 +332,15 @@
       :rows="2"
       v-if="form.isReContent == true"
     />
+    <div class="switch_content">
+      <van-cell center title="是否重复下单" class="switch_con">
+        <van-switch
+          v-model="form.isRepeateCreateOrder"
+          size="24"
+          class="switch_icon"
+        />
+      </van-cell>
+    </div>
 
     <div class="bottom">
       <van-button round block type="default" class="button" @click="cancel"
@@ -722,6 +731,8 @@ export default {
         customerWechatNo:'',
         // 词条
         fromTitle:'',
+        // 是否重复下单
+        isRepeateCreateOrder:false
       },
       // 线索截图
       imgList: [],
@@ -1347,7 +1358,8 @@ export default {
         isReContent,
         reContent,
         customerWechatNo,
-        fromTitle
+        fromTitle,
+        isRepeateCreateOrder
       } = this.form;
       if (!recordDate) {
         this.$toast("请选择登记时间！");
@@ -1464,7 +1476,8 @@ export default {
         isReContent,
         reContent,
         customerWechatNo,
-        fromTitle
+        fromTitle,
+        isRepeateCreateOrder
       };
       // if (phone) {
       //   if (!/^1[3456789]\d{9}$/.test(phone)) {
